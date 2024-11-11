@@ -30,7 +30,7 @@ Actions:
         - Run: chmod +x ./.codecatalyst/scripts/sst_deploy.sh
         - Run: ./.codecatalyst/scripts/sst_deploy.sh
       Container:
-        Image: 664418980468.dkr.ecr.us-east-1.amazonaws.com/devops-coca-codecatalyst-sst-app-imagebuilderforcodecatalyst-ecrrepoforimagebuildercodecatalystbf634ba6-7x3feipkb39m
+        Image: 664418980468.dkr.ecr.us-east-1.amazonaws.com/devops-coca-codecatalyst-sst-app-imagebuilderforcodecatalyst-ecrrepoforimagebuildercodecatalystbf634ba6-7x3feipkb39m:2.0.0-1
         Registry: ECR
     Compute:
       Type: EC2
