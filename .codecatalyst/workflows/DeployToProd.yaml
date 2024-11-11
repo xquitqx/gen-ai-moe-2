@@ -36,6 +36,6 @@ Actions:
       Type: EC2
     Environment:
       Connections:
-        - Role: CodeCatalystWorkflowDevelopmentRole-AWS-CIC-23-24-Test
-          Name: "888641773886"
+        - Role: CodeCatalystWorkflowDevelopmentRole-moe-ielts-phase2
+          Name: "664418980468"
       Name: Prod
