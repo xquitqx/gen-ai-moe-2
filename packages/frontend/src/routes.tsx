@@ -35,7 +35,12 @@ import { sampleFullTest } from './utilities/sampleFullTest.ts';
 import { RequireAuth } from './utilities/authUtilities.tsx';
 import { DevPage } from './pages/DevPage.tsx';
 
+//Abeer changes
+import AdminLogin from './pages/AdminLogin.tsx';
+import AdminHome from './pages/AdminHome.tsx';
+
 // These routes will have the landing nav bar
+
 const landingRoutes: RouteObject[] = [
   {
     path: '/',
@@ -48,6 +53,16 @@ const notLandingRoutes: RouteObject[] = [
   //   path: '/speaking',
   //   Component: Speaking,
   // },
+  {
+    //mychange-----
+    path: '/AdminLogin',
+    Component: AdminLogin,
+  },
+  {
+    //mychange------
+    path: '/AdminHome',
+    Component: AdminHome,
+  },
   {
     path: '/Exercises',
     Component: Exercises,
