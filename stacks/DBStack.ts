@@ -40,6 +40,18 @@ export function DBStack(this: any, { stack }: StackContext) {
     primaryIndex: { partitionKey: 'feedbackId' },
   });
 
+  const cefrQuestionsTable = new Table(stack, 'CEFRQuestions', {
+    fields: {
+      PK: 'string',
+      SK: 'string',
+    },
+    primaryIndex: { partitionKey: 'PK', sortKey: 'SK' },
+  });
+
+  stack.addOutputs({
+    CEFRQuestionsTableName: cefrQuestionsTable.tableName,
+  });
+
   // Create an RDS database
   const mainDBLogicalName = 'MainDatabase';
   // Define output/export attributes names
@@ -100,6 +112,7 @@ export function DBStack(this: any, { stack }: StackContext) {
 
   return {
     table,
+    cefrQuestionsTable,
     uploads_bucket,
     feedback_table,
     Polly_bucket,
