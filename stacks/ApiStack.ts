@@ -135,6 +135,44 @@ export function ApiStack({ stack }: StackContext) {
 
       // get the list of previous tests
       'GET /previousTest': 'packages/functions/src/getPreviousTests.main',
+      
+      'POST /createUserLevel': {
+        function: {
+          handler: 'packages/functions/src/streaks/createUserLevel.handler',
+          permissions: [
+            'dynamodb:PutItem',
+          ],
+          timeout: '120 seconds',
+        },
+      },
+      'POST /incrementStreaks': {
+        function: {
+          handler: 'packages/functions/src/streaks/incrementUserStreaks.handler',
+          permissions: [
+            'dynamodb:PutItem',
+            'dynamodb:UpdateItem'
+          ],
+          timeout: '120 seconds',
+        },
+      },
+      'GET /getUserLevel': {
+        function: {
+          handler: 'packages/functions/src/streaks/getUserLevel.handler',
+          permissions: [
+            'dynamodb:GetItem',
+          ],
+          timeout: '120 seconds',
+        },
+      },
+      'GET /getQuestionsByLevel': {
+        function: {
+          handler: 'packages/functions/src/streaks/getQuestionsByLevel.handler',
+          permissions: [
+            'dynamodb:Query',
+          ],
+          timeout: '120 seconds',
+        },
+      },
     },
   });
 
@@ -264,6 +302,15 @@ export function ApiStack({ stack }: StackContext) {
           timeout: '120 seconds',
         },
       },
+    },
+  });
+
+  const resetStreaksCron = new Cron(stack, 'DailyResetStreaksCron', {
+    schedule: 'cron(0 0 * * ? *)', // Runs daily at midnight UTC
+    job: {
+      handler: 'packages/functions/src/streaks/resetStreaks.handler',
+      permissions: ['dynamodb:Scan', 'dynamodb:UpdateItem'],
+      timeout: '120 seconds',
     },
   });
 
