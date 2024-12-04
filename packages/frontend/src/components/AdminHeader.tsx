@@ -34,7 +34,7 @@ function AdminHeader() {
             </a>
           </li>
           <li>
-            <a href="/upload-exams" className="nav-link">
+            <a href="/AdminUploadExams" className="nav-link">
               Upload Exams
             </a>
           </li>

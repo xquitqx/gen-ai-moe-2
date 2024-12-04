@@ -38,6 +38,7 @@ import { DevPage } from './pages/DevPage.tsx';
 //Abeer changes
 import AdminLogin from './pages/AdminLogin.tsx';
 import AdminHome from './pages/AdminHome.tsx';
+//import AdminUploadExams from './pages/AdminUploadExams.tsx';
 
 // These routes will have the landing nav bar
 
@@ -53,16 +54,8 @@ const notLandingRoutes: RouteObject[] = [
   //   path: '/speaking',
   //   Component: Speaking,
   // },
-  {
-    //mychange-----
-    path: '/AdminLogin',
-    Component: AdminLogin,
-  },
-  {
-    //mychange------
-    path: '/AdminHome',
-    Component: AdminHome,
-  },
+  // {
+
   {
     path: '/Exercises',
     Component: Exercises,
@@ -151,6 +144,22 @@ const noLayoutRoutes: RouteObject[] = [
   //   path: '/listening/:sk',
   //   Component: ListeningQuestionsPage,
   // },
+  {
+    //mychange-----
+    path: '/AdminLogin',
+    Component: AdminLogin,
+  },
+  {
+    //mychange------
+    path: '/AdminHome',
+    Component: AdminHome,
+  },
+  // {
+
+  //   path: '/AdminUploadExams',
+  //   Component: AdminUploadExams,
+  // },
+
   {
     path: '/scores/:section/:sk',
     Component: LRFeedbackPage,

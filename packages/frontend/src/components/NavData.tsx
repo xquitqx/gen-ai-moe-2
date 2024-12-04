@@ -21,14 +21,14 @@ export const NavData: SidebarItem[] = [
   },
   {
     title: 'Upload Exams',
-    path: '/upload-exams',
+    path: '/AdminUploadExams',
     icon: <AiIcons.AiOutlineCloudUpload />,
     cName: 'nav-text',
     subItems: [
-      { title: 'Listening', path: '/upload-exams/listening' },
-      { title: 'Reading', path: '/upload-exams/reading' },
-      { title: 'Writing', path: '/upload-exams/writing' },
-      { title: 'Speaking', path: '/upload-exams/speaking' },
+      { title: 'Listening', path: '/UploadListening' },
+      { title: 'Reading', path: '/UploadReading' },
+      { title: 'Writing', path: '/UploadWriting' },
+      { title: 'Speaking', path: '/UploadSpeaking' },
     ],
   },
   {

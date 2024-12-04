@@ -1,7 +1,7 @@
 /* Navbar container */
 .navbar {
   background-color: #4c929f;
-  height: 80px;
+  height: 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -34,7 +34,7 @@
 .nav-menu-items {
   list-style: none;
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   justify-content: start;
   align-items: flex-start;
 }
