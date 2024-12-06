@@ -14,7 +14,8 @@ export default function SignUp() {
   //TODO: make the institution list dynamic by fetching the list of institutions from the backend
   const authInfo = useContext(AuthContext);
   const [passwordShown, setPasswordShown] = useState(false);
-  const institution = 'UOB';
+  //const institution = 'UOB';
+  const [institution, setInstitution] = useState('');
 
   const { redirectBack } = useRedirectBack();
 
@@ -86,10 +87,26 @@ export default function SignUp() {
               </div>
             </div>
 
+            <label className="block text-sm font-medium leading-6 text-gray-900">
+              Institution Name
+            </label>
+
+            <div className="mt-23">
+              <div className="signupInstitute">
+                <input
+                  type="text"
+                  onChange={e => setInstitution(e.target.value)}
+                  className="block w-full rounded-md border border-blue-4 py-1.5 pl-4"
+                />
+              </div>
+            </div>
+
             <div className="mt-5">
               <label className="block text-sm font-medium leading-6 text-gray-900 ">
                 Password
               </label>
+
+              
 
               <div className="relative mt-2 w-full">
                 <input

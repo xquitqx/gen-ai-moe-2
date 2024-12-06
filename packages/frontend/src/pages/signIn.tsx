@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { signIn } from 'aws-amplify/auth';
+import { fetchUserAttributes, signIn } from 'aws-amplify/auth';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import { BsEye, BsEyeSlash } from 'react-icons/bs';
@@ -18,8 +18,12 @@ export default function SignIn() {
     setPasswordShown(passwordShown ? false : true);
   };
 
-  const handleToastClose = () => {
-    window.location.href = "/home";
+   const handleToastClose = () => {
+     window.location.href = "/home";
+   };
+
+   const handleToastCloseAdmin = () => {
+    window.location.href = "/adminHome";
   };
 
   useEffect(() => {
@@ -35,7 +39,18 @@ export default function SignIn() {
          * https://docs.amplify.aws/react/build-a-backend/auth/enable-sign-up/#sign-in
          */
         if (user.nextStep.signInStep === 'DONE') {
-          handleToastClose()
+          fetchUserAttributes()
+          .then(attributes => {
+            const institution = attributes['custom:Institution']; //Get User sign-in Institution
+
+            if(institution?.toUpperCase() == 'MOE')
+              handleToastCloseAdmin()
+            else
+              handleToastClose()
+          })
+          .catch(error => {
+            console.error('Error fetching user attributes:', error);
+          });
           
           /*
           toast.success('Signed in successfully', {
