@@ -3,7 +3,7 @@ import { Bucket, Function, StackContext } from "sst/constructs";
 export function StorageStack({ stack }: StackContext) {
   // Create the Lambda function
   const notificationFunction = new Function(stack, "NotificationFunctionPY", {
-    handler: "packages/functions/src/TextNotification.main",
+    handler: "packages/functions/src/sample-python-lambda/textNotification.main",
     timeout: 900,
     runtime: "python3.9", 
     permissions: ["textract:AmazonTextractFullAccesss","s3:GetObject" ,"textract:StartDocumentAnalysis", "textract:GetDocumentAnalysis"],
