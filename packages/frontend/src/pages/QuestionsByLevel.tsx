@@ -9,6 +9,7 @@ export interface Question {
   QuestionText: string;
   SK: string;
   Options: Option[];
+  PK?: string;
 }
 
 export interface Option {
@@ -19,9 +20,9 @@ export interface Option {
 const optionsStyle =
   'bg-white border border-gray-300 p-2 text-black text-lg my-4 hover:cursor-pointer hover:bg-gray-300';
 
-  const getLevelFromQuestion = (question: string) => {
-    return question.split('#')[1];
-  }
+const getLevelFromQuestion = (question: string) => {
+  return question.split('#')[1];
+}
 
 export const QuestionsByLevel = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -80,7 +81,7 @@ export const QuestionsByLevel = () => {
       </main>
     );
   }
-  
+
 
   if (showResults) {
     return (
@@ -94,8 +95,8 @@ export const QuestionsByLevel = () => {
             <span className="font-bold">{questions.length}</span>.
           </p>
           <div style={{ marginTop: '20px' }} onClick={handleTestDone}>
-          <Button label="Continue" tag="3B828E" />
-         </div>
+            <Button label="Continue" tag="3B828E" />
+          </div>
         </section>
       </main>
     );
@@ -111,7 +112,7 @@ export const QuestionsByLevel = () => {
           key={`Question-${currentQuestion.SK}`}
         >
           <h2 className="text-2xl md:text-3xl pb-8 font-semibold text-center text-blue-4">
-            Questions For Level {getLevelFromQuestion(currentQuestion.PK)}
+            Questions For Level {getLevelFromQuestion(currentQuestion.PK!)}
           </h2>
 
           <h3 className="text-xl pt-8">

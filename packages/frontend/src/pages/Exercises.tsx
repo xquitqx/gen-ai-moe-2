@@ -1,8 +1,5 @@
-import React, { useState , useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepButton from '@mui/material/StepButton';
 import { Plan, CefrLevel } from '../utilities/planTypes';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
@@ -11,14 +8,14 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import { useNavigate } from 'react-router-dom';
 import { toJSON } from '../utilities';
-import {  get } from 'aws-amplify/api';
+import { get } from 'aws-amplify/api';
 
 const buttonLabels = [
-  // 'Listening',
-  // 'Speaking',
+  'Listening',
+  'Speaking',
   'Grammer & Vocabulary',
-  // 'Reading',
-  // 'Writing',
+  'Reading',
+  'Writing',
 ] as const;
 type ButtonLabel = (typeof buttonLabels)[number];
 
@@ -116,26 +113,8 @@ const levelCardLabels = [
   'Writing',
 ] as const;
 
-const circleTheme = createTheme({
-  components: {
-    MuiStepIcon: {
-      styleOverrides: {
-        root: {
-          '&.Mui-active': {
-            color: 'gray', // Custom color for the active step
-          },
-          '&.Mui-completed': {
-            color: '#3B828E', // Custom color for the completed step
-          },
-          color: 'gray', // Default color for the step (Not active)
-        },
-      },
-    },
-  },
-});
 
 const Exercises: React.FC = () => {
-  const [activeStep, setActiveStep] = React.useState(0);
   const [activeButton, setActiveButton] = useState<ButtonLabel>('Reading');
   const [level, setLevel] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -145,9 +124,6 @@ const Exercises: React.FC = () => {
   };
   const handleChange = (event: SelectChangeEvent<ButtonLabel>) => {
     setActiveButton(event.target.value as ButtonLabel);
-  };
-  const handleStep = (step: number) => () => {
-    setActiveStep(step);
   };
 
   useEffect(() => {
@@ -159,13 +135,13 @@ const Exercises: React.FC = () => {
     )
       .then(response => {
         setLevel(response.CEFRLevel);
-        console.log('level',level);
+        console.log('level', level);
       })
   }, []);
 
 
   const navigateToQuestions = () => {
-    level ? navigate('/questions-by-level') :navigate('/PlacementTest');
+    level ? navigate('/questions-by-level') : navigate('/PlacementTest');
   }
 
   return (
@@ -208,24 +184,24 @@ const Exercises: React.FC = () => {
           </FormControl>
         </ThemeProvider>
       </div>
-        <div className="w-3/4 border-2 rounded-lg min-h-28 flex flex-col items-center justify-center gap-y-5 md:w-1/2">
-          <h1 className="font-semibold text-xl text-center">
-            {level ? 'Practice more to get to the next level!':  'You need to take the placement test!'}
-          </h1>
-          <ThemeProvider theme={buttonsTheme}>
-            <div onClick={navigateToQuestions}>
-              <Button variant="contained" color="primary">
-                Take Test
-              </Button>
-              </div>
-          </ThemeProvider>
-        </div>
-        
-        <img
-  src={`assets/Levels/${level}.png`}
-  alt={`${level} CEFR Level`}
-  className="w-64 h-auto" // Adjust the width class as needed
-/>
+      <div className="w-3/4 border-2 rounded-lg min-h-28 flex flex-col items-center justify-center gap-y-5 md:w-1/2">
+        <h1 className="font-semibold text-xl text-center">
+          {level ? 'Practice more to get to the next level!' : 'You need to take the placement test!'}
+        </h1>
+        <ThemeProvider theme={buttonsTheme}>
+          <div onClick={navigateToQuestions}>
+            <Button variant="contained" color="primary">
+              Take Test
+            </Button>
+          </div>
+        </ThemeProvider>
+      </div>
+
+      <img
+        src={`assets/Levels/${level}.png`}
+        alt={`${level} CEFR Level`}
+        className="w-64 h-auto" // Adjust the width class as needed
+      />
 
       <div className="w-full md:w-3/4">
         <h1 className="text-4xl font-bold underline underline-offset-[14px] decoration-4 decoration-blue-4">
