@@ -48,7 +48,7 @@ const handler: PostConfirmationTriggerHandler = async (event, context) => {
     // Initialize Scores in UserData DB
     let instituteSortKey = "Failed to get Institute"
     if(event.request.userAttributes['custom:Institution']) // This will always be true
-      if(event.request.userAttributes['custom:Institution'].toUpperCase() != 'MOE'){
+      if(event.request.userAttributes['custom:Institution'].toUpperCase() != 'MOE'){ // To avoid adding admins in UserDataDB
         instituteSortKey = event.request.userAttributes['custom:Institution']
 
         const putUserCommand = new PutCommand({
