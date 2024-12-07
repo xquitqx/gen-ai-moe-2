@@ -7,13 +7,12 @@ const dynamoDb = new DynamoDBClient({});
 
 export const handler: APIGatewayProxyHandler = async (event) => {
     const userId = event.requestContext.authorizer!.jwt.claims.sub;
-
     const { cefrLevel, streakCounter, testTaken } = JSON.parse(event.body || '{}');
 
-    if (!userId || !cefrLevel || !streakCounter|| !testTaken) {
+    if (!userId || !cefrLevel || streakCounter === undefined || !testTaken) {
         return {
             statusCode: 400,
-            body: JSON.stringify({ message: 'Invalid Input' }),
+            body: JSON.stringify({ message: 'Invalid input' }),
         };
     }
 

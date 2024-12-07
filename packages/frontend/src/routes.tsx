@@ -34,7 +34,7 @@ import challengePage from './pages/challengePage.tsx';
 import { sampleFullTest } from './utilities/sampleFullTest.ts';
 import { RequireAuth } from './utilities/authUtilities.tsx';
 import { DevPage } from './pages/DevPage.tsx';
-import {QuestionsByLevel} from './pages/QuestionsByLevel.tsx';
+
 //Abeer changes
 import AdminLogin from './pages/AdminLogin.tsx';
 import AdminHome from './pages/AdminHome.tsx';
@@ -116,10 +116,6 @@ const notLandingRoutes: RouteObject[] = [
     path: '/dev/',
     Component: DevPage,
   },
-  {
-    path: '/questions-by-level',
-    Component: QuestionsByLevel
-  }
 ];
 
 const noLayoutRoutes: RouteObject[] = [
