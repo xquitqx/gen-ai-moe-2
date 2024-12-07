@@ -4,13 +4,13 @@ import { DBStack } from './DBStack';
 
 
 export function AuthStack({ stack, app }: StackContext) {
-  const { table } = use(DBStack);
+  const { table, userdataTable } = use(DBStack);
   // Create User Pool
   const auth = new Cognito(stack, 'Auth', {
     login: ['email'],
     defaults: {
       function: {
-        bind: [table],
+        bind: [table, userdataTable],
       },
     },
     triggers: {
