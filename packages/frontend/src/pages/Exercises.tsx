@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from 'react';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -9,16 +9,14 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import { useNavigate } from 'react-router-dom';
-import { toJSON } from '../utilities';
-import {  get } from 'aws-amplify/api';
+import { Link } from 'react-router-dom';
 
 const buttonLabels = [
-  // 'Listening',
-  // 'Speaking',
+  'Listening',
+  'Speaking',
   'Grammer & Vocabulary',
-  // 'Reading',
-  // 'Writing',
+  'Reading',
+  'Writing',
 ] as const;
 type ButtonLabel = (typeof buttonLabels)[number];
 
@@ -136,9 +134,7 @@ const circleTheme = createTheme({
 
 const Exercises: React.FC = () => {
   const [activeStep, setActiveStep] = React.useState(0);
-  const [activeButton, setActiveButton] = useState<ButtonLabel>('Reading');
-  const [level, setLevel] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const [activeButton, setActiveButton] = useState<ButtonLabel>('Listening');
 
   const handleClick = (button: ButtonLabel) => {
     setActiveButton(button);
@@ -150,29 +146,24 @@ const Exercises: React.FC = () => {
     setActiveStep(step);
   };
 
-  useEffect(() => {
-    toJSON(
-      get({
-        apiName: 'myAPI',
-        path: '/getUserLevel',
-      }),
-    )
-      .then(response => {
-        setLevel(response.CEFRLevel);
-        console.log('level',level);
-      })
-  }, []);
+  const currentPlan = plans[activeButton];
+  const currentChallenges = currentPlan.challenges.map(
+    challenge => challenge.challengeId,
+  );
 
-
-  const navigateToQuestions = () => {
-    level ? navigate('/questions-by-level') :navigate('/PlacementTest');
-  }
+  const calculateScore = (plan: Plan) => {
+    const totalChallenges = plan.challenges.length;
+    const completedChallenges = plan.challenges.filter(
+      challenge => challenge.isCompleted,
+    ).length;
+    return totalChallenges > 0 ? completedChallenges / totalChallenges : 0;
+  };
 
   return (
     <main className="flex flex-col items-center gap-y-16">
       <div className="w-full md:w-3/4">
         <h1 className="text-4xl font-bold underline underline-offset-[14px] decoration-4 decoration-blue-4">
-          Vocabulary Gamification
+          Study Plan
         </h1>
       </div>
       <div className="hidden md:flex w-1/2 justify-between">
@@ -208,25 +199,57 @@ const Exercises: React.FC = () => {
           </FormControl>
         </ThemeProvider>
       </div>
+      {currentChallenges.length === 0 ? (
         <div className="w-3/4 border-2 rounded-lg min-h-28 flex flex-col items-center justify-center gap-y-5 md:w-1/2">
           <h1 className="font-semibold text-xl text-center">
-            {level ? 'Practice more to get to the next level!':  'You need to take the placement test!'}
+            You need to take Initial Test!
           </h1>
           <ThemeProvider theme={buttonsTheme}>
-            <div onClick={navigateToQuestions}>
+            <Link to="/PlacementTest">
               <Button variant="contained" color="primary">
                 Take Test
               </Button>
-              </div>
+            </Link>
           </ThemeProvider>
         </div>
-        
-        <img
-  src={`assets/Levels/${level}.png`}
-  alt={`${level} CEFR Level`}
-  className="w-64 h-auto" // Adjust the width class as needed
-/>
-
+      ) : (
+        <div className="w-3/4 border-2 rounded-lg min-h-28 flex justify-center items-center md:w-1/2">
+          <div className="w-full overflow-x-auto min-h-28">
+            <ThemeProvider theme={circleTheme}>
+              <Stepper nonLinear activeStep={activeStep}>
+                {currentChallenges.map((label, index) => (
+                  <Step
+                    key={label}
+                    completed={currentPlan.challenges[index].isCompleted}
+                    sx={{
+                      '& .MuiStepLabel-label': {
+                        fontSize: '0.875rem', // Adjust font size
+                      },
+                      '& .MuiSvgIcon-root': {
+                        fontSize: '2rem', // Adjust circle size
+                      },
+                    }}
+                  >
+                    <StepButton
+                      color="inherit"
+                      onClick={handleStep(index)}
+                      sx={{
+                        minHeight: '4rem', // Adjust button size (Not visible unless clicking)
+                        minWidth: '4rem',
+                      }}
+                    ></StepButton>
+                  </Step>
+                ))}
+              </Stepper>
+            </ThemeProvider>
+          </div>
+        </div>
+      )}
+      <div className="w-3/4 m-10 md:w-1/2">
+        {buttonLabels.map(button =>
+          entryTitle(button, calculateScore(plans[button])),
+        )}
+      </div>
       <div className="w-full md:w-3/4">
         <h1 className="text-4xl font-bold underline underline-offset-[14px] decoration-4 decoration-blue-4">
           What is it ?
@@ -248,6 +271,27 @@ const Exercises: React.FC = () => {
 };
 
 export default Exercises;
+
+const entryTitle = (title: string, score: number) => (
+  <>
+    <div className="flex items-center justify-between max-md:flex-col max-md:items-start w-full">
+      <span className="font-semibold max-md:mb-2">{title}</span>
+      {/* <div className="w-1/2 bg-blue-1 h-full"></div> */}
+      <div className="bg-blue-1 flex w-1/2 max-md:w-full rounded-xl">
+        <div
+          className="bg-blue-4 inline-block h-4 rounded-xl"
+          style={{ width: (score * 100).toFixed(2) + '%' }}
+        ></div>
+      </div>
+      {/* <div className="w-1/2 bg-blue-1">
+        <div
+          className="inline-block bg-blue-4 h-4 mr-4"
+          style={{ width: (score / 9) * 100 + '%' }}
+        ></div>
+      </div> */}
+    </div>
+  </>
+);
 
 const LevelCard = (icon: string, level: string, description: string) => (
   <div className="flex flex-col md:flex-row items-center border-2 border-gray-200 p-4 rounded-lg bg-white shadow-md w-full md:w-1/3 mb-4 md:mb-0">
