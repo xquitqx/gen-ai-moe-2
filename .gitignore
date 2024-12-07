@@ -14,6 +14,8 @@ node_modules
 # local env files
 .env*.local
 
+.env
+
 # structurizr since we will use auto-layout
 workspace.json
 .structurizr

@@ -1,8 +1,12 @@
 import Button from '../components/FButton';
+
 import { useState } from 'react';
 import { sections } from './Questions';
 import { BsCheckCircleFill, BsXCircleFill } from 'react-icons/bs';
 import { ProgressBar } from '../components/ProgressBar';
+import { post } from 'aws-amplify/api';
+import { toJSON } from '../utilities';
+import { useNavigate } from 'react-router-dom';
 
 export interface Question {
   text: string;
@@ -36,6 +40,7 @@ const PlacementTest = () => {
   const [sectionScore, setSectionScore] = useState(0);
   const [level, setLevel] = useState('');
   const [sectionSummary, setSectionSummary] = useState<Selected[]>([]);
+  const navigate = useNavigate();
 
   const optionClicked = (text: string) => {
     const currentSectionQuestions = sections[currentSection - 1];
@@ -79,29 +84,57 @@ const PlacementTest = () => {
       setShowFeedback(false); // Hide the feedback section
     }
   };
-  const handleResult = () => {
+  const handleResult = async () => {
     let updatedScore = sectionScore;
-
+  
     if (score >= 5) {
       updatedScore += 1;
     }
-
+  
+    let newLevel = '';
+  
     if (updatedScore < 2) {
-      setLevel('A1');
+      newLevel = 'A1';
     } else if (updatedScore === 2) {
-      setLevel('A2');
+      newLevel = 'A2';
     } else if (updatedScore === 3) {
-      setLevel('B1');
+      newLevel = 'B1';
     } else if (updatedScore === 4) {
-      setLevel('B2');
+      newLevel = 'B2';
     } else if (updatedScore === 5) {
-      setLevel('C1');
+      newLevel = 'C1';
     } else if (updatedScore === 6) {
-      setLevel('C2');
+      newLevel = 'C2';
     }
-
+  
+    setLevel(newLevel);
+  
+    const body = {
+      cefrLevel: newLevel,
+      streakCounter: 1,
+      testTaken: new Date().toISOString(),
+    };
+  
+    await toJSON(
+      post({
+        apiName: 'myAPI',
+        path: '/createUserLevel',
+        options: {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: body,
+        },
+      }),
+    );
+  
     setShowResult(true);
   };
+
+  const goToQuestionByLevel = () => {
+    navigate('/questions-by-level');
+  }
 
   const progressPercentage =
     (currentQuestion + 1) / sections[currentSection - 1].length;
@@ -118,7 +151,10 @@ const PlacementTest = () => {
               className="w-1/2 h-auto"
             />
           </div>
+
+          <div onClick={goToQuestionByLevel}>
           <Button label="Continue" tag="3B828E"></Button>
+                </div>
         </section>
       ) : (
         <section className="w-full flex items-center h-3/4 flex-col justify-center">
@@ -186,7 +222,7 @@ const PlacementTest = () => {
                 key={`Placement-Question-${currentQuestion}`}
               >
                 <h2 className="text-2xl md:text-3xl  pb-8 font-semiboldb text-center text-blue-4">
-                  Placment Test
+                  Placement Test
                 </h2>
 
                 <h3 className="text-xl  pt-8 ">
