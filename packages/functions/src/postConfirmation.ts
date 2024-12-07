@@ -46,22 +46,31 @@ const handler: PostConfirmationTriggerHandler = async (event, context) => {
 
     
     // Initialize Scores in UserData DB
-    // const putUserCommand = new PutCommand({
-    //   TableName: Table.Records.tableName,
-    //   Item: {
-    //     PK: event.userName,
-    //     SK: event.in,
-    //   },
-    //   ConditionExpression:
-    //     'attribute_not_exists(PK) AND attribute_not_exists(SK)',
-    // });
+    let instituteSortKey = "Failed to get Institute"
+    if(event.request.userAttributes['custom:Institution']) // This will always be true
+      instituteSortKey = event.request.userAttributes['custom:Institution']
 
-    // try {
-    //   const putResponse = await dynamoDb.send(putUserCommand);
-    //   console.log('Put Response:', putResponse);
-    // } catch (error) {
-    //   console.error('Error adding new student record:', error);
-    // }
+    const putUserCommand = new PutCommand({
+      TableName: Table.UserData.tableName,
+      Item: {
+        PK: event.userName,
+        SK: instituteSortKey,
+        Listeningbandscore: 0,
+        overallavg: 0,
+        readingbandscore: 0,
+        speakingbandscore: 0,
+        writingbandscore: 0,
+      },
+      ConditionExpression:
+        'attribute_not_exists(PK) AND attribute_not_exists(SK)',
+    });
+
+    try {
+      const putResponse = await dynamoDb.send(putUserCommand);
+      console.log('Put Response:', putResponse);
+    } catch (error) {
+      console.error('Error adding new student record:', error);
+    }
   
 
     // Add new record for the student plan
