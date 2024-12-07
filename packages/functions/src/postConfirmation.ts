@@ -44,6 +44,26 @@ const handler: PostConfirmationTriggerHandler = async (event, context) => {
     const updateResponse = await dynamoDb.send(updateCommand);
     console.log('Update Response:', updateResponse);
 
+    
+    // Initialize Scores in UserData DB
+    // const putUserCommand = new PutCommand({
+    //   TableName: Table.Records.tableName,
+    //   Item: {
+    //     PK: event.userName,
+    //     SK: event.in,
+    //   },
+    //   ConditionExpression:
+    //     'attribute_not_exists(PK) AND attribute_not_exists(SK)',
+    // });
+
+    // try {
+    //   const putResponse = await dynamoDb.send(putUserCommand);
+    //   console.log('Put Response:', putResponse);
+    // } catch (error) {
+    //   console.error('Error adding new student record:', error);
+    // }
+  
+
     // Add new record for the student plan
     const putCommand = new PutCommand({
       TableName: Table.Records.tableName,
