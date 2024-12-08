@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "sst dev",
+    "dev": "npx sst deploy --stage hsn",
     "build": "sst build",
     "deploy": "sst deploy",
     "remove": "sst remove",
@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.1",
+    "@types/react-dropzone": "^5.1.0",
     "@types/uuid": "^9.0.8",
     "aws-cdk-lib": "^2.137.0",
     "constructs": "10.3.0",
@@ -29,7 +30,9 @@
     "@aws-sdk/lib-dynamodb": "^3.556.0",
     "@expo/vector-icons": "^14.0.4",
     "@fontsource/inter": "^5.0.18",
+    "@heroicons/react": "^2.2.0",
     "aws-jwt-verify": "^4.0.1",
+    "dropzone": "^6.0.0-beta.2",
     "formik": "^2.4.6",
     "node-fetch": "^3.3.2",
     "react": "^18.3.1",
