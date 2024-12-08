@@ -3,11 +3,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  min-height: 100vh;
+  justify-content: flex-start; /* Align elements starting from the top */
+  min-height: 100vh; /* Ensure the container stretches to the full viewport height */
   width: 100%;
   padding: 20px;
-  box-sizing: border-box;
+  box-sizing: border-box; /* Include padding in width and height calculations */
 }
 
 .dashboard-section {
@@ -65,7 +65,7 @@
 }
 
 .search-icon {
-  margin-left: -30px;
+  margin-left: -30px; /* Position the icon inside the input box */
   color: #888;
   font-size: 18px;
 }
@@ -75,12 +75,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  justify-content: center;
-  width: 100%;
+  justify-content: center; /* Center-align graphs horizontally */
+  width: 100%; /* Stretch the section to fit the container width */
 }
 
 .graph {
-  max-width: 300px;
+  max-width: 300px; /* Limit graph container width */
   text-align: center;
 }
 
