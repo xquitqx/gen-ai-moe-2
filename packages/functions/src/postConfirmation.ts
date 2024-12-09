@@ -74,6 +74,31 @@ const handler: PostConfirmationTriggerHandler = async (event, context) => {
         }
       }
 
+      // Initialize Aggregates Scores in Records DB
+    // This command will only run once ever for the first sign-Up ever, TODO: Move it somewhere so it will be run only once ever
+    const putAvgCommand = new PutCommand({
+      TableName: Table.Records.tableName,
+      Item: {
+        PK: 'AGGREGATES',
+        SK: 'TOTALS',
+        Avg_overall_avg: 0,
+        student_count: 0,
+        avg_reading_score: 0,
+        avg_listening_score: 0,
+        avg_writing_score: 0,
+        avg_speaking_score: 0,
+      },
+      ConditionExpression:
+        'attribute_not_exists(PK) AND attribute_not_exists(SK)',
+    });
+
+    try {
+      const putResponse = await dynamoDb.send(putAvgCommand);
+      console.log('Put Response:', putResponse);
+    } catch (error) {
+      console.error('Error adding new student record:', error);
+    }
+
     
   
 
