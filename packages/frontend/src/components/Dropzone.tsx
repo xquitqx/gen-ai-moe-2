@@ -10,6 +10,8 @@ interface FileWithPreview extends File {
 const Dropzone = ({ className }: { className?: string }) => {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [rejected, setRejected] = useState<FileRejection[]>([]);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       if (acceptedFiles?.length) {
@@ -29,6 +31,7 @@ const Dropzone = ({ className }: { className?: string }) => {
     },
     [],
   );
+
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       'application/pdf': [],
@@ -51,9 +54,38 @@ const Dropzone = ({ className }: { className?: string }) => {
     setRejected([]);
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUploadStatus(null);
+
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+
+    try {
+      const response = await fetch('/adminUpload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        setUploadStatus('Upload successful!');
+        removeAll(); // Clear files after successful upload
+      } else {
+        const errorData = await response.json();
+        setUploadStatus(
+          `Upload failed: ${errorData.message || 'Unknown error'}`,
+        );
+      }
+    } catch (error) {
+      setUploadStatus(`Upload failed: ${(error as Error).message}`);
+    }
+  };
+
   return (
     <div className="container">
-      <form>
+      <form onSubmit={handleSubmit}>
         <div
           {...getRootProps({
             className: `dropzone ${className}`,
@@ -104,6 +136,17 @@ const Dropzone = ({ className }: { className?: string }) => {
             <button type="submit" className="submit-btn">
               Submit
             </button>
+          )}
+          {uploadStatus && (
+            <p
+              className={`upload-status ${
+                uploadStatus.startsWith('Upload successful')
+                  ? 'success'
+                  : 'error'
+              }`}
+            >
+              {uploadStatus}
+            </p>
           )}
         </section>
       </form>

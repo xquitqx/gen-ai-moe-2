@@ -4,7 +4,8 @@ def main(event, context):
     print("Lambda is Triggered NOW in the safe mode :) ")
     try:
         print(f"Received event: {event}")
-        fileObj = event["Records"][0]
+      
+        fileObj = event["Records"][0] 
         bucketName = fileObj["s3"]["bucket"]["name"]
         fileName = fileObj["s3"]["object"]["key"]
         print(f"Bucket: {bucketName}, File: {fileName}")
