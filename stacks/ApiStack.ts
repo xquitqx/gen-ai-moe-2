@@ -170,13 +170,13 @@ export function ApiStack({ stack }: StackContext) {
           timeout: '120 seconds',
         },
       },
-      // 'POST /adminUpload': {
-      //   function: {
-      //     handler: 'packages/functions/src/s3adminUpload.handler',
-      //     permissions: ['s3:PutObject', 's3:PutObjectAcl'],
-      //     timeout: '120 seconds',
-      //   },
-      // },
+      'POST /adminUpload': {
+        function: {
+          handler: 'packages/functions/src/s3adminUpload.handler',
+          permissions: ['s3:PutObject', 's3:PutObjectAcl'],
+          timeout: '120 seconds',
+        },
+      },
     },
   });
 
