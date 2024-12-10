@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import { Plan, CefrLevel } from '../utilities/planTypes';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import { useNavigate } from 'react-router-dom';
@@ -115,16 +115,13 @@ const levelCardLabels = [
 
 
 const Exercises: React.FC = () => {
-  const [activeButton, setActiveButton] = useState<ButtonLabel>('Reading');
   const [level, setLevel] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const [streakCounter, setStreakCounter] = useState<number>(0);
+  console.log("🚀 ~ streakCounter:", streakCounter)
+  const [loadingStreak, setLoadingStreak] = useState<boolean>(true);
+  console.log("🚀 ~ loadingStreak:", loadingStreak)
 
-  const handleClick = (button: ButtonLabel) => {
-    setActiveButton(button);
-  };
-  const handleChange = (event: SelectChangeEvent<ButtonLabel>) => {
-    setActiveButton(event.target.value as ButtonLabel);
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
     toJSON(
@@ -135,6 +132,8 @@ const Exercises: React.FC = () => {
     )
       .then(response => {
         setLevel(response.CEFRLevel);
+        setStreakCounter(response.StreakCounter);
+        setLoadingStreak(false);
         console.log('level', level);
       })
   }, []);
@@ -147,22 +146,25 @@ const Exercises: React.FC = () => {
   return (
     <main className="flex flex-col items-center gap-y-16">
       <div className="w-full md:w-3/4">
-        <h1 className="text-4xl font-bold underline underline-offset-[14px] decoration-4 decoration-blue-4">
+        <h1 className="text-4xl font-bold underline underline-offset-[14px] decoration-4 decoration-blue-4 flex items-center justify-center">
           Vocabulary Gamification
+          {streakCounter && !loadingStreak && (
+            <span className="ml-4 flex items-center text-yellow-500">
+              🔥 {streakCounter}
+            </span>
+          )}
         </h1>
+
       </div>
       <div className="hidden md:flex w-1/2 justify-between">
-        {buttonLabels.map(button => (
-          <ThemeProvider theme={buttonsTheme} key={button}>
-            <Button
-              variant={activeButton === button ? 'contained' : 'outlined'}
-              color="primary"
-              onClick={() => handleClick(button)}
-            >
-              <h1 className="font-semibold">{button}</h1>
-            </Button>
-          </ThemeProvider>
-        ))}
+        <ThemeProvider theme={buttonsTheme} key={'Grammer & Vocabulary'}>
+          <Button
+            variant={'contained'}
+            color="primary"
+          >
+            <h1 className="font-semibold">{'Grammer & Vocabulary'}</h1>
+          </Button>
+        </ThemeProvider>
       </div>
       <div className="md:hidden w-3/4">
         <ThemeProvider theme={buttonsTheme}>
@@ -171,15 +173,12 @@ const Exercises: React.FC = () => {
             <Select
               labelId="plan-select-label"
               id="plan-select"
-              value={activeButton}
+              value={'Grammer & Vocabulary'}
               label="Select Plan"
-              onChange={handleChange}
             >
-              {buttonLabels.map(button => (
-                <MenuItem key={button} value={button}>
-                  {button}
-                </MenuItem>
-              ))}
+              <MenuItem key={'Grammer & Vocabulary'} value={'Grammer & Vocabulary'}>
+                Grammer & Vocabulary{' '}
+              </MenuItem>
             </Select>
           </FormControl>
         </ThemeProvider>
@@ -197,11 +196,13 @@ const Exercises: React.FC = () => {
         </ThemeProvider>
       </div>
 
-      <img
-        src={`assets/Levels/${level}.png`}
-        alt={`${level} CEFR Level`}
-        className="w-64 h-auto" // Adjust the width class as needed
-      />
+      {level && (
+        <img
+          src={`assets/Levels/${level}.png`}
+          alt={`${level} CEFR Level`}
+          className="w-64 h-auto"
+        />
+      )}
 
       <div className="w-full md:w-3/4">
         <h1 className="text-4xl font-bold underline underline-offset-[14px] decoration-4 decoration-blue-4">
@@ -226,23 +227,28 @@ const Exercises: React.FC = () => {
 export default Exercises;
 
 const LevelCard = (icon: string, level: string, description: string) => (
-  <div className="flex flex-col md:flex-row items-center border-2 border-gray-200 p-4 rounded-lg bg-white shadow-md w-full md:w-1/3 mb-4 md:mb-0">
-    <div className="flex-shrink-0 mb-4 md:mb-0">
-      <div className="flex items-center justify-center w-12 h-12 md:w-12 md:h-12 rounded-full border-2 border-gray-200">
-        <img
-          src={`assets/Sections/${icon}.png`}
-          alt={icon}
-          className="w-8 h-8"
-        />
+  <>
+    {level && (
+      <div className="flex flex-col md:flex-row items-center border-2 border-gray-200 p-4 rounded-lg bg-white shadow-md w-full md:w-1/3 mb-4 md:mb-0">
+        <div className="flex-shrink-0 mb-4 md:mb-0">
+          <div className="flex items-center justify-center w-12 h-12 md:w-12 md:h-12 rounded-full border-2 border-gray-200">
+            <img
+              src={`assets/Sections/${icon}.png`}
+              alt={icon}
+              className="w-8 h-8"
+            />
+          </div>
+        </div>
+        <div className="flex flex-col items-center md:items-start flex-grow ml-0 md:ml-4">
+          <div className="text-2xl md:text-4xl font-bold text-gray-800">
+            {level}
+          </div>
+          <div className="text-sm md:text-base text-gray-500 mt-1 text-center md:text-left max-w-full">
+            {description}
+          </div>
+        </div>
       </div>
-    </div>
-    <div className="flex flex-col items-center md:items-start flex-grow ml-0 md:ml-4">
-      <div className="text-2xl md:text-4xl font-bold text-gray-800">
-        {level}
-      </div>
-      <div className="text-sm md:text-base text-gray-500 mt-1 text-center md:text-left max-w-full">
-        {description}
-      </div>
-    </div>
-  </div>
+    )}
+  </>
+
 );

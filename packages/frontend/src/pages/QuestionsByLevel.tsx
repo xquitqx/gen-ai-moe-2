@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { toJSON } from '../utilities';
-import { get } from 'aws-amplify/api';
+import { get, post } from 'aws-amplify/api';
 import { ProgressBar } from '../components/ProgressBar';
 import Button from '../components/FButton';
 import { useNavigate } from 'react-router-dom';
@@ -30,6 +30,9 @@ export const QuestionsByLevel = () => {
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showResults, setShowResults] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [streakCount, setStreakCount] = useState<number | null>(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,9 +64,30 @@ export const QuestionsByLevel = () => {
     }
   };
 
-  const handleTestDone = () => {
-    navigate('/Exercises')
-  }
+  const handleTestDone = async () => {
+    try {
+      const response = await toJSON(
+        post({
+          apiName: 'myAPI',
+          path: '/incrementStreaks',
+        }),
+      );
+
+      if (response && response.Attributes && response.Attributes.StreakCounter) {
+        setStreakCount(response.Attributes.StreakCounter);
+        setShowPopup(true);
+      } else {
+        navigate('/Exercises');
+      }
+    } catch (error) {
+      console.error('Error incrementing streak:', error);
+      navigate('/Exercises');
+    }
+  };
+
+  const handleContinue = () => {
+    navigate('/Exercises');
+  };
   const progressPercentage = (currentQuestionIndex + 1) / questions.length;
 
   if (loading) {
@@ -98,6 +122,22 @@ export const QuestionsByLevel = () => {
             <Button label="Continue" tag="3B828E" />
           </div>
         </section>
+
+        {showPopup && streakCount && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-6 rounded-lg text-center">
+              <div className="text-4xl mb-4">🎉🥳🎊</div>
+              <h2 className="text-2xl mb-2">Congratulations!</h2>
+              <p className="mb-4">You've increased your streak to {streakCount}!</p>
+              <button
+                onClick={handleContinue}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        )}
       </main>
     );
   }

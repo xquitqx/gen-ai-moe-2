@@ -37,9 +37,11 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     const userInfo = userResult.Items[0];
     const userLevel = userInfo.CEFRLevel;
 
+    const cefrQuestionsTableName = process.env.cefrQuestionsTableName;
+
     // Query questions based on user level
     const getQuestionsCommand = new QueryCommand({
-      TableName: Table.Records.tableName,
+      TableName: cefrQuestionsTableName,
       KeyConditionExpression: 'PK = :pk',
       ExpressionAttributeValues: {
         ':pk': `CEFR#${userLevel}`,
@@ -47,6 +49,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     });
 
     const questionsResult = await dynamoDb.send(getQuestionsCommand);
+    console.log("🚀 ~ consthandler:APIGatewayProxyHandler= ~ questionsResult:", questionsResult)
     if (!questionsResult.Items || questionsResult.Items.length === 0) {
       return {
         statusCode: 404,

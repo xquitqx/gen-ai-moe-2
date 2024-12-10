@@ -3,12 +3,12 @@
 // third change
 // please study broooooo
 // more changes
-import { Api, StackContext, use, WebSocketApi, Function, Cron } from 'sst/constructs';
+import { Api, StackContext, use, WebSocketApi, Function, Cron, toCdkDuration } from 'sst/constructs';
 import { DBStack } from './DBStack';
 import { CacheHeaderBehavior, CachePolicy } from 'aws-cdk-lib/aws-cloudfront';
-import { Duration } from 'aws-cdk-lib/core';
 import { AuthStack } from './AuthStack';
 import { GrammarToolStack } from './GrammarToolStack';
+import { Duration } from 'aws-cdk-lib';
 
 export function ApiStack({ stack }: StackContext) {
   const {
@@ -135,7 +135,7 @@ export function ApiStack({ stack }: StackContext) {
 
       // get the list of previous tests
       'GET /previousTest': 'packages/functions/src/getPreviousTests.main',
-      
+
       'POST /createUserLevel': {
         function: {
           handler: 'packages/functions/src/streaks/createUserLevel.handler',
@@ -170,6 +170,9 @@ export function ApiStack({ stack }: StackContext) {
           permissions: [
             'dynamodb:Query',
           ],
+          environment: {
+            cefrQuestionsTableName: cefrQuestionsTable.tableName,
+          },
           timeout: '120 seconds',
         },
       },
@@ -308,9 +311,11 @@ export function ApiStack({ stack }: StackContext) {
   const resetStreaksCron = new Cron(stack, 'DailyResetStreaksCron', {
     schedule: 'cron(0 0 * * ? *)', // Runs daily at midnight UTC
     job: {
-      handler: 'packages/functions/src/streaks/resetStreaks.handler',
-      permissions: ['dynamodb:Scan', 'dynamodb:UpdateItem'],
-      timeout: '120 seconds',
+      function: {
+        handler: 'packages/functions/src/streaks/resetStreaks.handler',
+        permissions: ['dynamodb:Scan', 'dynamodb:UpdateItem'],
+        timeout: '120 seconds',
+      },
     },
   });
 
