@@ -71,7 +71,7 @@ const Dropzone = ({ className }: { className?: string }) => {
 
       if (response.ok) {
         setUploadStatus('Upload successful!');
-        removeAll(); // Clear files after successful upload
+        removeAll();
       } else {
         const errorData = await response.json();
         setUploadStatus(
