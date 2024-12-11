@@ -26,7 +26,7 @@ ChartJS.register(
   Legend,
 );
 
-function AdminHome() {
+function Schooldatafetch() {
   const [studentCount, setStudentCount] = useState<number | null>(null);
   const [avgOverallAvg, setAvgOverallAvg] = useState<number | null>(null);
   const [avgReadingScore, setAvgReadingScore] = useState<number | null>(null);
@@ -38,13 +38,6 @@ function AdminHome() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [schools, setSchools] = useState<string[]>([]); // State for schools
-  const [selectedSchool, setSelectedSchool] = useState<string | null>(null); // State for selected school
-
-  const [schoolScores, setSchoolScores] = useState<
-    { schoolName: string; avg_overall_avg: number }[]
-  >([]); // New state to hold school scores for the second graph
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -53,7 +46,7 @@ function AdminHome() {
         const response = await toJSON(
           get({
             apiName: 'myAPI',
-            path: '/getAggregates',
+            path: '/schooldatafetch',
           }),
         );
 
@@ -75,67 +68,12 @@ function AdminHome() {
     fetchData();
   }, []);
 
-  // Fetch list of schools
-  useEffect(() => {
-    const fetchSchools = async () => {
-      try {
-        const response = await toJSON(
-          get({
-            apiName: 'myAPI',
-            path: '/listofschools',
-          }),
-        );
-
-        // Assuming response.schools contains the list of school names
-        if (response.schools) {
-          setSchools(response.schools);
-        }
-      } catch (error) {
-        console.error('Error fetching schools:', error);
-        setError('Failed to fetch the list of schools.');
-      }
-    };
-
-    fetchSchools();
-  }, []);
-
-  // Fetch school scores for the second graph
-  useEffect(() => {
-    const fetchSchoolScores = async () => {
-      try {
-        const response = await toJSON(
-          get({
-            apiName: 'myAPI',
-            path: '/secondgraph',
-          }),
-        );
-
-        // Assuming the response is an array of school names with their avg_overall_avg
-        if (response && Array.isArray(response)) {
-          setSchoolScores(response);
-        }
-      } catch (error) {
-        console.error('Error fetching school scores:', error);
-        setError('Failed to fetch school scores.');
-      }
-    };
-
-    fetchSchoolScores();
-  }, []);
-
-  // Handle school change
-  const handleSchoolChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedSchool(event.target.value);
-    console.log(`Selected school: ${event.target.value}`);
-    // You can trigger additional logic here based on the selected school
-  };
-
-  // Define chart data for the first chart (IELTS scores)
+  // Define chart data for the chart
   const chartData: ChartData<'bar'> = {
-    labels: ['Reading', 'Writing', 'Listening', 'Speaking'],
+    labels: ['Reading', 'Writing', 'listening', 'speaking'],
     datasets: [
       {
-        label: 'Average IELTS Sections Score',
+        label: 'Average IELTS sections score',
         data: [
           avgReadingScore,
           avgWritingScore,
@@ -147,27 +85,17 @@ function AdminHome() {
           'rgba(54, 162, 235, 0.2)',
           'rgba(255, 206, 86, 0.2)',
           'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)',
         ],
         borderColor: [
           'rgba(255, 99, 132, 1)',
           'rgba(54, 162, 235, 1)',
           'rgba(255, 206, 86, 1)',
           'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
         ],
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  // Define chart data for the second chart (school scores)
-  const secondChartData: ChartData<'bar'> = {
-    labels: schoolScores.map(item => item.schoolName), // School names as labels
-    datasets: [
-      {
-        label: 'Average School Score',
-        data: schoolScores.map(item => item.avg_overall_avg), // School scores
-        backgroundColor: 'rgba(75, 192, 192, 0.2)', // Light blue color
-        borderColor: 'rgba(75, 192, 192, 1)', // Darker blue for the border
         borderWidth: 1,
       },
     ],
@@ -212,39 +140,18 @@ function AdminHome() {
           </div>
         </div>
 
-        <div className="graphs-container">
-          <div className="graph-left">
-            <h3>Performance Overview for Each IELTS Section</h3>
+        <div
+          className="graph-section"
+          style={{ width: '100%', height: '1000px' }}
+        >
+          <div className="graph">
+            <h3>Performance Overview</h3>
             <ChartComponent data={chartData} options={chartOptions} />
           </div>
-          <div className="graph-right">
-            <h3>Average School-by-School Performance</h3>
-            <ChartComponent data={secondChartData} options={chartOptions} />
-          </div>
-        </div>
-
-        <div className="school-selector">
-          <h3>
-            Select a School to View Detailed Dashboard for Each Institution
-          </h3>
-          {error ? (
-            <p>{error}</p>
-          ) : (
-            <select onChange={handleSchoolChange} value={selectedSchool || ''}>
-              <option value="" disabled>
-                Select a school
-              </option>
-              {schools.map((school, index) => (
-                <option key={index} value={school}>
-                  {school}
-                </option>
-              ))}
-            </select>
-          )}
         </div>
       </main>
     </div>
   );
 }
 
-export default AdminHome;
+export default Schooldatafetch;

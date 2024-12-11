@@ -129,27 +129,28 @@ export function ApiStack({ stack }: StackContext) {
           environment: { audioBucket: audiobucket.bucketName },
         },
       },
-      'GET /getAggregates': {
-        function: {
-          handler: 'packages/functions/src/getAggregates.handler',
-          permissions: ['dynamodb:*'],
-          timeout: '60 seconds',
-          environment: {
-            tableName: table.tableName,
-          },
-        },
-      },
+     'GET /getAggregates': {
+  function: {
+    handler: 'packages/functions/src/getAggregates.handler',
+    permissions: ['dynamodb:*'],
+    timeout: '60 seconds',
+    environment: {
+      tableName: table.tableName,
+    },
+  },
+},
 
-      'GET /schooldatafetch': {
-        function: {
-          handler: 'packages/functions/src/schooldatafetch.handler',
-          permissions: ['dynamodb:*'],
-          timeout: '60 seconds',
-          environment: {
-            tableName: table.tableName,
-          },
-        },
-      },
+'GET /schooldatafetch': {
+  function: {
+    handler: 'packages/functions/src/schooldatafetch.handler',
+    permissions: ['dynamodb:*'],
+    timeout: '60 seconds',
+    environment: {
+      tableName: table.tableName,
+    },
+  },
+},
+
       'GET /listofschools': {
         function: {
           handler: 'packages/functions/src/listofschools.handler',
@@ -157,6 +158,16 @@ export function ApiStack({ stack }: StackContext) {
           timeout: '60 seconds',
           environment: {
             tableName: userdataTable.tableName,
+          },
+        },
+      },
+      'GET /secondgraph': {
+        function: {
+          handler: 'packages/functions/src/adminsecondgraph.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: table.tableName,
           },
         },
       },
