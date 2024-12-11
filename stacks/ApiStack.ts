@@ -16,6 +16,7 @@ import { CacheHeaderBehavior, CachePolicy } from 'aws-cdk-lib/aws-cloudfront';
 import { Duration } from 'aws-cdk-lib/core';
 import { AuthStack } from './AuthStack';
 import { GrammarToolStack } from './GrammarToolStack';
+import { StorageStack } from './StorageStack';
 
 export function ApiStack({ stack }: StackContext) {
   const {
@@ -27,6 +28,9 @@ export function ApiStack({ stack }: StackContext) {
     Polly_bucket,
     audiobucket,
   } = use(DBStack);
+  const {
+    bucket,
+  } = use(StorageStack);
   const { auth } = use(AuthStack);
   const { grammarToolDNS } = use(GrammarToolStack);
 
@@ -36,7 +40,7 @@ export function ApiStack({ stack }: StackContext) {
       authorizer: 'jwt',
       function: {
         // Bind the table name to our API
-        bind: [table],
+        bind: [table, bucket],
       },
     },
     authorizers: {
@@ -175,6 +179,9 @@ export function ApiStack({ stack }: StackContext) {
         function: {
           handler: 'packages/functions/src/s3adminUpload.handler',
           permissions: ['s3:PutObject', 's3:PutObjectAcl'],
+          environment: {
+            bucket: bucket.bucketName,
+          },
           timeout: '120 seconds',
         },
       },

@@ -85,15 +85,19 @@ const Dropzone = ({ className }: { className?: string }) => {
       //     `Upload failed: ${errorData.message || 'Unknown error'}`,
       //   );
       // }
-      await toJSON(
+      const response = await toJSON(
         post({
           apiName: 'myAPI',
           path: '/adminUpload',
           options: {
+            // headers: {
+            //   'content-type': 'application/pdf'
+            // },
             body: formData
           },
         }),
       );
+      setUploadStatus(response.message)
     } catch (error) {
       setUploadStatus(`Upload failed: ${(error as Error).message}`);
     }
