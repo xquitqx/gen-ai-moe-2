@@ -39,7 +39,6 @@ function AdminHome() {
   const [error, setError] = useState<string | null>(null);
 
   const [schools, setSchools] = useState<string[]>([]); // State for schools
-  const [selectedSchool, setSelectedSchool] = useState<string | null>(null); // State for selected school
 
   const [schoolScores, setSchoolScores] = useState<
     { schoolName: string; avg_overall_avg: number }[]
@@ -125,9 +124,8 @@ function AdminHome() {
 
   // Handle school change
   const handleSchoolChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedSchool(event.target.value);
-    console.log(`Selected school: ${event.target.value}`);
-    // You can trigger additional logic here based on the selected school
+    const selectedSchool = event.target.value;
+    window.location.href = `/schooldatagraph?school=${encodeURIComponent(selectedSchool)}`;
   };
 
   // Define chart data for the first chart (IELTS scores)
@@ -230,8 +228,8 @@ function AdminHome() {
           {error ? (
             <p>{error}</p>
           ) : (
-            <select onChange={handleSchoolChange} value={selectedSchool || ''}>
-              <option value="" disabled>
+            <select onChange={handleSchoolChange}>
+              <option value="" disabled selected>
                 Select a school
               </option>
               {schools.map((school, index) => (

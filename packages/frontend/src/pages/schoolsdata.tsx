@@ -38,15 +38,22 @@ function Schooldatafetch() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Extract school name from the URL
+  const queryParams = new URLSearchParams(window.location.search);
+  const schoolName = queryParams.get('school');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        setLoading(true);
 
+        // Pass the school name as part of the API path
         const response = await toJSON(
           get({
             apiName: 'myAPI',
-            path: '/schooldatafetch',
+            path: `/schooldatafetch?school=${encodeURIComponent(
+              schoolName || '',
+            )}`,
           }),
         );
 
@@ -66,11 +73,11 @@ function Schooldatafetch() {
     };
 
     fetchData();
-  }, []);
+  }, [schoolName]);
 
   // Define chart data for the chart
   const chartData: ChartData<'bar'> = {
-    labels: ['Reading', 'Writing', 'listening', 'speaking'],
+    labels: ['Reading', 'Writing', 'Listening', 'Speaking'],
     datasets: [
       {
         label: 'Average IELTS sections score',
@@ -85,16 +92,12 @@ function Schooldatafetch() {
           'rgba(54, 162, 235, 0.2)',
           'rgba(255, 206, 86, 0.2)',
           'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)',
         ],
         borderColor: [
           'rgba(255, 99, 132, 1)',
           'rgba(54, 162, 235, 1)',
           'rgba(255, 206, 86, 1)',
           'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
         ],
         borderWidth: 1,
       },

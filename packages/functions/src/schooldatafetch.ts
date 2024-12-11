@@ -6,21 +6,32 @@ const tableName = process.env.tableName || 'unknown_table';
 
 export const handler: APIGatewayProxyHandler = async (event, context) => {
   try {
-    // Query DynamoDB for items where PK = 'AGGREGATES' and SK = 'TOTALS'
+    // Extract the 'school' query parameter from the event object
+    const schoolName = event.queryStringParameters?.school;
+
+    if (!schoolName) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: 'School name is required in query parameter',
+        }),
+      };
+    }
+
+    // Query DynamoDB using the school name from the query parameter
     const response = await dynamodb
       .query({
         TableName: tableName,
         KeyConditionExpression: 'PK = :pk and SK = :sk',
         ExpressionAttributeValues: {
           ':pk': { S: 'AGGREGATES' },
-          ':sk': { S: 'Manama School' },
+          ':sk': { S: schoolName }, // Use dynamic school name here
         },
       })
       .promise();
 
-    // Check if the query returned any items
     if (response.Items && response.Items.length > 0) {
-      const item = response.Items[0]; // Since there's only one aggregate entry with PK 'AGGREGATES' and SK 'TOTALS'
+      const item = response.Items[0]; // Since there's only one aggregate entry
 
       // Extract values from the item and convert them to numbers, with fallback to 0 if undefined
       const studentCount = item.student_count?.N ? +item.student_count.N : 0;
@@ -40,7 +51,6 @@ export const handler: APIGatewayProxyHandler = async (event, context) => {
         ? +item.avg_writing_score.N
         : 0;
 
-      // Return the result with the aggregate values in the response body
       return {
         statusCode: 200,
         body: JSON.stringify({
@@ -53,16 +63,15 @@ export const handler: APIGatewayProxyHandler = async (event, context) => {
         }),
       };
     } else {
-      // Handle case where no aggregates are found
       return {
         statusCode: 404,
-        body: JSON.stringify({ error: 'Aggregates not found' }),
+        body: JSON.stringify({
+          error: 'Aggregates not found for the specified school',
+        }),
       };
     }
   } catch (error) {
     console.error('Error fetching aggregates:', error);
-
-    // Return an error message if there's an issue
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Could not fetch aggregates' }),
