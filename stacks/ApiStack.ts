@@ -97,9 +97,7 @@ export function ApiStack({ stack }: StackContext) {
       'POST /putCEFRQuestions': {
         function: {
           handler: 'packages/functions/src/putCEFRQuestions.handler',
-          permissions: [
-            'dynamodb:PutItem',
-          ],
+          permissions: ['dynamodb:PutItem'],
           environment: {
             cefrQuestionsTableName: cefrQuestionsTable.tableName,
           },
@@ -136,31 +134,26 @@ export function ApiStack({ stack }: StackContext) {
       // get the list of previous tests
       'GET /previousTest': 'packages/functions/src/getPreviousTests.main',
 
+
       'POST /createUserLevel': {
         function: {
           handler: 'packages/functions/src/streaks/createUserLevel.handler',
-          permissions: [
-            'dynamodb:PutItem',
-          ],
+          permissions: ['dynamodb:PutItem'],
           timeout: '120 seconds',
         },
       },
       'POST /incrementStreaks': {
         function: {
-          handler: 'packages/functions/src/streaks/incrementUserStreaks.handler',
-          permissions: [
-            'dynamodb:PutItem',
-            'dynamodb:UpdateItem'
-          ],
+          handler:
+            'packages/functions/src/streaks/incrementUserStreaks.handler',
+          permissions: ['dynamodb:PutItem', 'dynamodb:UpdateItem'],
           timeout: '120 seconds',
         },
       },
       'GET /getUserLevel': {
         function: {
           handler: 'packages/functions/src/streaks/getUserLevel.handler',
-          permissions: [
-            'dynamodb:GetItem',
-          ],
+          permissions: ['dynamodb:GetItem'],
           timeout: '120 seconds',
         },
       },
@@ -173,6 +166,13 @@ export function ApiStack({ stack }: StackContext) {
           environment: {
             cefrQuestionsTableName: cefrQuestionsTable.tableName,
           },
+          timeout: '120 seconds',
+        },
+      },
+      'POST /adminUpload': {
+        function: {
+          handler: 'packages/functions/src/s3adminUpload.handler',
+          permissions: ['s3:PutObject', 's3:PutObjectAcl'],
           timeout: '120 seconds',
         },
       },
