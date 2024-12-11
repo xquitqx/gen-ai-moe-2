@@ -223,7 +223,8 @@ export const handler = async () => {
                 Item: question,
             });
 
-            await dynamoDb.send(putCommand);
+            const response = await dynamoDb.send(putCommand);
+            console.log("🚀 ~ handler ~ response:", response)
         }
 
         return {

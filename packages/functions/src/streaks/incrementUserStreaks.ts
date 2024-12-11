@@ -15,17 +15,22 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     };
   }
 
+  const now = new Date();
+  const fifteenHoursAgo = new Date(now.getTime() - 15 * 60 * 60 * 1000).toISOString();
+
   const updateCommand = new UpdateCommand({
     TableName: Table.Records.tableName,
     Key: {
       PK: userId,
       SK: 'USER#INFO',
     },
-    UpdateExpression: 'SET StreakCounter = if_not_exists(StreakCounter, :start) + :inc, TestTaken = :testTaken',
+    UpdateExpression: 'SET StreakCounter = if_not_exists(StreakCounter, :start) + :inc, TestTakenTime = :testTakenTime',
+    ConditionExpression: 'attribute_not_exists(TestTakenTime) OR TestTakenTime < :fifteenHoursAgo',
     ExpressionAttributeValues: {
       ':start': 0,
       ':inc': 1,
-      ':TestTakenTime': new Date().toISOString(),
+      ':testTakenTime': now.toISOString(),
+      ':fifteenHoursAgo': fifteenHoursAgo,
     },
     ReturnValues: 'ALL_NEW',
   });
@@ -36,8 +41,14 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       statusCode: 200,
       body: JSON.stringify({ message: 'User streak incremented successfully', Attributes: result.Attributes }),
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error incrementing user streak:', error);
+    if (error.name === 'ConditionalCheckFailedException') {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'Streaks have already been incremented in the last 15 hours' }),
+      };
+    }
     return {
       statusCode: 500,
       body: JSON.stringify({ message: 'Failed to increment user streak' }),
