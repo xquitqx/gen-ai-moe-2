@@ -172,6 +172,7 @@ const noLayoutRoutes: RouteObject[] = [
   //   path: '/AdminUploadExams',
   //   Component: AdminUploadExams,
   // },
+  {
     path: '/Dropzone',
     Component: Dropzone,
   },
