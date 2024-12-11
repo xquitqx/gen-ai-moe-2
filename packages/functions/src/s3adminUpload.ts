@@ -5,8 +5,7 @@ import { v4 as uuidv4 } from 'uuid'; // To generate a unique file name
 const s3 = new S3Client({});
 
 export const handler: APIGatewayProxyHandler = async event => {
-  const bucketName =
-    'hsn-codecatalyst-sst-app--buckettextractbucket4e81-9qp7bptepiwk';
+  const bucketName = 'hsn-codecatalyst-sst-app--buckettextractbucket4e81-9qp7bptepiwk';
 
   // Check if the body of the request exists
   if (!event.body) {
@@ -15,9 +14,12 @@ export const handler: APIGatewayProxyHandler = async event => {
       body: JSON.stringify({ message: 'File data is required' }),
     };
   }
+  console.log(event.headers)
 
   // Check if the Content-Type header is present
-  const contentType: string | undefined = event.headers['Content-Type'];
+  const contentType: string | undefined = event.headers['content-type'];
+  console.log(event.headers)
+
 
   // Ensure contentType is not undefined and is one of the allowed types
   if (!contentType) {

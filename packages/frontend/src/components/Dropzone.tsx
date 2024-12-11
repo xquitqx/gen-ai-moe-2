@@ -1,6 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+// import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useDropzone, FileRejection } from 'react-dropzone';
 import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
+import { post } from 'aws-amplify/api';
+import { toJSON } from '../utilities';
 import '../components/AdminStyle/Dropzone.css';
 
 interface FileWithPreview extends File {
@@ -43,11 +46,11 @@ const Dropzone = ({ className }: { className?: string }) => {
     onDrop,
   });
 
-  useEffect(() => {
-    return () => {
-      files.forEach(file => URL.revokeObjectURL(file.preview));
-    };
-  }, [files]);
+  // useEffect(() => {
+  //   return () => {
+  //     files.forEach(file => URL.revokeObjectURL(file.preview));
+  //   };
+  // }, [files]);
 
   const removeAll = () => {
     setFiles([]);
@@ -59,25 +62,38 @@ const Dropzone = ({ className }: { className?: string }) => {
     setUploadStatus(null);
 
     const formData = new FormData();
+    // files.forEach(file => {
+    //   formData.append('files', file);
+    // });
+
     files.forEach(file => {
-      formData.append('files', file);
+      formData.append(`file-${file.name}`, file);
     });
 
     try {
-      const response = await fetch('/adminUpload', {
-        method: 'POST',
-        body: formData,
-      });
+      // const response = await fetch('/adminUpload', {
+      //   method: 'POST',
+      //   body: formData,
+      // });
 
-      if (response.ok) {
-        setUploadStatus('Upload successful!');
-        removeAll();
-      } else {
-        const errorData = await response.json();
-        setUploadStatus(
-          `Upload failed: ${errorData.message || 'Unknown error'}`,
-        );
-      }
+      // if (response.ok) {
+      //   setUploadStatus('Upload successful!');
+      //   removeAll();
+      // } else {
+      //   const errorData = await response.json();
+      //   setUploadStatus(
+      //     `Upload failed: ${errorData.message || 'Unknown error'}`,
+      //   );
+      // }
+      await toJSON(
+        post({
+          apiName: 'myAPI',
+          path: '/adminUpload',
+          options: {
+            body: formData
+          },
+        }),
+      );
     } catch (error) {
       setUploadStatus(`Upload failed: ${(error as Error).message}`);
     }
