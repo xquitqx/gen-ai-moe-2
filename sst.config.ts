@@ -31,9 +31,10 @@ export default {
         .stack(DBStack)
         .stack(AuthStack)
         .stack(GrammarToolStack)
+        .stack(StorageStack)
         .stack(ApiStack)
         .stack(FrontendStack)
-        .stack(StorageStack);;
+        //.stack(StorageStack)
     }
   },
 } satisfies SSTConfig;

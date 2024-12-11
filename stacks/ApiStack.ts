@@ -3,13 +3,21 @@
 // third change
 // please study broooooo
 // more changes
-import { Api, StackContext, use, WebSocketApi, Function } from 'sst/constructs';
+import {
+  Api,
+  StackContext,
+  use,
+  WebSocketApi,
+  Function,
+  Cron,
+  toCdkDuration,
+} from 'sst/constructs';
 import { DBStack } from './DBStack';
 import { CacheHeaderBehavior, CachePolicy } from 'aws-cdk-lib/aws-cloudfront';
-import { Duration } from 'aws-cdk-lib/core';
 import { AuthStack } from './AuthStack';
 import { GrammarToolStack } from './GrammarToolStack';
-import { UserData } from 'aws-cdk-lib/aws-ec2';
+import { StorageStack } from './StorageStack';
+import { Duration } from 'aws-cdk-lib';
 
 export function ApiStack({ stack }: StackContext) {
   const {
@@ -22,6 +30,7 @@ export function ApiStack({ stack }: StackContext) {
     audiobucket,
     userdataTable,
   } = use(DBStack);
+  const { bucket } = use(StorageStack);
   const { auth } = use(AuthStack);
   const { grammarToolDNS } = use(GrammarToolStack);
 
@@ -31,7 +40,7 @@ export function ApiStack({ stack }: StackContext) {
       authorizer: 'jwt',
       function: {
         // Bind the table name to our API
-        bind: [table],
+        bind: [table, bucket],
       },
     },
     authorizers: {
@@ -129,27 +138,27 @@ export function ApiStack({ stack }: StackContext) {
           environment: { audioBucket: audiobucket.bucketName },
         },
       },
-     'GET /getAggregates': {
-  function: {
-    handler: 'packages/functions/src/getAggregates.handler',
-    permissions: ['dynamodb:*'],
-    timeout: '60 seconds',
-    environment: {
-      tableName: table.tableName,
-    },
-  },
-},
+      'GET /getAggregates': {
+        function: {
+          handler: 'packages/functions/src/getAggregates.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: table.tableName,
+          },
+        },
+      },
 
-'GET /schooldatafetch': {
-  function: {
-    handler: 'packages/functions/src/schooldatafetch.handler',
-    permissions: ['dynamodb:*'],
-    timeout: '60 seconds',
-    environment: {
-      tableName: table.tableName,
-    },
-  },
-},
+      'GET /schooldatafetch': {
+        function: {
+          handler: 'packages/functions/src/schooldatafetch.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: table.tableName,
+          },
+        },
+      },
 
       'GET /listofschools': {
         function: {
@@ -171,9 +180,6 @@ export function ApiStack({ stack }: StackContext) {
           },
         },
       },
-      
-
-
 
       // get the test item when graded
       'GET /fullTestFeedback/{SK}':
@@ -181,6 +187,36 @@ export function ApiStack({ stack }: StackContext) {
 
       // get the list of previous tests
       'GET /previousTest': 'packages/functions/src/getPreviousTests.main',
+
+      'POST /createUserLevel': {
+        function: {
+          handler: 'packages/functions/src/streaks/createUserLevel.handler',
+          permissions: ['dynamodb:PutItem'],
+          timeout: '120 seconds',
+        },
+      },
+      'POST /incrementStreaks': {
+        function: {
+          handler:
+            'packages/functions/src/streaks/incrementUserStreaks.handler',
+          permissions: ['dynamodb:PutItem', 'dynamodb:UpdateItem'],
+          timeout: '120 seconds',
+        },
+      },
+      'GET /getUserLevel': {
+        function: {
+          handler: 'packages/functions/src/streaks/getUserLevel.handler',
+          permissions: ['dynamodb:GetItem'],
+          timeout: '120 seconds',
+        },
+      },
+      'GET /getQuestionsByLevel': {
+        function: {
+          handler: 'packages/functions/src/streaks/getQuestionsByLevel.handler',
+          permissions: ['dynamodb:Query'],
+          timeout: '120 seconds',
+        },
+      },
     },
   });
 
@@ -310,6 +346,15 @@ export function ApiStack({ stack }: StackContext) {
           timeout: '120 seconds',
         },
       },
+    },
+  });
+
+  const resetStreaksCron = new Cron(stack, 'DailyResetStreaksCron', {
+    schedule: 'cron(0 0 * * ? *)', // Runs daily at midnight UTC
+    job: {
+      handler: 'packages/functions/src/streaks/resetStreaks.handler',
+      permissions: ['dynamodb:Scan', 'dynamodb:UpdateItem'],
+      timeout: '120 seconds',
     },
   });
 

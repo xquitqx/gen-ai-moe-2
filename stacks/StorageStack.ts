@@ -1,20 +1,26 @@
-import { Bucket, Function, StackContext } from "sst/constructs";
+import { Bucket, Function, StackContext } from 'sst/constructs';
 
 export function StorageStack({ stack }: StackContext) {
   // Create the Lambda function
-  const notificationFunction = new Function(stack, "NotificationFunctionPY", {
-    handler: "packages/functions/src/sample-python-lambda/textNotification.main",
+  const notificationFunction = new Function(stack, 'NotificationFunctionPY', {
+    handler:
+      'packages/functions/src/sample-python-lambda/textNotification.main',
     timeout: 900,
-    runtime: "python3.9", 
-    permissions: ["textract:AmazonTextractFullAccesss","s3:GetObject" ,"textract:StartDocumentAnalysis", "textract:GetDocumentAnalysis"],
+    runtime: 'python3.9',
+    permissions: [
+      'textract:AmazonTextractFullAccesss',
+      's3:GetObject',
+      'textract:StartDocumentAnalysis',
+      'textract:GetDocumentAnalysis',
+    ],
   });
 
   // Create the S3 bucket and set up notifications
-  const bucket = new Bucket(stack, "BucketTextract", {
+  const bucket = new Bucket(stack, 'BucketTextract', {
     notifications: {
       myNotification: {
         function: notificationFunction,
-        events: ["object_created"], 
+        events: ['object_created'],
       },
     },
   });
@@ -24,5 +30,5 @@ export function StorageStack({ stack }: StackContext) {
     LambdaFunctionName: notificationFunction.functionName,
   });
 
-  return { bucket , notificationFunction};
+  return { bucket, notificationFunction };
 }
