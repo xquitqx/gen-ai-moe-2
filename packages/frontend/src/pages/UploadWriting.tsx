@@ -1,7 +1,7 @@
 import Header from '../components/AdminHeader';
 import Navbar from '../components/Navbar';
 import Dropzone from '../components/Dropzone';
-import '../components/AdminStyle/upload.css';
+import '../components/AdminStyle/Upload.css';
 
 const UploadWriting = () => {
   return (
