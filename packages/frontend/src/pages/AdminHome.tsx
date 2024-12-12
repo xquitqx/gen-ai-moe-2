@@ -2,10 +2,8 @@ import AdminHeader from '../components/AdminHeader';
 import Navbar from '../components/Navbar';
 import { FaSearch } from 'react-icons/fa';
 import '../components/AdminStyle/AdminHome.css';
-
 import Graph1 from '../assets/graph2.png';
 import Graph2 from '../assets/graph2.png';
-
 function AdminHome() {
   return (
     <div>

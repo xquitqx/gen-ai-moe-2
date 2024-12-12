@@ -176,6 +176,13 @@ export function ApiStack({ stack }: StackContext) {
           timeout: '120 seconds',
         },
       },
+      'GET /getExtract': {
+        function: {
+          handler:'packages/functions/src/getTXT.handler',
+          permissions:['s3:ListBucket','s3:GetObject'],
+          timeout: '60 seconds'
+        },
+      },
     },
   });
 

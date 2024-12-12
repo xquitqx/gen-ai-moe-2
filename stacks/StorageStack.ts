@@ -6,7 +6,7 @@ export function StorageStack({ stack }: StackContext) {
     handler: "packages/functions/src/sample-python-lambda/textNotification.main",
     timeout: 900,
     runtime: "python3.9", 
-    permissions: ["textract:AmazonTextractFullAccesss","s3:GetObject" ,"textract:StartDocumentAnalysis", "textract:GetDocumentAnalysis"],
+    permissions: ["textract:AmazonTextractFullAccesss","s3:GetObject" ,"textract:StartDocumentAnalysis", "textract:GetDocumentAnalysis" ,"s3:PutObject"],
   });
 
   // Create the S3 bucket and set up notifications
@@ -18,11 +18,12 @@ export function StorageStack({ stack }: StackContext) {
       },
     },
   });
+  const bucket2 = new Bucket(stack, "ExtractedTXT")
   // Outputs
   stack.addOutputs({
     BucketName: bucket.bucketName,
     LambdaFunctionName: notificationFunction.functionName,
   });
 
-  return { bucket , notificationFunction};
+  return { bucket , notificationFunction , bucket2};
 }

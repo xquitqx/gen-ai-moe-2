@@ -1,5 +1,6 @@
 import boto3
 import time
+import random
 def main(event, context):
     print("Lambda is Triggered NOW in the safe mode :) ")
     try:
@@ -26,16 +27,27 @@ def main(event, context):
                 if jobStatus in ['SUCCEEDED', 'FAILED']:
                     break
                 print(f"Job Status: {jobStatus}. Waiting for completion...")
-                time.sleep(5)  # Wait for 5 seconds before checking again
-
+                time.sleep(5)  
+                
             # Check if the job succeeded and print the result
             if jobStatus == 'SUCCEEDED':
                 print("Document analysis succeeded!")
                 print(jobResponse)
                 print("Extracted Text Lines:")
-                for block in jobResponse['Blocks']:
-                    if block['BlockType'] == 'LINE':  # Only process lines of text
-                        print(block['Text'])
+                temp_file_path = '/tmp/extracted.txt'
+                with open(temp_file_path, 'w') as f:
+                    for block in jobResponse['Blocks']:
+                        if block['BlockType'] == 'LINE':  
+                            f.write(block['Text'] + '\n')  
+                
+                #random_number = random.randint(1, 1000)
+                # const user = event.requestContext.authorizer!.jwt.claims.sub;
+                user = "Mohamed"
+                output_file_name = f"{fileName.rsplit('.', 1)[0]}_{user}_extracted_text.txt"
+                s3Client = boto3.client('s3')
+                # Upload the file to S3
+                s3Client.upload_file(temp_file_path, "mohdj-codecatalyst-sst-ap-extractedtxtbucket87b8ca-ijzohbu9cf75", output_file_name)
+                print(f"Uploaded extracted text to {output_file_name} in bucket {bucketName}")
             else:
                 print("Document analysis failed!")
         else:
