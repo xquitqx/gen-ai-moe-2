@@ -35,6 +35,8 @@ import challengePage from './pages/challengePage.tsx';
 import { sampleFullTest } from './utilities/sampleFullTest.ts';
 import { RequireAuth } from './utilities/authUtilities.tsx';
 import { DevPage } from './pages/DevPage.tsx';
+import {QuestionsByLevel} from './pages/QuestionsByLevel.tsx';
+import ExtractedFilePage from "./pages/showExtracted.tsx";
 
 //Abeer changes
 import AdminLogin from './pages/AdminLogin.tsx';
@@ -122,6 +124,14 @@ const notLandingRoutes: RouteObject[] = [
   {
     path: '/dev/',
     Component: DevPage,
+  },
+  {
+    path: '/questions-by-level',
+    Component: QuestionsByLevel,
+  },
+  {
+    path: '/showExtracted',
+    Component: ExtractedFilePage,
   },
 ];
 
