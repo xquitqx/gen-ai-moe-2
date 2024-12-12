@@ -3,11 +3,20 @@
 // third change
 // please study broooooo
 // more changes
-import { Api, StackContext, use, WebSocketApi, Function, Cron, toCdkDuration } from 'sst/constructs';
+import {
+  Api,
+  StackContext,
+  use,
+  WebSocketApi,
+  Function,
+  Cron,
+  toCdkDuration,
+} from 'sst/constructs';
 import { DBStack } from './DBStack';
 import { CacheHeaderBehavior, CachePolicy } from 'aws-cdk-lib/aws-cloudfront';
 import { AuthStack } from './AuthStack';
 import { GrammarToolStack } from './GrammarToolStack';
+import { StorageStack } from './StorageStack';
 import { Duration } from 'aws-cdk-lib';
 
 export function ApiStack({ stack }: StackContext) {
@@ -19,7 +28,9 @@ export function ApiStack({ stack }: StackContext) {
     speakingPollyBucket,
     Polly_bucket,
     audiobucket,
+    userdataTable,
   } = use(DBStack);
+  const { bucket } = use(StorageStack);
   const { auth } = use(AuthStack);
   const { grammarToolDNS } = use(GrammarToolStack);
 
@@ -29,7 +40,7 @@ export function ApiStack({ stack }: StackContext) {
       authorizer: 'jwt',
       function: {
         // Bind the table name to our API
-        bind: [table],
+        bind: [table, bucket],
       },
     },
     authorizers: {
@@ -97,9 +108,7 @@ export function ApiStack({ stack }: StackContext) {
       'POST /putCEFRQuestions': {
         function: {
           handler: 'packages/functions/src/putCEFRQuestions.handler',
-          permissions: [
-            'dynamodb:PutItem',
-          ],
+          permissions: ['dynamodb:PutItem'],
           environment: {
             cefrQuestionsTableName: cefrQuestionsTable.tableName,
           },
@@ -129,6 +138,49 @@ export function ApiStack({ stack }: StackContext) {
           environment: { audioBucket: audiobucket.bucketName },
         },
       },
+      'GET /getAggregates': {
+        function: {
+          handler: 'packages/functions/src/getAggregates.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: table.tableName,
+          },
+        },
+      },
+
+      'GET /schooldatafetch': {
+        function: {
+          handler: 'packages/functions/src/schooldatafetch.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: table.tableName,
+          },
+        },
+      },
+
+      'GET /listofschools': {
+        function: {
+          handler: 'packages/functions/src/listofschools.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: userdataTable.tableName,
+          },
+        },
+      },
+      'GET /secondgraph': {
+        function: {
+          handler: 'packages/functions/src/adminsecondgraph.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: table.tableName,
+          },
+        },
+      },
+
       // get the test item when graded
       'GET /fullTestFeedback/{SK}':
         'packages/functions/src/getFullTestFeedback.main',
@@ -139,39 +191,38 @@ export function ApiStack({ stack }: StackContext) {
       'POST /createUserLevel': {
         function: {
           handler: 'packages/functions/src/streaks/createUserLevel.handler',
-          permissions: [
-            'dynamodb:PutItem',
-          ],
+          permissions: ['dynamodb:PutItem'],
           timeout: '120 seconds',
         },
       },
       'POST /incrementStreaks': {
         function: {
-          handler: 'packages/functions/src/streaks/incrementUserStreaks.handler',
-          permissions: [
-            'dynamodb:PutItem',
-            'dynamodb:UpdateItem'
-          ],
+          handler:
+            'packages/functions/src/streaks/incrementUserStreaks.handler',
+          permissions: ['dynamodb:PutItem', 'dynamodb:UpdateItem'],
           timeout: '120 seconds',
         },
       },
       'GET /getUserLevel': {
         function: {
           handler: 'packages/functions/src/streaks/getUserLevel.handler',
-          permissions: [
-            'dynamodb:GetItem',
-          ],
+          permissions: ['dynamodb:GetItem'],
           timeout: '120 seconds',
         },
       },
       'GET /getQuestionsByLevel': {
         function: {
           handler: 'packages/functions/src/streaks/getQuestionsByLevel.handler',
-          permissions: [
-            'dynamodb:Query',
-          ],
+          permissions: ['dynamodb:Query'],
+          timeout: '120 seconds',
+        },
+      },
+      'POST /adminUpload': {
+        function: {
+          handler: 'packages/functions/src/s3adminUpload.handler',
+          permissions: ['s3:PutObject', 's3:PutObjectAcl'],
           environment: {
-            cefrQuestionsTableName: cefrQuestionsTable.tableName,
+            bucket: bucket.bucketName,
           },
           timeout: '120 seconds',
         },
@@ -318,11 +369,9 @@ export function ApiStack({ stack }: StackContext) {
   const resetStreaksCron = new Cron(stack, 'DailyResetStreaksCron', {
     schedule: 'cron(0 0 * * ? *)', // Runs daily at midnight UTC
     job: {
-      function: {
-        handler: 'packages/functions/src/streaks/resetStreaks.handler',
-        permissions: ['dynamodb:Scan', 'dynamodb:UpdateItem'],
-        timeout: '120 seconds',
-      },
+      handler: 'packages/functions/src/streaks/resetStreaks.handler',
+      permissions: ['dynamodb:Scan', 'dynamodb:UpdateItem'],
+      timeout: '120 seconds',
     },
   });
 
@@ -336,4 +385,5 @@ export function ApiStack({ stack }: StackContext) {
 
   return { api, apiCachePolicy, webSocket };
 }
+
 // last change pull request!

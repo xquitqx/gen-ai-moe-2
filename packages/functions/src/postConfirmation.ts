@@ -57,6 +57,7 @@ const handler: PostConfirmationTriggerHandler = async (event, context) => {
             PK: event.userName,
             SK: instituteSortKey,
             Listeningbandscore: 0,
+            numberOfExamsSolved: 0,
             overallavg: 0,
             readingbandscore: 0,
             speakingbandscore: 0,
