@@ -23,7 +23,7 @@ export default function SignIn() {
    };
 
    const handleToastCloseAdmin = () => {
-    window.location.href = "/adminHome";
+    window.location.href = "/admin-home";
   };
 
   useEffect(() => {
