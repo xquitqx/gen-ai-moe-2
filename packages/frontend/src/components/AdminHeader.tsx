@@ -24,7 +24,7 @@ function AdminHeader() {
       <nav>
         <ul>
           <li>
-            <a href="/dashboard" className="nav-link">
+            <a href="/admin-home" className="nav-link">
               Dashboard
             </a>
           </li>
