@@ -18,6 +18,7 @@ import { AddListeningQPage } from './pages/AddListeningQPage.tsx';
 import { SuccessAddListeningQPage } from './pages/SuccessAddListeningQPage.tsx';
 import { SignOutPage } from './pages/signOut.tsx';
 import ErrorPage from './pages/ErrorPage.tsx';
+
 // import { WritingPage } from './pages/WritingPage.tsx';
 //import { writingSection } from './utilities.ts';
 // import RAnswersPage from './pages/RAnswersPage.tsx';
@@ -36,10 +37,17 @@ import { RequireAuth } from './utilities/authUtilities.tsx';
 import { DevPage } from './pages/DevPage.tsx';
 import {QuestionsByLevel} from './pages/QuestionsByLevel.tsx';
 import ExtractedFilePage from "./pages/showExtracted.tsx";
+
 //Abeer changes
 import AdminLogin from './pages/AdminLogin.tsx';
 import AdminHome from './pages/AdminHome.tsx';
-//import AdminUploadExams from './pages/AdminUploadExams.tsx';
+import Schooldatafetch from './pages/schoolsdata.tsx';
+import AdminUploadExams from './pages/AdminUploadExams.tsx';
+import UploadWriting from './pages/UploadWriting.tsx';
+import Dropzone from './components/Dropzone.tsx';
+import UploadReading from './pages/UploadReading.tsx';
+import UploadSpeaking from './pages/UploadSpeaking.tsx';
+import UploadListening from './pages/UploadListening.tsx';
 
 // These routes will have the landing nav bar
 
@@ -124,7 +132,7 @@ const notLandingRoutes: RouteObject[] = [
   {
     path: '/showExtracted',
     Component: ExtractedFilePage,
-  }
+  },
 ];
 
 const noLayoutRoutes: RouteObject[] = [
@@ -155,19 +163,53 @@ const noLayoutRoutes: RouteObject[] = [
   // },
   {
     //mychange-----
-    path: '/AdminLogin',
+    path: '/admin-login',
     Component: AdminLogin,
   },
   {
     //mychange------
-    path: '/AdminHome',
+    path: '/admin-home',
     Component: AdminHome,
   },
+  {
+    //mychange------
+    path: '/schooldatagraph',
+    Component: Schooldatafetch,
+  },
+
   // {
 
   //   path: '/AdminUploadExams',
   //   Component: AdminUploadExams,
   // },
+  {
+    path: '/Dropzone',
+    Component: Dropzone,
+  },
+  {
+    //mychange------
+    path: '/UploadWriting',
+    Component: UploadWriting,
+  },
+  {
+    //mychange------
+    path: '/UploadSpeaking',
+    Component: UploadSpeaking,
+  },
+  {
+    //mychange------
+    path: '/UploadReading',
+    Component: UploadReading,
+  },
+  {
+    //mychange------
+    path: '/UploadListening',
+    Component: UploadListening,
+  },
+  {
+    path: '/AdminUploadExams',
+    Component: AdminUploadExams,
+  },
 
   {
     path: '/scores/:section/:sk',
