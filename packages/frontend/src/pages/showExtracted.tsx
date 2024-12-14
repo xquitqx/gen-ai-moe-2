@@ -7,38 +7,38 @@ const ExtractedFilePage: React.FC = () => {
 
   useEffect(() => {
     const fetchExtractedFile = async () => {
-        try {
-          const response: any = await get({
-            apiName: "myAPI",
-            path: "/getExtract",
-          });
-      
-          console.log("Raw Response:", response); // Debugging: Check the initial structure
-      
-          // Resolve the nested Promise if it exists
-          const resolvedResponse = await response.response;
-      
-          console.log("Resolved Response:", resolvedResponse); // Debugging: Check the resolved structure
-      
-          // Check if body is already an object
-          const parsedBody = typeof resolvedResponse.body === "string"
+      try {
+        const response: any = await get({
+          apiName: "myAPI",
+          path: "/getExtract",
+        });
+
+        console.log("Raw Response:", response); // Debugging: Check the initial structure
+
+        // Resolve the nested Promise if it exists
+        const resolvedResponse = await response.response;
+
+        console.log("Resolved Response:", resolvedResponse); // Debugging: Check the resolved structure
+
+        // Check if body is already an object
+        const parsedBody =
+          typeof resolvedResponse.body === "string"
             ? JSON.parse(resolvedResponse.body) // Parse if it's a string
             : resolvedResponse.body; // Use directly if it's an object
-      
-          console.log("Parsed Body:", parsedBody); // Debugging: Check the parsed content
-      
-          if (parsedBody) {
-            setFileContent(parsedBody); // Update state with file content
-          } else {
-            setError("Failed to retrieve file content.");
-          }
-        } catch (err: any) {
-          console.error("Error fetching file:", err);
-          setError("An error occurred while fetching the file.");
+
+        console.log("Parsed Body:", parsedBody); // Debugging: Check the parsed content
+
+        if (parsedBody) {
+          const fileContent = await parsedBody.text();
+          setFileContent(fileContent); // Update state with file content
+        } else {
+          setError("Failed to retrieve file content.");
         }
-      };
-      
-      
+      } catch (err: any) {
+        console.error("Error fetching file:", err);
+        setError("An error occurred while fetching the file.");
+      }
+    };
 
     fetchExtractedFile();
   }, []);
@@ -64,14 +64,19 @@ const ExtractedFilePage: React.FC = () => {
           border: "1px solid #ddd",
           borderRadius: "8px",
           backgroundColor: "rgba(233, 225, 225, 0.894)",
-          maxWidth: "600px",
-          textAlign: "center",
+          maxWidth: "90%", // Adjust to take more horizontal space
+          maxHeight: "auto", // Limit height
+          overflowY: "auto", // Add vertical scrolling if needed
+          wordWrap: "break-word", // Ensure long words break properly
+          overflowWrap: "break-word", // Break long words within content
+          whiteSpace: "pre-wrap", // Preserve whitespace and line breaks
+          textAlign: "left", // Align text to the left
         }}
       >
         {error ? (
           <p style={{ color: "red" }}>{error}</p>
         ) : fileContent ? (
-          <pre style={{ textAlign: "left" }}>{fileContent}</pre>
+          <pre>{fileContent}</pre>
         ) : (
           <p>Loading...</p>
         )}
