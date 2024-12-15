@@ -62,6 +62,7 @@ const handler: PostConfirmationTriggerHandler = async (event, context) => {
             readingbandscore: 0,
             speakingbandscore: 0,
             writingbandscore: 0,
+            username: event.request.userAttributes['email'],
           },
           ConditionExpression:
             'attribute_not_exists(PK) AND attribute_not_exists(SK)',
