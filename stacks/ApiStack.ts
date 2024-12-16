@@ -148,6 +148,16 @@ export function ApiStack({ stack }: StackContext) {
           },
         },
       },
+      'GET /schoolsstudenttable': {
+        function: {
+          handler: 'packages/functions/src/fetchtheschoolsstudentdata.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: userdataTable.tableName,
+          },
+        },
+      },
 
       'GET /schooldatafetch': {
         function: {
