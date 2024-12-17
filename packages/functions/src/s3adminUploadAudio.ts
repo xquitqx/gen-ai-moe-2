@@ -33,7 +33,7 @@ export const handler: APIGatewayProxyHandler = async event => {
   // Generate a unique file name using UUID
   const userID = event.requestContext.authorizer!.jwt.claims.sub;
   const fileName = `${userID}.${
-    contentType === 'application/pdf' ? 'docx' : 'pdf'
+    contentType === 'audio/mpeg' ? 'mp3' : 'unknown'
   }`;
 
   const fileData = Buffer.from(event.body, 'base64');
@@ -44,7 +44,7 @@ export const handler: APIGatewayProxyHandler = async event => {
       Bucket: bucketName,
       Key: fileName,
       Body: fileData,
-      ContentType: 'application/pdf',
+      ContentType: 'audio/mpeg', // MP3 MIME type
     });
 
     await s3.send(command);

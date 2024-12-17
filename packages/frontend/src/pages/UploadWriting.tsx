@@ -16,7 +16,12 @@ const UploadWriting = () => {
             Please upload your question files here. Accepted files are of type
             as .docx or .pdf
           </p>
-          <Dropzone className="dropzone-container" />
+          <Dropzone
+            className="dropzone-container"
+            acceptedFileTypes={{
+              'application/pdf': [],
+            }}
+          />
         </div>
       </div>
     </div>

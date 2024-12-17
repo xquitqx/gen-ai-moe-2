@@ -14,9 +14,14 @@ const UploadSpeaking = () => {
           <h1 className="page-title">Upload Your Speaking Files</h1>
           <p className="page-description">
             Please upload your question files here. Accepted files are of type
-            as .docx or .pdf
+            .pdf
           </p>
-          <Dropzone className="dropzone-container" />
+          <Dropzone
+            className="dropzone-container"
+            acceptedFileTypes={{
+              'application/pdf': [],
+            }}
+          />
         </div>
       </div>
     </div>
