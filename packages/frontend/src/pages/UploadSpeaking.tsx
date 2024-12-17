@@ -3,11 +3,11 @@ import Navbar from '../components/Navbar';
 import Dropzone from '../components/Dropzone';
 import '../components/AdminStyle/Upload.css';
 
-const UploadSpeaking = () => {
+const UploadSpeaking = ({ hideLayout = false }) => {
   return (
     <div className="upload-page">
-      <Header />
-      <Navbar />
+      {!hideLayout && <Header />}
+      {!hideLayout && <Navbar />}
 
       <div className="container">
         <div className="upload-section">

@@ -7,9 +7,9 @@ import { ReactNode } from 'react';
 export interface SidebarItem {
   title: string;
   path: string;
-  icon: ReactNode; // The icon is a React component
-  cName: string; // for styling - css
-  subItems?: { title: string; path: string }[]; //  optional
+  icon: ReactNode;
+  cName: string;
+  subItems?: { title: string; path: string }[];
 }
 
 export const NavData: SidebarItem[] = [
@@ -20,7 +20,7 @@ export const NavData: SidebarItem[] = [
     cName: 'nav-text',
   },
   {
-    title: 'Upload Exams',
+    title: 'Upload Section Exams',
     path: '/AdminUploadExams',
     icon: <AiIcons.AiOutlineCloudUpload />,
     cName: 'nav-text',
@@ -32,11 +32,18 @@ export const NavData: SidebarItem[] = [
     ],
   },
   {
+    title: 'Upload Full Exams',
+    path: '/FullExamUpload',
+    icon: <AiIcons.AiOutlineCloudUpload />,
+    cName: 'nav-text',
+  },
+  {
     title: 'Generate Exams',
     path: '/generate-exams',
     icon: <AiIcons.AiOutlineFileText />,
     cName: 'nav-text',
   },
+
   {
     title: 'Messages',
     path: '/messages',

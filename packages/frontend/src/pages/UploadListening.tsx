@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { post } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
 
-const UploadListening = () => {
+const UploadListening = ({ hideLayout = false }) => {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [questionFile, setQuestionFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
@@ -59,8 +59,8 @@ const UploadListening = () => {
 
   return (
     <div className="upload-page">
-      <Header />
-      <Navbar />
+      {!hideLayout && <Header />}
+      {!hideLayout && <Navbar />}
       <div className="container">
         <div className="upload-section">
           <h1 className="page-title">Upload Your Listening Files</h1>

@@ -49,6 +49,7 @@ import DropzoneAudio from './components/DropzoneAudio.tsx';
 import UploadReading from './pages/UploadReading.tsx';
 import UploadSpeaking from './pages/UploadSpeaking.tsx';
 import UploadListening from './pages/UploadListening.tsx';
+import FullExamUpload from './pages/FullExamUpload.tsx';
 
 // These routes will have the landing nav bar
 
@@ -210,6 +211,10 @@ const noLayoutRoutes: RouteObject[] = [
     //mychange------
     path: '/UploadListening',
     Component: UploadListening,
+  },
+  {
+    path: '/FullExamUpload',
+    Component: FullExamUpload,
   },
   {
     path: '/AdminUploadExams',
