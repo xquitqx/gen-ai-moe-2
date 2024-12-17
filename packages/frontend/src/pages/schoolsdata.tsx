@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import AdminHeader from '../components/AdminHeader';
 import Navbar from '../components/Navbar';
 import '../components/AdminStyle/AdminHome.css';
+import '../components/AdminStyle/schools.css';
 import { get } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
 import ChartComponent from '../components/AdminStyle/ChartComponent'; // Correct import for ChartComponent
@@ -37,6 +38,7 @@ function Schooldatafetch() {
   const [avgWritingScore, setAvgWritingScore] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [records, setRecords] = useState<any[]>([]); // State to hold the records
 
   // Extract school name from the URL
   const queryParams = new URLSearchParams(window.location.search);
@@ -73,6 +75,36 @@ function Schooldatafetch() {
     };
 
     fetchData();
+  }, [schoolName]);
+  // Fetch the records data
+  useEffect(() => {
+    const fetchRecords = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch records data from the new API endpoint
+        const response = await toJSON(
+          get({
+            apiName: 'myAPI', // Ensure this is the correct API name for your backend
+            path: `/schoolsstudenttable?school=${encodeURIComponent(
+              schoolName || '',
+            )}`, // Adjusted API path
+          }),
+        );
+
+        // Set the records state with the response data
+        setRecords(response.records || []);
+      } catch (error) {
+        console.error('Error fetching records data:', error);
+        setError('Failed to fetch records data. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (schoolName) {
+      fetchRecords();
+    }
   }, [schoolName]);
 
   // Define chart data for the chart
@@ -143,18 +175,64 @@ function Schooldatafetch() {
           </div>
         </div>
 
-        <div
-          className="graph-section"
-          style={{ width: '100%', height: '1000px' }}
-        >
+        <div className="graph-section" style={{ width: '100%' }}>
           <div className="graph">
             <h3>Performance Overview</h3>
             <ChartComponent data={chartData} options={chartOptions} />
+          </div>
+
+          {/* Place the table header here */}
+          <div className="table-header">All Records for {schoolName}</div>
+
+          <div className="records-table" style={{ marginTop: '20px' }}>
+            {loading ? (
+              <p>Loading...</p>
+            ) : error ? (
+              <p>{error}</p>
+            ) : (
+              <table className="styled-table">
+                <thead>
+                  <tr>
+                    <th>Username</th>
+                    <th>Number of Exams Solved</th>
+                    <th>Listening Band Score</th>
+                    <th>Reading Band Score</th>
+                    <th>Speaking Band Score</th>
+                    <th>Writing Band Score</th>
+                    <th>Overall Average</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {records.map((record, index) => (
+                    <tr key={index}>
+                      <td>{record.username || 'N/A'}</td>
+                      <td style={{ textAlign: 'center' }}>
+                        {record.numberOfExamsSolved || 'N/A'}
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        {record.listeningBandScore || 'N/A'}
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        {record.readingBandScore || 'N/A'}
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        {record.speakingBandScore || 'N/A'}
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        {record.writingBandScore || 'N/A'}
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        {record.overallAvg || 'N/A'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       </main>
     </div>
   );
 }
-
 export default Schooldatafetch;
