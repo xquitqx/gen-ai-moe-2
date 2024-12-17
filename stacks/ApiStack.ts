@@ -237,11 +237,21 @@ export function ApiStack({ stack }: StackContext) {
           timeout: '120 seconds',
         },
       },
+      'POST /adminUploadAudio': {
+        function: {
+          handler: 'packages/functions/src/s3adminUploadAudio.handler',
+          permissions: ['s3:PutObject', 's3:PutObjectAcl'],
+          environment: {
+            bucket: bucket.bucketName,
+          },
+          timeout: '120 seconds',
+        },
+      },
       'GET /getExtract': {
         function: {
-          handler:'packages/functions/src/getTXT.handler',
-          permissions:['s3:ListBucket','s3:GetObject'],
-          timeout: '60 seconds'
+          handler: 'packages/functions/src/getTXT.handler',
+          permissions: ['s3:ListBucket', 's3:GetObject'],
+          timeout: '60 seconds',
         },
       },
     },

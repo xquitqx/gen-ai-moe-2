@@ -35,8 +35,8 @@ import challengePage from './pages/challengePage.tsx';
 import { sampleFullTest } from './utilities/sampleFullTest.ts';
 import { RequireAuth } from './utilities/authUtilities.tsx';
 import { DevPage } from './pages/DevPage.tsx';
-import {QuestionsByLevel} from './pages/QuestionsByLevel.tsx';
-import ExtractedFilePage from "./pages/showExtracted.tsx";
+import { QuestionsByLevel } from './pages/QuestionsByLevel.tsx';
+import ExtractedFilePage from './pages/showExtracted.tsx';
 
 //Abeer changes
 import AdminLogin from './pages/AdminLogin.tsx';
@@ -45,9 +45,11 @@ import Schooldatafetch from './pages/schoolsdata.tsx';
 import AdminUploadExams from './pages/AdminUploadExams.tsx';
 import UploadWriting from './pages/UploadWriting.tsx';
 import Dropzone from './components/Dropzone.tsx';
+import DropzoneAudio from './components/DropzoneAudio.tsx';
 import UploadReading from './pages/UploadReading.tsx';
 import UploadSpeaking from './pages/UploadSpeaking.tsx';
 import UploadListening from './pages/UploadListening.tsx';
+import FullExamUpload from './pages/FullExamUpload.tsx';
 
 // These routes will have the landing nav bar
 
@@ -187,6 +189,10 @@ const noLayoutRoutes: RouteObject[] = [
     Component: Dropzone,
   },
   {
+    path: '/DropzoneAudio',
+    Component: DropzoneAudio,
+  },
+  {
     //mychange------
     path: '/UploadWriting',
     Component: UploadWriting,
@@ -205,6 +211,10 @@ const noLayoutRoutes: RouteObject[] = [
     //mychange------
     path: '/UploadListening',
     Component: UploadListening,
+  },
+  {
+    path: '/FullExamUpload',
+    Component: FullExamUpload,
   },
   {
     path: '/AdminUploadExams',
