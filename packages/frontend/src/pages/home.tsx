@@ -1,5 +1,4 @@
 import Sliding from '../sections/sliding';
-import Continue from '../sections/continuePast';
 
 const Home = () => (
   <>
@@ -7,9 +6,7 @@ const Home = () => (
       <Sliding />
     </section>
 
-    <section className="h-1/2">
-      <Continue />
-    </section>
+   
   </>
 );
 

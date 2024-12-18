@@ -50,6 +50,8 @@ import UploadReading from './pages/UploadReading.tsx';
 import UploadSpeaking from './pages/UploadSpeaking.tsx';
 import UploadListening from './pages/UploadListening.tsx';
 import FullExamUpload from './pages/FullExamUpload.tsx';
+import StudentPerformance from './pages/studentsperformancebh.tsx';
+import schooltopachievers from './pages/schooltopachievers.tsx';
 
 // These routes will have the landing nav bar
 
@@ -178,7 +180,16 @@ const noLayoutRoutes: RouteObject[] = [
     path: '/schooldatagraph',
     Component: Schooldatafetch,
   },
-
+  {
+    //mychange------
+    path: '/studentperformance',
+    Component: StudentPerformance,
+  },
+  {
+    //mychange------
+    path: '/schooltopachievers',
+    Component: schooltopachievers,
+  },
   // {
 
   //   path: '/AdminUploadExams',
