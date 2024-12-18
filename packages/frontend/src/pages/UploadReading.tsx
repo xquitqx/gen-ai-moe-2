@@ -3,20 +3,25 @@ import Navbar from '../components/Navbar';
 import Dropzone from '../components/Dropzone';
 import '../components/AdminStyle/Upload.css';
 
-const UploadReading = () => {
+const UploadReading = ({ hideLayout = false }) => {
   return (
     <div className="upload-page">
-      <Header />
-      <Navbar />
+      {!hideLayout && <Header />}
+      {!hideLayout && <Navbar />}
 
       <div className="container">
         <div className="upload-section">
           <h1 className="page-title">Upload Your Reading Files</h1>
           <p className="page-description">
             Please upload your question files here. Accepted files are of type
-            as .docx or .pdf
+            .pdf
           </p>
-          <Dropzone className="dropzone-container" />
+          <Dropzone
+            className="dropzone-container"
+            acceptedFileTypes={{
+              'application/pdf': [],
+            }}
+          />
         </div>
       </div>
     </div>

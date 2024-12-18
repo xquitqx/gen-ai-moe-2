@@ -45,12 +45,13 @@ import Schooldatafetch from './pages/schoolsdata.tsx';
 import AdminUploadExams from './pages/AdminUploadExams.tsx';
 import UploadWriting from './pages/UploadWriting.tsx';
 import Dropzone from './components/Dropzone.tsx';
+import DropzoneAudio from './components/DropzoneAudio.tsx';
 import UploadReading from './pages/UploadReading.tsx';
 import UploadSpeaking from './pages/UploadSpeaking.tsx';
 import UploadListening from './pages/UploadListening.tsx';
+import FullExamUpload from './pages/FullExamUpload.tsx';
 import StudentPerformance from './pages/studentsperformancebh.tsx';
 import schooltopachievers from './pages/schooltopachievers.tsx';
-
 
 // These routes will have the landing nav bar
 
@@ -199,6 +200,10 @@ const noLayoutRoutes: RouteObject[] = [
     Component: Dropzone,
   },
   {
+    path: '/DropzoneAudio',
+    Component: DropzoneAudio,
+  },
+  {
     //mychange------
     path: '/UploadWriting',
     Component: UploadWriting,
@@ -217,6 +222,10 @@ const noLayoutRoutes: RouteObject[] = [
     //mychange------
     path: '/UploadListening',
     Component: UploadListening,
+  },
+  {
+    path: '/FullExamUpload',
+    Component: FullExamUpload,
   },
   {
     path: '/AdminUploadExams',
