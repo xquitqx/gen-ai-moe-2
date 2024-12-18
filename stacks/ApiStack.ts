@@ -148,6 +148,30 @@ export function ApiStack({ stack }: StackContext) {
           },
         },
       },
+      'GET /studentperformance': {
+        function: {
+          handler: 'packages/functions/src/studentperformance.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: userdataTable.tableName,
+            tableName2:table.tableName,
+          },
+        },
+      },
+      'GET /schooltopachievers': {
+        function: {
+          handler: 'packages/functions/src/schooltopachievers.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: userdataTable.tableName,
+            tableName2:table.tableName,
+          },
+        },
+      },
+      
+      
       'GET /schoolsstudenttable': {
         function: {
           handler: 'packages/functions/src/fetchtheschoolsstudentdata.handler',

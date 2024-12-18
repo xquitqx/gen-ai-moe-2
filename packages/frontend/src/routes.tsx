@@ -35,8 +35,8 @@ import challengePage from './pages/challengePage.tsx';
 import { sampleFullTest } from './utilities/sampleFullTest.ts';
 import { RequireAuth } from './utilities/authUtilities.tsx';
 import { DevPage } from './pages/DevPage.tsx';
-import {QuestionsByLevel} from './pages/QuestionsByLevel.tsx';
-import ExtractedFilePage from "./pages/showExtracted.tsx";
+import { QuestionsByLevel } from './pages/QuestionsByLevel.tsx';
+import ExtractedFilePage from './pages/showExtracted.tsx';
 
 //Abeer changes
 import AdminLogin from './pages/AdminLogin.tsx';
@@ -48,6 +48,9 @@ import Dropzone from './components/Dropzone.tsx';
 import UploadReading from './pages/UploadReading.tsx';
 import UploadSpeaking from './pages/UploadSpeaking.tsx';
 import UploadListening from './pages/UploadListening.tsx';
+import StudentPerformance from './pages/studentsperformancebh.tsx';
+import schooltopachievers from './pages/schooltopachievers.tsx';
+
 
 // These routes will have the landing nav bar
 
@@ -176,7 +179,16 @@ const noLayoutRoutes: RouteObject[] = [
     path: '/schooldatagraph',
     Component: Schooldatafetch,
   },
-
+  {
+    //mychange------
+    path: '/studentperformance',
+    Component: StudentPerformance,
+  },
+  {
+    //mychange------
+    path: '/schooltopachievers',
+    Component: schooltopachievers,
+  },
   // {
 
   //   path: '/AdminUploadExams',
