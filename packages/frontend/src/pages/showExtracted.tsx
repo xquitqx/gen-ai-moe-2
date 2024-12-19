@@ -39,57 +39,56 @@ const ExtractedFilePage: React.FC = () => {
     fetchExtractedFile();
   }, []);
 
-  
+  console.log("our feedback:", feedback); // for testing
 
-  
-    console.log("our feedback:" , feedback) // for testing
+  const container = document.getElementById("container") ? document.getElementById("container") : null;
 
-    const container = document.getElementById("container") ? document.getElementById("container"): null;
+  // Split text by "BREAK"
+  const sections = feedback.split(/BREAK /).filter(section => section.trim() !== "");
 
-    // Split text by "BREAK"
-    const sections = feedback.split(/BREAK /).filter(section => section.trim() !== "");
+  // Generate divs dynamically
+  sections.forEach(section => {
+    // Extract question and choices
+    const [question, ...choices] = section.split("\n").map(line => line.trim()).filter(line => line);
 
-    // Generate divs dynamically
-    sections.forEach(section => {
-      // Extract question and choices
-      const [question, ...choices] = section.split("\n").map(line => line.trim()).filter(line => line);
+    // Create a new div for each "BREAK" section
+    const div = document.createElement("div");
+    div.classList.add("question-section");
 
-      // Create a new div for each "BREAK" section
-      const div = document.createElement("div");
-      div.classList.add("question-section");
+    // Add question as a heading
+    const questionHeading = document.createElement("h3");
+    questionHeading.textContent = question;
+    div.appendChild(questionHeading);
 
-      // Add question as a heading
-      const questionHeading = document.createElement("h3");
-      questionHeading.textContent = question;
-      div.appendChild(questionHeading);
+    // Add radio buttons and text inputs for choices
+    choices.forEach(choice => {
+      // Create the radio button
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      radio.name = question; // Group radios by question
+      radio.value = choice.replace(/^CHOICE\s/, ""); // Cleaned-up value
 
-      // Add radio buttons for choices
-      choices.forEach(choice => {
-        const label = document.createElement("label");
-        label.textContent = label.textContent = choice.replace(/^CHOICE\s/, "");
+      // Create the text input
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = choice.replace(/^CHOICE\s/, ""); // Removing "CHOICE" from the text
+      input.style.width = "300px"; // Adjusted width to make the text box longer
+      input.classList.add("editable-choice");
+      input.name = question;
 
-        const radio = document.createElement("input");
-        radio.type = "radio";
-        radio.name = question; // Group radios by question
-        radio.value = choice;
+      // Append the radio button and text input to the div
+      div.appendChild(radio);
+      div.appendChild(input);
 
-        label.prepend(radio); // Add radio button before the text
-        div.appendChild(label);
-
-        // Add a line break after each choice
-        div.appendChild(document.createElement("br"));
-      });
-
-      // Append the div to the container
-      
-        container?.appendChild(div);
-      
-      
+      // Add a line break after each set of inputs
+      div.appendChild(document.createElement("br"));
     });
-    console.log(container)
-  
+
+    // Append the div to the container
+    container?.appendChild(div);
+  });
+
   return (
-    
     <div
       style={{
         display: "flex",
@@ -129,7 +128,6 @@ const ExtractedFilePage: React.FC = () => {
         )}
       </div>
     </div>
-    
   );
 };
 
