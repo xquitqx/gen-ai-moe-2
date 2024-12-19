@@ -230,7 +230,7 @@ export function ApiStack({ stack }: StackContext) {
       'GET /getExtract': {
         function: {
           handler:'packages/functions/src/getTXT.handler',
-          permissions:['s3:ListBucket','s3:GetObject'],
+          permissions:['s3:ListBucket','s3:GetObject', 'bedrock:InvokeModel'],
           timeout: '60 seconds'
         },
       },
