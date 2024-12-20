@@ -1,93 +1,70 @@
-/* Page background and title styling */
+/* Page background and font styling */
 body,
 html {
-  margin: 0;
-  padding: 0;
-  background-color: #fbf9f1; /* Light beige background */
-  font-family: 'Montserrat', sans-serif;
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: #fbf9f1 !important; /* Light beige background */
+  font-family: 'Montserrat', sans-serif !important;
 }
 
-.container {
-  padding: 20px;
-  text-align: center;
+/* Container for all boxes */
+.containerabout {
+  display: flex !important;
+  flex-wrap: wrap !important; /* Allow wrapping to create multiple rows */
+  justify-content: center !important; /* Center the items horizontally */
+  gap: 20px !important; /* Add space between items */
+  padding: 20px !important;
+  max-width: 800px !important; /* Limit the maximum width of the container */
+  margin: 0 auto !important; /* Center the container */
 }
 
-/* Page title styling */
-.page-title {
-  font-size: 2.2em; /* Slightly smaller font size */
-  font-weight: 600; /* Lighter weight for a more professional look */
-  color: #4a6e77; /* A more muted color for a professional tone */
-  text-transform: capitalize; /* Changed to capitalize for a more polished look */
-  margin-top: 60px; /* Increased top margin to move it down */
-  margin-bottom: 20px; /* Reduced bottom margin for better spacing */
-  letter-spacing: 1px; /* Slightly reduced letter-spacing for a cleaner look */
-  background-color: transparent; /* Removed the white background */
-  border: none; /* Removed any border */
-  display: inline-block; /* Ensure the title doesn't behave like a block element */
-  padding: 0; /* Remove any padding that might be applied */
-}
-
-/* Flexbox container for CEFR level boxes */
-.levels-container {
-  padding: 20px;
-  display: flex;
-  justify-content: center; /* Center the items horizontally */
-  gap: 20px; /* Add space between items */
-  margin-top: 40px;
-  max-width: 800px; /* Limit the maximum width of the container */
-  align-items: center; /* Center-align the graph and header */
-}
-
-/* Box styling for each CEFR level */
-.level {
-  background-color: #ffffff;
-  border: 2px solid #6a9eab; /* Box border */
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  flex: 1 1 calc(45% - 20px); /* Ensure two items per row with spacing */
-  max-width: 380px; /* Limit the box width */
-  margin-bottom: 20px;
-  text-align: center; /* Center content inside the box */
+/* Styling for individual boxes */
+.levelabout {
+  background-color: #ffffff !important; /* White background */
+  border: 2px solid #6a9eab !important; /* Box border */
+  border-radius: 10px !important; /* Rounded corners */
+  padding: 20px !important; /* Inner padding */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important; /* Subtle shadow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important; /* Hover animation */
+  flex: 1 1 calc(50% - 20px) !important; /* Two boxes per row with gap spacing */
+  max-width: calc(50% - 20px) !important; /* Ensure proper spacing */
+  text-align: center !important; /* Center content inside the box */
+  min-height: 200px !important; /* Maintain uniform height */
 }
 
 /* Hover effect for the boxes */
-.level:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+.levelabout:hover {
+  transform: translateY(-5px) !important; /* Slight upward movement */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2) !important; /* Stronger shadow on hover */
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .level {
-    flex: 1 1 100%; /* Make boxes take the full width on smaller screens */
-  }
-}
-
-/* Level title inside box */
+/* Styling for the level title inside each box */
 .level-title {
-  font-size: 1.8em;
-  color: #6a9eab;
-  margin-bottom: 15px;
-  text-transform: uppercase; /* Capitalize the level names */
-  font-weight: bold;
+  font-size: 1.8em !important; /* Larger font size */
+  color: #6a9eab !important; /* Muted blue-green color */
+  margin-bottom: 15px !important; /* Spacing below the title */
+  text-transform: uppercase !important; /* Capitalize the level names */
+  font-weight: bold !important; /* Bold font */
 }
 
-/* Level description inside box */
+/* Styling for the level description inside each box */
 .level-description {
-  font-size: 1.1em;
-  color: #333;
-  line-height: 1.6;
+  font-size: 1.1em !important; /* Slightly larger font size */
+  color: #333 !important; /* Dark gray for readability */
+  line-height: 1.6 !important; /* Line spacing for better readability */
 }
 
-/* Responsive Design */
+/* Responsive Design: Adjust boxes for smaller screens */
 @media (max-width: 768px) {
-  .level {
-    width: 100%; /* Make boxes take the full width on smaller screens */
+  .levelabout {
+    flex: 1 1 100% !important; /* Make boxes take the full width on smaller screens */
   }
 
-  .page-title {
-    font-size: 2em;
+  .level-title {
+    font-size: 1.6em !important; /* Slightly smaller font for titles */
+  }
+
+  .level-description {
+    font-size: 1em !important; /* Adjust description font size */
   }
 }
