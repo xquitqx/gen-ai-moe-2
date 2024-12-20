@@ -1,0 +1,121 @@
+/* General styling */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  background-color: #fbf9f1; /* Light background for the page */
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Container for the whole page */
+.admin-landing-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Title of the Admin Page */
+.admin-page-title {
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #4a6e77;
+  margin-top: 50px;
+  margin-bottom: 30px;
+  text-transform: capitalize;
+  text-align: center;
+}
+
+/* Cards container */
+.dashboard-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
+  width: 100%;
+}
+
+/* Individual Dashboard Cards */
+.dashboard-card {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 250px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.button-link {
+  display: block;
+  text-decoration: none; /* Ensure no text decoration is applied */
+  color: inherit; /* Inherit text color */
+}
+
+.dashboard-card h3 {
+  font-size: 1.4em;
+  margin-bottom: 15px;
+  color: #4a6e77;
+}
+
+/* Hover effect for cards */
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dashboard-card {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .admin-page-title {
+    font-size: 2em;
+  }
+}
+/* Style for the button-like links */
+.button-link {
+  background-color: #ffffff;
+  border: 2px solid #6a9eab; /* Box border */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  flex: 1 1 calc(45% - 20px); /* Ensure two items per row with spacing */
+  max-width: 380px; /* Limit the box width */
+  margin-bottom: 20px;
+  text-align: center; /* Center content inside the box */
+}
+
+/* Hover effect for the button */
+.button-link:hover {
+  background-color: #ffffff; /* Darker shade for hover effect */
+  transform: translateY(-5px); /* Slight lift effect */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+}
+/* Make sure links are clickable */
+.dashboard-card {
+  position: relative;
+  z-index: 10; /* Ensure the link is on top */
+}
+
+/* Ensure the navigation bar doesn't overlap */
+.navbar {
+  position: relative;
+  z-index: 5; /* Lower z-index for navbar */
+}
+/* Ensure links are clickable */
+.dashboard-card {
+  pointer-events: auto;
+}

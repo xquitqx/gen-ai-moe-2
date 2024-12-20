@@ -25,8 +25,8 @@ export const Layout = ({
   const getNavEntries = () => {
     if (isLanding) {
       return [
-        { text: 'About', to: '""' },
-        { text: 'How to use', to: '"' },
+        { text: 'About', to: '/about' },
+        { text: 'How to use', to: '/howtouse' },
         ...(showSignIn ? [{ text: 'Sign in', to: '/sign-in' }] : []),
       ];
     } else if (authInfo.user) {
@@ -41,8 +41,8 @@ export const Layout = ({
       ];
     } else {
       return [
-        { text: 'About', to: '"' },
-        { text: 'How to use', to: '""' },
+        { text: 'About', to: '/about' },
+        { text: 'How to use', to: '/howtouse' },
         { text: 'Sign in', to: '/sign-in' },
       ];
     }

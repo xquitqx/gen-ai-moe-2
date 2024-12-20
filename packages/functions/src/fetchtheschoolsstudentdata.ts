@@ -24,6 +24,7 @@ export const handler: APIGatewayProxyHandler = async event => {
 
     // Perform a scan operation with a filter expression to get all matching items based on SK
     let records: any[] = [];
+    let userDetails: any[] = []; // Initialize user details array
     let response;
 
     do {
@@ -63,7 +64,20 @@ export const handler: APIGatewayProxyHandler = async event => {
         };
       });
 
+      // Add new records to the list
       records = [...records, ...(newRecords || [])];
+
+      // Extract the username and numberOfExamsSolved for the users
+      const newUserDetails = response.Items?.map(item => ({
+        username: item.username?.S || 'N/A',
+        numberOfExamsSolved: item.numberOfExamsSolved?.N
+          ? +item.numberOfExamsSolved.N
+          : 0,
+      }));
+
+      // Add the user details to the users list
+      userDetails = [...userDetails, ...(newUserDetails || [])];
+
       // Set the LastEvaluatedKey for the next scan, if available
       lastEvaluatedKey = response.LastEvaluatedKey
         ? response.LastEvaluatedKey.SK.S
@@ -75,6 +89,7 @@ export const handler: APIGatewayProxyHandler = async event => {
         statusCode: 200,
         body: JSON.stringify({
           records, // Return all matching records as an array
+          users: userDetails, // Include user details (username and numberOfExamsSolved)
           lastEvaluatedKey: lastEvaluatedKey, // Include the lastEvaluatedKey for pagination
         }),
       };

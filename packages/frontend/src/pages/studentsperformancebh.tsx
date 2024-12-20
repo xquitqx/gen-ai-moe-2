@@ -160,7 +160,7 @@ function StudentPerformance() {
         <div className="school-selector">
           <h3
             className="text-4xl font-bold underline underline-offset-[14px] decoration-4 decoration-blue-4 flex items-center justify-center"
-            style={{ color: '#6a9eab' }}
+            style={{ color: '#4a6e77' }}
           >
             {' '}
             Select a school to view detailed top achievers for each school in

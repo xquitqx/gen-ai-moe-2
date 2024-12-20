@@ -1,0 +1,145 @@
+/* Page background and title styling */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  background-color: #fbf9f1; /* Light beige background */
+  font-family: 'Montserrat', sans-serif;
+}
+
+.steps-page {
+  padding: 20px;
+  text-align: center;
+}
+
+/* Page title styling */
+.page-title {
+  font-size: 2.2em; /* Slightly smaller font size */
+  font-weight: 600; /* Lighter weight for a more professional look */
+  color: #4a6e77; /* A more muted color for a professional tone */
+  text-transform: capitalize; /* Changed to capitalize for a more polished look */
+  margin-top: 60px; /* Increased top margin to move it down */
+  margin-bottom: 20px; /* Reduced bottom margin for better spacing */
+  letter-spacing: 1px; /* Slightly reduced letter-spacing for a cleaner look */
+  background-color: transparent; /* Ensures no background color */
+  border: none; /* Ensures no border around the title */
+  display: inline-block; /* Ensure the title doesn't behave like a block element */
+  padding: 0; /* Remove any padding that might be applied */
+  box-shadow: none; /* Ensure there's no shadow */
+}
+
+/* Flowchart container */
+.flowchart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* Individual step */
+.step {
+  position: relative;
+  width: 300px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.step:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Arrow styling */
+.arrow {
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 20px solid #6a9eab; /* Arrow color */
+  margin: 10px auto; /* Center the arrow */
+}
+
+/* Step content */
+.step-content h2 {
+  font-size: 1.5em;
+  color: #6a9eab;
+  margin-bottom: 10px;
+}
+
+.step-content p {
+  font-size: 1em;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .step {
+    width: 80%;
+  }
+
+  .page-title {
+    font-size: 2em;
+  }
+}
+
+/* Leaderboard Note Styling */
+.leaderboard-note {
+  margin: 40px auto;
+  background-color: #ffffff;
+  border: 2px solid #6a9eab;
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.leaderboard-note:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+}
+
+.leaderboard-note p {
+  font-size: 1.2em;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.leaderboard-list {
+  list-style: none;
+  padding: 0;
+}
+
+.leaderboard-list li {
+  font-size: 1.1em;
+  color: #6a9eab;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.leaderboard-list li strong {
+  color: #333; /* Stronger text contrast */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .leaderboard-note {
+    padding: 15px;
+  }
+
+  .leaderboard-note p {
+    font-size: 1em;
+  }
+
+  .leaderboard-list li {
+    font-size: 1em;
+  }
+}

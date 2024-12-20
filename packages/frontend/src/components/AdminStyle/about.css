@@ -1,0 +1,70 @@
+/* Page background and font styling */
+body,
+html {
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: #fbf9f1 !important; /* Light beige background */
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+/* Container for all boxes */
+.containerabout {
+  display: flex !important;
+  flex-wrap: wrap !important; /* Allow wrapping to create multiple rows */
+  justify-content: center !important; /* Center the items horizontally */
+  gap: 20px !important; /* Add space between items */
+  padding: 20px !important;
+  max-width: 800px !important; /* Limit the maximum width of the container */
+  margin: 0 auto !important; /* Center the container */
+}
+
+/* Styling for individual boxes */
+.levelabout {
+  background-color: #ffffff !important; /* White background */
+  border: 2px solid #6a9eab !important; /* Box border */
+  border-radius: 10px !important; /* Rounded corners */
+  padding: 20px !important; /* Inner padding */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important; /* Subtle shadow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important; /* Hover animation */
+  flex: 1 1 calc(50% - 20px) !important; /* Two boxes per row with gap spacing */
+  max-width: calc(50% - 20px) !important; /* Ensure proper spacing */
+  text-align: center !important; /* Center content inside the box */
+  min-height: 200px !important; /* Maintain uniform height */
+}
+
+/* Hover effect for the boxes */
+.levelabout:hover {
+  transform: translateY(-5px) !important; /* Slight upward movement */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2) !important; /* Stronger shadow on hover */
+}
+
+/* Styling for the level title inside each box */
+.level-title {
+  font-size: 1.8em !important; /* Larger font size */
+  color: #6a9eab !important; /* Muted blue-green color */
+  margin-bottom: 15px !important; /* Spacing below the title */
+  text-transform: uppercase !important; /* Capitalize the level names */
+  font-weight: bold !important; /* Bold font */
+}
+
+/* Styling for the level description inside each box */
+.level-description {
+  font-size: 1.1em !important; /* Slightly larger font size */
+  color: #333 !important; /* Dark gray for readability */
+  line-height: 1.6 !important; /* Line spacing for better readability */
+}
+
+/* Responsive Design: Adjust boxes for smaller screens */
+@media (max-width: 768px) {
+  .levelabout {
+    flex: 1 1 100% !important; /* Make boxes take the full width on smaller screens */
+  }
+
+  .level-title {
+    font-size: 1.6em !important; /* Slightly smaller font for titles */
+  }
+
+  .level-description {
+    font-size: 1em !important; /* Adjust description font size */
+  }
+}
