@@ -10,44 +10,61 @@
   box-sizing: border-box; /* Include padding in width and height calculations */
 }
 
+/* Page title */
+.page-title {
+  font-size: 2.2em; /* Slightly smaller font size */
+  font-weight: 600; /* Lighter weight for a more professional look */
+  color: #4a6e77; /* A more muted color for a professional tone */
+  text-transform: capitalize; /* Changed to capitalize for a more polished look */
+  margin-top: 60px; /* Increased top margin to move it down */
+  margin-bottom: 20px; /* Reduced bottom margin for better spacing */
+  letter-spacing: 1px; /* Slightly reduced letter-spacing for a cleaner look */
+  background-color: transparent; /* Removed the white background */
+  border: none; /* Removed any border */
+  display: inline-block; /* Ensure the title doesn't behave like a block element */
+  padding: 0; /* Remove any padding that might be applied */
+}
+
+/* Dashboard section */
 .dashboard-section {
   text-align: center;
   margin-bottom: 30px;
   width: 100%;
 }
 
-/* Container for the active-users, average */
+/* Container for the dashboard cards */
 .dashboard-cards {
   display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
+  justify-content: space-between;
   margin-bottom: 20px;
-  width: 100%;
+  width: 100%; /* Ensure it takes the full width of the container */
+  gap: 20px; /* Adds space between the cards */
 }
 
+/* Dashboard cards */
 .dashboard-card {
-  background-color: #f4f4f4;
-  padding: 15px;
+  background-color: #f8f9fa;
+  padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 180px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex: 1; /* Ensures both cards take up equal width */
   text-align: center;
+  min-width: 0; /* Prevents overflow issues */
 }
 
 .dashboard-card h3 {
   margin-bottom: 10px;
-  font-size: 16px;
+  font-size: 1.2rem;
   color: #333;
 }
 
 .dashboard-card p {
-  font-size: 20px;
+  font-size: 1.5rem;
   font-weight: bold;
-  color: #4caf50;
+  color: #4a6e77;
 }
 
-/* search bar container */
+/* Search bar container */
 .search-bar {
   margin-top: 20px;
   display: flex;
@@ -70,7 +87,7 @@
   font-size: 18px;
 }
 
-/* Graph section  */
+/* Graph section */
 .graph-section {
   display: flex;
   flex-wrap: wrap;
@@ -79,119 +96,12 @@
   width: 100%; /* Stretch the section to fit the container width */
 }
 
-.graph {
-  max-width: 300px; /* Limit graph container width */
-  text-align: center;
-}
-
-.graph h3 {
-  margin-bottom: 15px;
-  font-size: 18px;
-  color: #333;
-}
-.school-selector {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 30px;
-  margin-bottom: 20px;
-}
-
-.school-selector h3 {
-  font-size: 18px;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-.school-select {
-  width: 300px; /* Wider dropdown for readability */
-  height: 45px; /* Larger height for better usability */
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #fff;
-  color: #333;
-  outline: none;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.school-select:focus {
-  border-color: #007bff; /* Highlight border on focus */
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-.school-select option {
-  font-size: 16px;
-  padding: 5px;
-}
-
-@media (max-width: 768px) {
-  .school-select {
-    width: 90%; /* Responsive width for smaller screens */
-  }
-}
-.school-selector {
-  margin: 20px 0;
-  text-align: center;
-}
-
-.school-selector h3 {
-  font-size: 18px;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.school-select {
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  width: 200px;
-  outline: none;
-  background-color: #f9f9f9;
-  cursor: pointer;
-}
-
-.school-select:focus {
-  border-color: #007bff;
-  background-color: #fff;
-}
-.admin-home {
-  padding: 20px;
-}
-
-.dashboard-cards {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.dashboard-card {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 48%;
-  text-align: center;
-}
-
-.dashboard-card h3 {
-  margin-bottom: 10px;
-  font-size: 1.2rem;
-}
-
-.dashboard-card p {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
 .graphs-container {
   display: flex;
   justify-content: space-between;
   gap: 20px;
   margin-bottom: 20px;
+  width: 100%;
 }
 
 .graph-left,
@@ -201,15 +111,17 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
 .graph-left h3,
 .graph-right h3 {
   font-size: 1.5rem;
   margin-bottom: 15px;
-  text-align: center;
+  color: #4a6e77;
 }
 
+/* School selector section */
 .school-selector {
   background-color: #f8f9fa;
   padding: 20px;
@@ -222,6 +134,8 @@
 .school-selector h3 {
   font-size: 1.5rem;
   margin-bottom: 15px;
+  color: #4a6e77;
+  font-weight: bold;
 }
 
 .school-selector select {
@@ -238,6 +152,7 @@
   outline: none;
 }
 
+/* Responsive design for smaller screens */
 @media (max-width: 768px) {
   .graphs-container {
     flex-direction: column;
@@ -245,15 +160,20 @@
 
   .graph-left,
   .graph-right {
-    width: 100%;
+    width: 100%; /* Ensure both graphs take full width on smaller screens */
   }
 
   .dashboard-cards {
     flex-direction: column;
+    gap: 20px; /* Adds space between the cards when stacked */
   }
 
   .dashboard-card {
-    width: 100%;
+    width: 100%; /* Ensures the cards take full width */
     margin-bottom: 20px;
+  }
+
+  .school-select {
+    width: 90%; /* Responsive width for smaller screens */
   }
 }

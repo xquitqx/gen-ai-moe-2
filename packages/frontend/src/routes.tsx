@@ -50,7 +50,11 @@ import UploadSpeaking from './pages/UploadSpeaking.tsx';
 import UploadListening from './pages/UploadListening.tsx';
 import StudentPerformance from './pages/studentsperformancebh.tsx';
 import schooltopachievers from './pages/schooltopachievers.tsx';
-
+import VerticalSteps from './pages/howtouse.tsx';
+import about from './pages/about.tsx';
+import AdminLandingPage from './pages/adminlayout.tsx';
+import SchoolsList from './pages/chooseschool.tsx';
+import SchoolsList2 from './pages/chooseschool2.tsx';
 
 // These routes will have the landing nav bar
 
@@ -176,6 +180,11 @@ const noLayoutRoutes: RouteObject[] = [
   },
   {
     //mychange------
+    path: '/chooseschoolachievers',
+    Component: SchoolsList2,
+  },
+  {
+    //mychange------
     path: '/schooldatagraph',
     Component: Schooldatafetch,
   },
@@ -186,8 +195,22 @@ const noLayoutRoutes: RouteObject[] = [
   },
   {
     //mychange------
+    path: '/about',
+    Component: about,
+  },
+  {
+    //mychange------
     path: '/schooltopachievers',
     Component: schooltopachievers,
+  },
+  {
+    //mychange------
+    path: '/adminlandingpage',
+    Component: AdminLandingPage,
+  },
+  {
+    path: '/howtouse',
+    Component: VerticalSteps,
   },
   // {
 
@@ -202,6 +225,11 @@ const noLayoutRoutes: RouteObject[] = [
     //mychange------
     path: '/UploadWriting',
     Component: UploadWriting,
+  },
+  {
+    //mychange------
+    path: '/chooseschoolperformance',
+    Component: SchoolsList,
   },
   {
     //mychange------

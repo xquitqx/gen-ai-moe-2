@@ -1,0 +1,93 @@
+/* Page background and title styling */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  background-color: #fbf9f1; /* Light beige background */
+  font-family: 'Montserrat', sans-serif;
+}
+
+.container {
+  padding: 20px;
+  text-align: center;
+}
+
+/* Page title styling */
+.page-title {
+  font-size: 2.2em; /* Slightly smaller font size */
+  font-weight: 600; /* Lighter weight for a more professional look */
+  color: #4a6e77; /* A more muted color for a professional tone */
+  text-transform: capitalize; /* Changed to capitalize for a more polished look */
+  margin-top: 60px; /* Increased top margin to move it down */
+  margin-bottom: 20px; /* Reduced bottom margin for better spacing */
+  letter-spacing: 1px; /* Slightly reduced letter-spacing for a cleaner look */
+  background-color: transparent; /* Removed the white background */
+  border: none; /* Removed any border */
+  display: inline-block; /* Ensure the title doesn't behave like a block element */
+  padding: 0; /* Remove any padding that might be applied */
+}
+
+/* Flexbox container for CEFR level boxes */
+.levels-container {
+  padding: 20px;
+  display: flex;
+  justify-content: center; /* Center the items horizontally */
+  gap: 20px; /* Add space between items */
+  margin-top: 40px;
+  max-width: 800px; /* Limit the maximum width of the container */
+  align-items: center; /* Center-align the graph and header */
+}
+
+/* Box styling for each CEFR level */
+.level {
+  background-color: #ffffff;
+  border: 2px solid #6a9eab; /* Box border */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  flex: 1 1 calc(45% - 20px); /* Ensure two items per row with spacing */
+  max-width: 380px; /* Limit the box width */
+  margin-bottom: 20px;
+  text-align: center; /* Center content inside the box */
+}
+
+/* Hover effect for the boxes */
+.level:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .level {
+    flex: 1 1 100%; /* Make boxes take the full width on smaller screens */
+  }
+}
+
+/* Level title inside box */
+.level-title {
+  font-size: 1.8em;
+  color: #6a9eab;
+  margin-bottom: 15px;
+  text-transform: uppercase; /* Capitalize the level names */
+  font-weight: bold;
+}
+
+/* Level description inside box */
+.level-description {
+  font-size: 1.1em;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .level {
+    width: 100%; /* Make boxes take the full width on smaller screens */
+  }
+
+  .page-title {
+    font-size: 2em;
+  }
+}

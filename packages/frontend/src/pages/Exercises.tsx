@@ -198,7 +198,6 @@ const Exercises: React.FC = () => {
 
       {level && (
         <img
-          src={`assets/Levels/${level}.png`}
           alt={`${level} CEFR Level`}
           className="w-64 h-auto"
         />

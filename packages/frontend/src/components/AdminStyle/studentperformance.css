@@ -16,7 +16,7 @@
   text-transform: uppercase;
   letter-spacing: 2px;
   font-family: 'Montserrat', sans-serif; /* Modern font */
-  border-bottom: 4px solid #6a9eab; /* Underline with a strong border */
+  border-bottom: 4px solid #4a6e77; /* Underline with a strong border */
   padding-bottom: 10px;
   background-color: #ffffff; /* White background for the title */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
@@ -50,7 +50,7 @@
 .top-students-section h3 {
   font-size: 1.8em;
   font-weight: bold;
-  color: #6a9eab; /* Your theme color */
+  color: #4a6e77; /* Your theme color */
   margin-bottom: 15px;
   text-align: center; /* Center align the title */
   text-transform: uppercase;
@@ -86,7 +86,7 @@
 /* Styling the student name and other info */
 .top-student-item strong {
   font-size: 1.2em;
-  color: #6a9eab;
+  color: #4a6e77;
   display: block;
   margin-bottom: 5px;
 }
@@ -96,7 +96,7 @@
 .student-exams-solved,
 .student-streak {
   font-weight: bold;
-  color: #6a9eab; /* Use theme color for score/exams solved */
+  color: #4a6e77; /* Use theme color for score/exams solved */
   font-size: 1.1em;
 }
 

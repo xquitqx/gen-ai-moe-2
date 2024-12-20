@@ -182,6 +182,17 @@ export function ApiStack({ stack }: StackContext) {
           },
         },
       },
+      'GET /homeuser': {
+        function: {
+          handler: 'packages/functions/src/homeuser.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: userdataTable.tableName,
+            tableName2:table.tableName,
+          },
+        },
+      },
 
       'GET /schooldatafetch': {
         function: {

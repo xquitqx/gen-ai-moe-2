@@ -125,7 +125,9 @@ function AdminHome() {
   // Handle school change
   const handleSchoolChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedSchool = event.target.value;
-    window.location.href = `/schooldatagraph?school=${encodeURIComponent(selectedSchool)}`;
+    window.location.href = `/schooldatagraph?school=${encodeURIComponent(
+      selectedSchool,
+    )}`;
   };
 
   // Define chart data for the first chart (IELTS scores)
@@ -188,7 +190,7 @@ function AdminHome() {
       <main className="admin-home">
         <div className="dashboard-cards">
           <div className="dashboard-card">
-            <h3>Active Users</h3>
+            <h3>Current students across Bahrain</h3>
             {loading ? (
               <p>Loading...</p>
             ) : error ? (
@@ -199,7 +201,7 @@ function AdminHome() {
           </div>
 
           <div className="dashboard-card">
-            <h3>Average</h3>
+            <h3>Overall Average of Students Across Bahrain</h3>
             {loading ? (
               <p>Loading...</p>
             ) : error ? (
@@ -208,6 +210,9 @@ function AdminHome() {
               <p>{avgOverallAvg}</p>
             )}
           </div>
+        </div>
+        <div>
+          <h1 className='page-title'>Student Performance Across Bahrain</h1>
         </div>
 
         <div className="graphs-container">
