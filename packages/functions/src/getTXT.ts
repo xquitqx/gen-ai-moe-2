@@ -1,7 +1,7 @@
 //const userID = event.requestContext.authorizer!.jwt.claims.sub;
 import { S3 } from 'aws-sdk';
 import { APIGatewayProxyHandler } from 'aws-lambda';
-
+import { wsError, runModel } from './utilities';
 const s3 = new S3();
 
 export const handler: APIGatewayProxyHandler = async (event) => {
@@ -35,13 +35,17 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       .promise();
 
     const objectContent = targetObject.Body?.toString('utf-8') || '';
-
+    let  questions = "For every question in the provided text, append the word 'BREAK'  before each question number and keep all other text.  append \"CHOICE\" before each  choice letter and keep all other text. Ensure this is done for all sections in the text without altering the rest of the content.";
+    questions += objectContent
+    const feedbackResults = await runModel(questions);
+    
+    console.log("listening prompt: ",feedbackResults)
     console.log('Object Content:', objectContent);
 
     return {
       statusCode: 200,
       body:JSON.stringify({
-         objectContent
+         feedbackResults
       }),
     };
   } catch (error) {

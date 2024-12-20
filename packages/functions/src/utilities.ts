@@ -42,9 +42,9 @@ export async function runModel(prompt: string) {
   const modelParams = {
     inputText: prompt,
     textGenerationConfig: {
-      maxTokenCount: 4096,
+      maxTokenCount: 3072,
       stopSequences: [],
-      temperature: 0,
+      temperature: 0.7,
       topP: 0.9,
     },
   };
@@ -55,7 +55,7 @@ export async function runModel(prompt: string) {
       body: JSON.stringify(modelParams),
       contentType: 'application/json',
       accept: '*/*',
-      modelId: 'amazon.titan-text-express-v1',
+      modelId: 'amazon.titan-text-premier-v1:0',
     }),
   );
 

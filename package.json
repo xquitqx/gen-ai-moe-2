@@ -35,6 +35,7 @@
     "@heroicons/react": "^2.2.0",
     "aws-amplify": "^6.10.2",
     "aws-jwt-verify": "^4.0.1",
+    "chart": "^0.1.2",
     "chart.js": "^4.4.7",
     "dropzone": "^6.0.0-beta.2",
     "formik": "^2.4.6",
