@@ -1,0 +1,105 @@
+.full-exam-upload-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.wizard-container {
+  max-width: 900px;
+  margin: 40px auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.wizard-title {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.wizard-content {
+  margin-bottom: 20px;
+}
+
+.wizard-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wizard-btn {
+  background-color: #4c929f;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.wizard-btn:hover {
+  background-color: #2d7d8b;
+}
+
+.previous-btn {
+  background-color: #6c757d;
+}
+
+.previous-btn:hover {
+  background-color: #5a6268;
+}
+
+.done-btn {
+  background-color: #4c929f;
+}
+
+.wizard-steps {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+  padding: 10px 0;
+}
+
+.step {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  background: #ddd;
+  border-radius: 5px;
+  margin: 0 5px;
+  font-weight: 500;
+}
+
+.step.active {
+  background: #4c929f;
+  color: white;
+  font-weight: bold;
+}
+
+.wizard-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.nav-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.prev-btn {
+  background-color: #7f8c8d;
+  color: white;
+}
+
+.next-btn {
+  background-color: #4c929f;
+  color: white;
+}

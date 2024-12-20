@@ -148,6 +148,40 @@ export function ApiStack({ stack }: StackContext) {
           },
         },
       },
+      'GET /studentperformance': {
+        function: {
+          handler: 'packages/functions/src/studentperformance.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: userdataTable.tableName,
+            tableName2:table.tableName,
+          },
+        },
+      },
+      'GET /schooltopachievers': {
+        function: {
+          handler: 'packages/functions/src/schooltopachievers.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: userdataTable.tableName,
+            tableName2:table.tableName,
+          },
+        },
+      },
+      
+      
+      'GET /schoolsstudenttable': {
+        function: {
+          handler: 'packages/functions/src/fetchtheschoolsstudentdata.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: userdataTable.tableName,
+          },
+        },
+      },
 
       'GET /schooldatafetch': {
         function: {
@@ -227,11 +261,21 @@ export function ApiStack({ stack }: StackContext) {
           timeout: '120 seconds',
         },
       },
+      'POST /adminUploadAudio': {
+        function: {
+          handler: 'packages/functions/src/s3adminUploadAudio.handler',
+          permissions: ['s3:PutObject', 's3:PutObjectAcl'],
+          environment: {
+            bucket: bucket.bucketName,
+          },
+          timeout: '120 seconds',
+        },
+      },
       'GET /getExtract': {
         function: {
           handler:'packages/functions/src/getTXT.handler',
           permissions:['s3:ListBucket','s3:GetObject', 'bedrock:InvokeModel'],
-          timeout: '60 seconds'
+          timeout: '60 seconds',
         },
       },
     },

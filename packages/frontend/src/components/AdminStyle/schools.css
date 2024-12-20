@@ -1,90 +1,66 @@
-.student-table {
+.styled-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin: 20px 0;
+  font-size: 1rem;
+  text-align: left;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.student-table th,
-.student-table td {
-  padding: 8px;
-  text-align: center;
+.styled-table caption {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 12px 15px;
   border: 1px solid #ddd;
 }
 
-.student-table th {
-  background-color: #f2f2f2;
+.styled-table thead tr {
+  background-color: #6a9eab;
+  color: #ffffff;
+  text-align: center;
 }
 
-.student-table tr:nth-child(even) {
+.styled-table tbody tr {
+  background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
   background-color: #f9f9f9;
 }
 
-.student-table tr:hover {
-  background-color: #ddd;
+.styled-table tbody tr:hover {
+  background-color: #f1f1f1;
 }
-.admin-home {
-  padding: 20px;
+
+.records-table {
+  margin: 0 auto; /* Center the table horizontally */
+  max-width: 1200px;
+}
+
+.graph-section .records-table {
+  margin-top: 20px; /* Ensure it's close to the graph */
+}
+.graph-section {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* Center-align the graph and header */
+  gap: 20px; /* Space between elements */
 }
 
-.dashboard-cards {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 30px;
-}
-
-.dashboard-card {
-  background-color: #f4f4f9;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  width: 200px;
-}
-
-.graph-section {
-  width: 100%;
-  margin-bottom: 30px;
-}
-
-.graph h3 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.student-table-section {
-  width: 100%;
-  padding: 20px;
-}
-
-.student-table-container {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.student-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-.student-table th,
-.student-table td {
-  padding: 12px;
-  text-align: left;
-  border: 1px solid #ddd;
-}
-
-.student-table th {
-  background-color: #f2f2f2;
-}
-
-.student-table tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.student-table tbody tr:hover {
-  background-color: #f1f1f1;
+.table-header {
+  font-size: 1.5rem; /* Larger font for visibility */
+  font-weight: bold;
+  color: #fcf6f6; /* Light text color for contrast */
+  text-align: center; /* Center-align the text */
+  background-color: #6a9eab; /* Background color */
+  padding: 10px 15px 5px 15px; /* Reduced bottom padding (near the table) */
+  border-radius: 10px; /* Rounded corners for a modern look */
+  width: auto; /* Adjust width to fit the content */
+  max-width: none; /* Remove the max-width limitation */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Add shadow for depth */
 }
