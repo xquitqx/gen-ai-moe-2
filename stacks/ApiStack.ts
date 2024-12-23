@@ -234,6 +234,13 @@ export function ApiStack({ stack }: StackContext) {
           timeout: '60 seconds'
         },
       },
+      'GET /getExtractReading': {
+        function: {
+          handler:'packages/functions/src/getTXTReading.handler',
+          permissions:['s3:ListBucket','s3:GetObject', 'bedrock:InvokeModel'],
+          timeout: '60 seconds'
+        },
+      },
     },
   });
 

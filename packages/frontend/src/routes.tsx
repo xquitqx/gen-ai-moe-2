@@ -37,6 +37,8 @@ import { RequireAuth } from './utilities/authUtilities.tsx';
 import { DevPage } from './pages/DevPage.tsx';
 import {QuestionsByLevel} from './pages/QuestionsByLevel.tsx';
 import ExtractedFilePage from "./pages/showExtracted.tsx";
+import ReadingExtractedFilePage from "./pages/showExtractedReading.tsx";
+
 
 //Abeer changes
 import AdminLogin from './pages/AdminLogin.tsx';
@@ -132,6 +134,10 @@ const notLandingRoutes: RouteObject[] = [
   {
     path: '/showExtracted',
     Component: ExtractedFilePage,
+  },
+  {
+    path: '/showExtractedReading',
+    Component: ReadingExtractedFilePage,
   },
 ];
 
