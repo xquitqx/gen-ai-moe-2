@@ -14,7 +14,8 @@ const Dropzone = ({ className }: { className?: string }) => {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [rejected, setRejected] = useState<FileRejection[]>([]);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
-
+  //console.log(window.location.pathname.replace('/upload', ''));
+  //console.log("helloooo?");
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       if (acceptedFiles?.length) {
@@ -60,48 +61,42 @@ const Dropzone = ({ className }: { className?: string }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setUploadStatus(null);
-
-    const formData = new FormData();
-    // files.forEach(file => {
-    //   formData.append('files', file);
-    // });
-
-    files.forEach(file => {
-      formData.append(`file-${file.name}`, file);
-    });
-
+  
+    const section = window.location.pathname.replace('/upload', '');
+  
+    const filesData = await Promise.all(
+      files.map(async file => {
+        const fileContent = await file.text(); // Convert file to text or base64
+        return {
+          name: file.name,
+          content: fileContent,
+        };
+      })
+    );
+  
+    const payload = {
+      section,
+      files: filesData,
+    };
+    console.log("Payload being sent:", payload);
+  
     try {
-      // const response = await fetch('/adminUpload', {
-      //   method: 'POST',
-      //   body: formData,
-      // });
-
-      // if (response.ok) {
-      //   setUploadStatus('Upload successful!');
-      //   removeAll();
-      // } else {
-      //   const errorData = await response.json();
-      //   setUploadStatus(
-      //     `Upload failed: ${errorData.message || 'Unknown error'}`,
-      //   );
-      // }
       const response = await toJSON(
         post({
           apiName: 'myAPI',
           path: '/adminUpload',
           options: {
-            // headers: {
-            //   'content-type': 'application/pdf'
-            // },
-            body: formData
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
           },
-        }),
+        })
       );
-      setUploadStatus(response.message)
+      setUploadStatus(response.message);
     } catch (error) {
       setUploadStatus(`Upload failed: ${(error as Error).message}`);
     }
   };
+  
 
   return (
     <div className="container">
