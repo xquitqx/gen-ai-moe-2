@@ -44,7 +44,7 @@ def main(event, context):
                 #random_number = random.randint(1, 1000)
                 # const user = event.requestContext.authorizer!.jwt.claims.sub;
                 user = "Mohamed"
-                output_file_name = f"{fileName.rsplit('.', 1)[0]}_{user}_extracted_text.txt"
+                output_file_name = f"{fileName.rsplit('.', 1)[0]}_{user}_Reading_extracted_text.txt"
                 s3Client = boto3.client('s3')
                 # Upload the file to S3
                 s3Client.upload_file(temp_file_path, "mohdj-codecatalyst-sst-ap-extractedtxtbucket87b8ca-ijzohbu9cf75", output_file_name)

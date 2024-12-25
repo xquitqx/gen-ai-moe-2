@@ -36,7 +36,11 @@ import { sampleFullTest } from './utilities/sampleFullTest.ts';
 import { RequireAuth } from './utilities/authUtilities.tsx';
 import { DevPage } from './pages/DevPage.tsx';
 import { QuestionsByLevel } from './pages/QuestionsByLevel.tsx';
-import ExtractedFilePage from './pages/showExtracted.tsx';
+import ListeningExtractedFilePage from './pages/showExtractedListening.tsx';
+import ReadingExtractedFilePage from "./pages/showExtractedReading.tsx";
+import WritingExtractedFilePage from "./pages/showExtractedWriting.tsx";
+import SpeakingExtractedFilePage from "./pages/showExtractedSpeaking.tsx";
+
 
 //Abeer changes
 import AdminLogin from './pages/AdminLogin.tsx';
@@ -139,8 +143,20 @@ const notLandingRoutes: RouteObject[] = [
     Component: QuestionsByLevel,
   },
   {
-    path: '/showExtracted',
-    Component: ExtractedFilePage,
+    path: '/showExtractedListening',
+    Component: ListeningExtractedFilePage,
+  },
+  {
+    path: '/showExtractedReading',
+    Component: ReadingExtractedFilePage,
+  },
+  {
+    path: '/showExtractedWriting',
+    Component: WritingExtractedFilePage,
+  },
+  {
+    path: '/showExtractedSpeaking',
+    Component: SpeakingExtractedFilePage,
   },
 ];
 

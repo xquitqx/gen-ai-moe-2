@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { get } from "aws-amplify/api";
 
-const ExtractedFilePage: React.FC = () => {
+const SpeakingExtractedFilePage: React.FC = () => {
   const [feedback, setFeedback] = useState<string>(""); 
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -11,7 +11,7 @@ const ExtractedFilePage: React.FC = () => {
       try {
         const response: any = await get({
           apiName: "myAPI",
-          path: "/getExtract",
+          path: "/getExtractWriting",
         });
 
         // Resolve the nested Promise if it exists
@@ -24,7 +24,7 @@ const ExtractedFilePage: React.FC = () => {
 
         if (parsedBody) {
           const fileContent = await parsedBody.text();
-          const feedbackResults = JSON.parse(fileContent).feedbackResults;
+          const feedbackResults = JSON.parse(fileContent).objectContent;
           setFeedback(feedbackResults);
           setFileContent(feedback); // Update state with file content
         } else {
@@ -44,50 +44,40 @@ const ExtractedFilePage: React.FC = () => {
   const container = document.getElementById("container") ? document.getElementById("container") : null;
 
   // Split text by "BREAK"
-  const sections = feedback.split(/BREAK /).filter(section => section.trim() !== "");
+  const sections = feedback.split("Question").filter(section => section.trim() !== "");
+  const form = document.createElement("form");
+  form.action = "/ApproveQuestions";
+  form.method = "POST";
+
 
   // Generate divs dynamically
   sections.forEach(section => {
-    // Extract question and choices
-    const [question, ...choices] = section.split("\n").map(line => line.trim()).filter(line => line);
-
     // Create a new div for each "BREAK" section
     const div = document.createElement("div");
     div.classList.add("question-section");
-
     // Add question as a heading
-    const questionHeading = document.createElement("h3");
-    questionHeading.textContent = question;
+    const questionHeading = document.createElement("textarea");
+    questionHeading.value = section;
+    questionHeading.style.width = "100%";
+    questionHeading.style.border = "1px solid grey";
+    questionHeading.rows = 10
+    div.appendChild(document.createElement("br"));
     div.appendChild(questionHeading);
-
-    // Add radio buttons and text inputs for choices
-    choices.forEach(choice => {
-      // Create the radio button
-      const radio = document.createElement("input");
-      radio.type = "radio";
-      radio.name = question; // Group radios by question
-      radio.value = choice.replace(/^CHOICE\s/, ""); // Cleaned-up value
-
-      // Create the text input
-      const input = document.createElement("input");
-      input.type = "text";
-      input.value = choice.replace(/^CHOICE\s/, ""); // Removing "CHOICE" from the text
-      input.style.width = "300px"; // Adjusted width to make the text box longer
-      input.classList.add("editable-choice");
-      input.name = question;
-
-      // Append the radio button and text input to the div
-      div.appendChild(radio);
-      div.appendChild(input);
-
-      // Add a line break after each set of inputs
-      div.appendChild(document.createElement("br"));
-    });
-
-    // Append the div to the container
-    container?.appendChild(div);
+    div.appendChild(document.createElement("br"));
+    form.appendChild(div);
   });
+  container?.appendChild(form);
+  const statusElement = document.getElementById("status");
+  const buttonTry = document.getElementById("btnTry");
+  const buttonApprove = document.getElementById("btnApprove");
 
+
+  if (statusElement && buttonTry && buttonApprove)
+  { 
+    statusElement.style.visibility = "hidden";
+    buttonTry.style.visibility = "visible";
+    buttonApprove.style.visibility = "visible";
+  }
   return (
     <div
       style={{
@@ -109,7 +99,7 @@ const ExtractedFilePage: React.FC = () => {
           padding: "20px",
           border: "1px solid #ddd",
           borderRadius: "8px",
-          backgroundColor: "rgba(233, 225, 225, 0.894)",
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
           width: "80%", // Adjust to take more horizontal space
           maxHeight: "auto", // Limit height
           overflowY: "auto", // Add vertical scrolling if needed
@@ -123,12 +113,47 @@ const ExtractedFilePage: React.FC = () => {
           <p style={{ color: "red" }}>{error}</p>
         ) : fileContent ? (
           <pre>{fileContent}</pre>
-        ) : (
-          <p>Loading...</p>
+        ) : (<div style={{textAlign: "center"}}>
+          <button id="btnTry" onClick={() => location.reload()} style={{
+            backgroundColor: "#4c929f",
+            color: "white",
+            padding: "1rem 2rem",
+            border: "none",
+            borderRadius: "0.5rem",
+            cursor: "pointer",
+            marginTop: "1.5rem",
+            fontWeight: "bold",
+            visibility: "hidden",
+            //float: "right",
+            display: "inline-block",
+            marginRight: "25px",
+          }}>Try again</button>
+          <p style={{display: "inline-block",}} id="status">Loading...</p>
+          <button id="btnApprove"
+          style={{
+            backgroundColor: "#4c929f",
+            color: "white",
+            padding: "1rem 2rem",
+            border: "none",
+            borderRadius: "0.5rem",
+            cursor: "pointer",
+            marginTop: "1.5rem",
+            fontWeight: "bold",
+            visibility: "hidden",
+            //float: "right",
+            display: "inline-block",
+            marginLeft: "25px",
+          }}
+          >
+            Approve questions
+          </button>          
+
+          </div>
+          
         )}
       </div>
     </div>
   );
 };
 
-export default ExtractedFilePage;
+export default SpeakingExtractedFilePage;

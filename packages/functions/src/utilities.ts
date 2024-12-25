@@ -44,7 +44,7 @@ export async function runModel(prompt: string) {
     textGenerationConfig: {
       maxTokenCount: 3072,
       stopSequences: [],
-      temperature: 0.7,
+      temperature: 0.1,
       topP: 0.9,
     },
   };

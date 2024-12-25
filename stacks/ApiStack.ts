@@ -286,7 +286,42 @@ export function ApiStack({ stack }: StackContext) {
         function: {
           handler:'packages/functions/src/getTXT.handler',
           permissions:['s3:ListBucket','s3:GetObject', 'bedrock:InvokeModel'],
-          timeout: '60 seconds',
+          timeout: '120 seconds',
+        },
+      },
+      'GET /getExtractReading': {
+        function: {
+          handler:'packages/functions/src/getTXTReading.handler',
+          permissions:['s3:ListBucket','s3:GetObject', 'bedrock:InvokeModel'],
+          timeout: '120 seconds'
+        },
+      },
+      'GET /getExtractWriting': {
+        function: {
+          handler:'packages/functions/src/getTXTWriting.handler',
+          permissions:['s3:ListBucket','s3:GetObject'],
+          timeout: '60 seconds'
+        },
+      },
+      'POST /approveListening': {
+        function: {
+          handler:'packages/functions/src/approveListening.handler',
+          permissions:['s3:ListBucket','s3:GetObject', 's3:DeleteObject'],
+          timeout: '60 seconds'
+        },
+      },
+      'POST /approveReading': {
+        function: {
+          handler:'packages/functions/src/approveReading.handler',
+          permissions:['s3:ListBucket','s3:GetObject', 's3:DeleteObject'],
+          timeout: '60 seconds'
+        },
+      },
+      'POST /approveWriting': {
+        function: {
+          handler:'packages/functions/src/approveWriting.handler',
+          permissions:['s3:ListBucket','s3:GetObject', 's3:DeleteObject'],
+          timeout: '60 seconds'
         },
       },
     },
@@ -424,9 +459,10 @@ export function ApiStack({ stack }: StackContext) {
   const resetStreaksCron = new Cron(stack, 'DailyResetStreaksCron', {
     schedule: 'cron(0 0 * * ? *)', // Runs daily at midnight UTC
     job: {
+      function:{
       handler: 'packages/functions/src/streaks/resetStreaks.handler',
       permissions: ['dynamodb:Scan', 'dynamodb:UpdateItem'],
-      timeout: '120 seconds',
+      timeout: '120 seconds',},
     },
   });
 

@@ -4,6 +4,7 @@ import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
 import { post } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
 import '../components/AdminStyle/Dropzone.css';
+//import { sections } from '../pages/Questions';
 
 interface FileWithPreview extends File {
   preview: string;
@@ -18,7 +19,8 @@ const Dropzone = ({ className, acceptedFileTypes }: DropzoneProps) => {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [rejected, setRejected] = useState<FileRejection[]>([]);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
-
+  //console.log(window.location.pathname.replace('/upload', ''));
+  //console.log("helloooo?");
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       if (files.length > 0) {
@@ -41,6 +43,7 @@ const Dropzone = ({ className, acceptedFileTypes }: DropzoneProps) => {
     },
     [files],
   );
+  const sectionName = window.location.pathname.replace('/upload', '');
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: acceptedFileTypes,
@@ -67,17 +70,18 @@ const Dropzone = ({ className, acceptedFileTypes }: DropzoneProps) => {
       const response = await toJSON(
         post({
           apiName: 'myAPI',
-          path: '/adminUpload',
+          path: `/adminUpload?section=${sectionName}`,
           options: {
             body: formData,
           },
-        }),
+        })
       );
       setUploadStatus(response.message);
     } catch (error) {
       setUploadStatus(`Upload failed: ${(error as Error).message}`);
     }
   };
+  
 
   return (
     <div className="container">
