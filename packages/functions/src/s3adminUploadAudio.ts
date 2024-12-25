@@ -33,21 +33,9 @@ export const handler: APIGatewayProxyHandler = async event => {
   // Generate a unique file name using UUID
   const userID = event.requestContext.authorizer!.jwt.claims.sub;
   const fileName = `${userID}.${
-    contentType === 'application/pdf' ? 'docx' : 'pdf'
+    contentType === 'audio/mpeg' ? 'mp3' : 'unknown'
   }`;
-  console.log("Received event body:", event.body);
-  // let parsedBody;
-  // try {
-  //   parsedBody = JSON.parse(event.body); // Parse JSON string
-  // } catch (error) {
-  //   console.error("Failed to parse event body:", error);
-  //   return {
-  //     statusCode: 400,
-  //     body: JSON.stringify({ message: "Invalid JSON format" }),
-  //   };
-  // }
-  // const { section, files } = parsedBody
-  // console.log("Parsed Section!: " , section)
+
   const fileData = Buffer.from(event.body, 'base64');
   console.log(fileName);
 
@@ -56,7 +44,7 @@ export const handler: APIGatewayProxyHandler = async event => {
       Bucket: bucketName,
       Key: fileName,
       Body: fileData,
-      ContentType: 'application/pdf',
+      ContentType: 'audio/mpeg', // MP3 MIME type
     });
 
     await s3.send(command);

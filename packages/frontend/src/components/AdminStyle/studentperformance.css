@@ -1,0 +1,192 @@
+/* Overall container styling */
+.admin-home {
+  padding: 20px;
+  background-color: #fbf9f1;
+  min-height: 100vh;
+  position: relative; /* For positioning the trophy image */
+}
+
+/* Page title styling */
+.page-title {
+  font-size: 2.5em;
+  font-weight: 700;
+  color: #6a9eab; /* Professional blue */
+  margin-bottom: 40px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: 'Montserrat', sans-serif; /* Modern font */
+  border-bottom: 4px solid #4a6e77; /* Underline with a strong border */
+  padding-bottom: 10px;
+  background-color: #ffffff; /* White background for the title */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  padding-top: 20px;
+  padding-bottom: 15px;
+  transition: box-shadow 0.3s ease;
+}
+
+/* Hover effect for title */
+.page-title:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+  transform: translateY(-4px); /* Slight upward movement */
+}
+
+/* Section for Top Students */
+.top-students-section {
+  margin-bottom: 30px;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+/* Hover effect for top students section */
+.top-students-section:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Styling the title for the section */
+.top-students-section h3 {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #4a6e77; /* Your theme color */
+  margin-bottom: 15px;
+  text-align: center; /* Center align the title */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Styling the list of top students */
+.top-students-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+/* Styling each top student item */
+.top-student-item {
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  transition: background-color 0.3s ease, transform 0.3s ease,
+    box-shadow 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Light shadow for depth */
+}
+
+/* Hover effect for top student item */
+.top-student-item:hover {
+  background-color: #e9f5f9; /* Light hover background */
+  transform: translateY(-5px); /* Lift effect */
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Stronger shadow on hover */
+}
+
+/* Styling the student name and other info */
+.top-student-item strong {
+  font-size: 1.2em;
+  color: #4a6e77;
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Styling the scores and exams solved */
+.student-score,
+.student-exams-solved,
+.student-streak {
+  font-weight: bold;
+  color: #4a6e77; /* Use theme color for score/exams solved */
+  font-size: 1.1em;
+}
+
+/* Loading and error message styles */
+p {
+  text-align: center;
+  font-size: 1.2em;
+  color: #333;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .top-students-section {
+    padding: 15px;
+  }
+
+  .top-student-item {
+    padding: 12px;
+  }
+
+  .top-students-list {
+    padding-left: 20px;
+  }
+
+  .top-students-section h3 {
+    font-size: 1.6em; /* Adjust title size for small screens */
+  }
+
+  .page-title {
+    font-size: 2em; /* Adjust title size for small screens */
+    margin-bottom: 30px;
+  }
+}
+
+/* Trophy Container Styling */
+.trophy-container {
+  position: fixed; /* Fixed to the screen */
+  top: 20%;
+  right: 10px; /* Position on the right side */
+  z-index: 10; /* Ensure it stays above other elements */
+  animation: bounce 2s infinite; /* Apply bounce animation */
+}
+
+/* Trophy Image Styling */
+.trophy {
+  width: 150px; /* Default trophy size */
+  height: auto; /* Maintain aspect ratio */
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Hover effect for trophy */
+.trophy-container:hover .trophy {
+  transform: rotate(10deg); /* Rotate the trophy on hover */
+}
+
+/* Bounce Animation */
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-10px); /* Move up */
+  }
+  50% {
+    transform: translateY(0); /* Back to original position */
+  }
+  75% {
+    transform: translateY(-5px); /* Slight upward movement */
+  }
+  100% {
+    transform: translateY(0); /* Back to original position */
+  }
+}
+
+/* Responsive adjustments for trophy on smaller screens */
+@media (max-width: 480px) {
+  .trophy-container {
+    top: 15%; /* Adjust position on very small screens */
+    right: 5px;
+  }
+
+  .trophy {
+    width: 100px; /* Reduce trophy size for small screens */
+  }
+}
+
+/* Larger trophy for laptop/desktop screens */
+@media (min-width: 1024px) {
+  .trophy {
+    width: 200px; /* Increase the trophy size for laptops/desktops */
+    height: auto; /* Maintain aspect ratio */
+  }
+}

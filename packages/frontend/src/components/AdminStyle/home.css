@@ -1,22 +1,19 @@
+/* StudentPerformance.css */
+
 .styled-table {
-  width: 100%;
+  width: auto; /* Adjust width to fit content */
   border-collapse: collapse;
-  margin: 20px 0;
+  margin: 20px auto; /* Center the table horizontally */
   font-size: 1rem;
   text-align: left;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.styled-table caption {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 10px;
 }
 
 .styled-table th,
 .styled-table td {
   padding: 12px 15px;
   border: 1px solid #ddd;
+  font-size: 1.2rem; /* Increased font size for table content */
 }
 
 .styled-table thead tr {
@@ -39,9 +36,11 @@
 
 .records-table {
   margin: 0 auto; /* Center the table horizontally */
-  max-width: 1200px;
+  max-width: 1200px; /* Optional: Remove if you don't want to constrain the maximum width */
 }
-.table-header {
+
+/* Styling for the table header (h1) */
+.table-header1 {
   font-size: 2.2em; /* Slightly smaller font size */
   font-weight: 600; /* Lighter weight for a more professional look */
   color: #4a6e77; /* A more muted color for a professional tone */
@@ -49,8 +48,11 @@
   margin-top: 60px; /* Increased top margin to move it down */
   margin-bottom: 20px; /* Reduced bottom margin for better spacing */
   letter-spacing: 1px; /* Slightly reduced letter-spacing for a cleaner look */
-  background-color: transparent; /* Removed the white background */
-  border: none; /* Removed any border */
-  display: inline-block; /* Ensure the title doesn't behave like a block element */
+  background-color: transparent; /* Ensures no background color */
+  border: none; /* Ensures no border around the title */
+  display: block; /* Changed from inline-block to block */
   padding: 0; /* Remove any padding that might be applied */
+  box-shadow: none; /* Ensure there's no shadow */
+  text-align: center;
+  width: 100%; /* Ensure it spans the full width */
 }

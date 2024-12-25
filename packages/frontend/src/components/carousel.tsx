@@ -6,10 +6,9 @@ const images = ['assets/Learning-pana.svg', 'assets/Webinar-pana.svg'];
 const texts = [
   'Experience a full mock exam and prepare for succes',
   'Practice with exercises tailored to your English level',
-
 ];
 const labels = ['Take Exam', 'Practice'];
-const buttonPage = ['/full-exam', '/home'];
+const buttonPage = ['/full-exam', '/Exercises'];
 
 const Carousel = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -25,29 +24,29 @@ const Carousel = () => {
     setCurrentIndex(newIndex);
   };
 
-   // Auto-scroll functionality
-    useEffect(() => {
-      const interval = setInterval(() => {
-        nextSlide();
-      }, 7000); 
-      return () => clearInterval(interval);
-    }, [currentIndex]);
+  // Auto-scroll functionality
+  useEffect(() => {
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 7000);
+    return () => clearInterval(interval);
+  }, [currentIndex]);
 
   return (
     <div className="bg-[#EEE9E0] w-full h-full flex flex-col gap-8 group py-10 px-5  relative overflow-hidden">
-        <div className="flex w-full h-5/6 items-center justify-center">
-          <BsChevronCompactLeft
-            onClick={prevSlide}
-            size={30}
-            className="rounded-full text-gray-400 cursor-pointer absolute left-5 z-10 sm:w-6 sm:h-6 md:w-6 md:h-6 lg:w-8 lg:h-8"
-          />
-      
-          <div className="flex w-full h-full overflow-hidden relative">
+      <div className="flex w-full h-5/6 items-center justify-center">
+        <BsChevronCompactLeft
+          onClick={prevSlide}
+          size={30}
+          className="rounded-full text-gray-400 cursor-pointer absolute left-5 z-10 sm:w-6 sm:h-6 md:w-6 md:h-6 lg:w-8 lg:h-8"
+        />
+
+        <div className="flex w-full h-full overflow-hidden relative">
           <div
             className="flex transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
-          {images.map((image, index) => (
+            {images.map((image, index) => (
               <div
                 key={index}
                 className="flex-shrink-0 w-full flex justify-center items-center"
@@ -66,12 +65,9 @@ const Carousel = () => {
                   </p>
                   <div className="w-full flex justify-center items-center">
                     <Link to={buttonPage[index]}>
-                    
-                    <button className="text-blue-4 text-sm font-bold border border-blue-4 px-4 py-2 rounded-full shadow-md focus:outline-none hover:bg-blue-4 hover:text-white sm:text-lg sm:px-5 sm:py-2">
-                      {labels[index]}
+                      <button className="text-blue-4 text-sm font-bold border border-blue-4 px-4 py-2 rounded-full shadow-md focus:outline-none hover:bg-blue-4 hover:text-white sm:text-lg sm:px-5 sm:py-2">
+                        {labels[index]}
                       </button>
-
-                      
                     </Link>
                   </div>
                 </div>
@@ -99,7 +95,6 @@ const Carousel = () => {
       </div>
     </div>
   );
-
 };
 
 export default Carousel;

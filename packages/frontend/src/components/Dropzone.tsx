@@ -1,16 +1,21 @@
-// import { useCallback, useEffect, useState } from 'react';
 import { useCallback, useState } from 'react';
 import { useDropzone, FileRejection } from 'react-dropzone';
 import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
 import { post } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
 import '../components/AdminStyle/Dropzone.css';
+//import { sections } from '../pages/Questions';
 
 interface FileWithPreview extends File {
   preview: string;
 }
 
-const Dropzone = ({ className }: { className?: string }) => {
+interface DropzoneProps {
+  className?: string;
+  acceptedFileTypes?: { [key: string]: string[] }; // Specify accepted file types
+}
+
+const Dropzone = ({ className, acceptedFileTypes }: DropzoneProps) => {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [rejected, setRejected] = useState<FileRejection[]>([]);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
@@ -18,40 +23,33 @@ const Dropzone = ({ className }: { className?: string }) => {
   //console.log("helloooo?");
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
-      if (acceptedFiles?.length) {
-        setFiles(previousFiles => [
-          ...previousFiles,
-          ...acceptedFiles.map(file => {
-            const fileWithPreview = Object.assign(file, {
-              preview: URL.createObjectURL(file),
-            }) as FileWithPreview;
-            return fileWithPreview;
-          }),
-        ]);
+      if (files.length > 0) {
+        setUploadStatus('You can upload only one file at a time.');
+        return;
       }
+
+      if (acceptedFiles?.length) {
+        const file = acceptedFiles[0];
+        const fileWithPreview = Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        }) as FileWithPreview;
+        setFiles([fileWithPreview]);
+        setUploadStatus(null);
+      }
+
       if (rejectedFiles?.length) {
-        setRejected(previousFiles => [...previousFiles, ...rejectedFiles]);
+        setRejected(rejectedFiles);
       }
     },
-    [],
+    [files],
   );
+  const sectionName = window.location.pathname.replace('/upload', '');
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: {
-      'application/pdf': [],
-      'application/msword': [],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-        [],
-    },
+    accept: acceptedFileTypes,
     maxSize: Infinity,
     onDrop,
   });
-
-  // useEffect(() => {
-  //   return () => {
-  //     files.forEach(file => URL.revokeObjectURL(file.preview));
-  //   };
-  // }, [files]);
 
   const removeAll = () => {
     setFiles([]);
@@ -61,33 +59,20 @@ const Dropzone = ({ className }: { className?: string }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setUploadStatus(null);
-  
-    const section = window.location.pathname.replace('/upload', '');
-  
-    const filesData = await Promise.all(
-      files.map(async file => {
-        const fileContent = await file.text(); // Convert file to text or base64
-        return {
-          name: file.name,
-          content: fileContent,
-        };
-      })
-    );
-  
-    const payload = {
-      section,
-      files: filesData,
-    };
-    console.log("Payload being sent:", payload);
-  
+
+    const formData = new FormData();
+
+    files.forEach(file => {
+      formData.append(`file-${file.name}`, file);
+    });
+
     try {
       const response = await toJSON(
         post({
           apiName: 'myAPI',
-          path: '/adminUpload',
+          path: `/adminUpload?section=${sectionName}`,
           options: {
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
+            body: formData,
           },
         })
       );
@@ -122,7 +107,7 @@ const Dropzone = ({ className }: { className?: string }) => {
               onClick={removeAll}
               className="remove-all-btn"
             >
-              Remove all files
+              Remove file
             </button>
           </div>
 
@@ -143,7 +128,7 @@ const Dropzone = ({ className }: { className?: string }) => {
             <div className="rejected-message">
               <p className="error-message-text">
                 Some files were rejected because they are not of the accepted
-                formats (PDF, DOC, DOCX). Please upload only supported files.
+                formats. Please upload only supported files.
               </p>
             </div>
           )}

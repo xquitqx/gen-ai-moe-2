@@ -35,9 +35,11 @@ import challengePage from './pages/challengePage.tsx';
 import { sampleFullTest } from './utilities/sampleFullTest.ts';
 import { RequireAuth } from './utilities/authUtilities.tsx';
 import { DevPage } from './pages/DevPage.tsx';
-import {QuestionsByLevel} from './pages/QuestionsByLevel.tsx';
-import ExtractedFilePage from "./pages/showExtracted.tsx";
+import { QuestionsByLevel } from './pages/QuestionsByLevel.tsx';
+import ListeningExtractedFilePage from './pages/showExtractedListening.tsx';
 import ReadingExtractedFilePage from "./pages/showExtractedReading.tsx";
+import WritingExtractedFilePage from "./pages/showExtractedWriting.tsx";
+import SpeakingExtractedFilePage from "./pages/showExtractedSpeaking.tsx";
 
 
 //Abeer changes
@@ -47,9 +49,18 @@ import Schooldatafetch from './pages/schoolsdata.tsx';
 import AdminUploadExams from './pages/AdminUploadExams.tsx';
 import UploadWriting from './pages/UploadWriting.tsx';
 import Dropzone from './components/Dropzone.tsx';
+import DropzoneAudio from './components/DropzoneAudio.tsx';
 import UploadReading from './pages/UploadReading.tsx';
 import UploadSpeaking from './pages/UploadSpeaking.tsx';
 import UploadListening from './pages/UploadListening.tsx';
+import FullExamUpload from './pages/FullExamUpload.tsx';
+import StudentPerformance from './pages/studentsperformancebh.tsx';
+import schooltopachievers from './pages/schooltopachievers.tsx';
+import VerticalSteps from './pages/howtouse.tsx';
+import about from './pages/about.tsx';
+import AdminLandingPage from './pages/adminlayout.tsx';
+import SchoolsList from './pages/chooseschool.tsx';
+import SchoolsList2 from './pages/chooseschool2.tsx';
 
 // These routes will have the landing nav bar
 
@@ -132,12 +143,20 @@ const notLandingRoutes: RouteObject[] = [
     Component: QuestionsByLevel,
   },
   {
-    path: '/showExtracted',
-    Component: ExtractedFilePage,
+    path: '/showExtractedListening',
+    Component: ListeningExtractedFilePage,
   },
   {
     path: '/showExtractedReading',
     Component: ReadingExtractedFilePage,
+  },
+  {
+    path: '/showExtractedWriting',
+    Component: WritingExtractedFilePage,
+  },
+  {
+    path: '/showExtractedSpeaking',
+    Component: SpeakingExtractedFilePage,
   },
 ];
 
@@ -179,10 +198,38 @@ const noLayoutRoutes: RouteObject[] = [
   },
   {
     //mychange------
+    path: '/chooseschoolachievers',
+    Component: SchoolsList2,
+  },
+  {
+    //mychange------
     path: '/schooldatagraph',
     Component: Schooldatafetch,
   },
-
+  {
+    //mychange------
+    path: '/studentperformance',
+    Component: StudentPerformance,
+  },
+  {
+    //mychange------
+    path: '/about',
+    Component: about,
+  },
+  {
+    //mychange------
+    path: '/schooltopachievers',
+    Component: schooltopachievers,
+  },
+  {
+    //mychange------
+    path: '/adminlandingpage',
+    Component: AdminLandingPage,
+  },
+  {
+    path: '/howtouse',
+    Component: VerticalSteps,
+  },
   // {
 
   //   path: '/AdminUploadExams',
@@ -193,9 +240,18 @@ const noLayoutRoutes: RouteObject[] = [
     Component: Dropzone,
   },
   {
+    path: '/DropzoneAudio',
+    Component: DropzoneAudio,
+  },
+  {
     //mychange------
     path: '/UploadWriting',
     Component: UploadWriting,
+  },
+  {
+    //mychange------
+    path: '/chooseschoolperformance',
+    Component: SchoolsList,
   },
   {
     //mychange------
@@ -211,6 +267,10 @@ const noLayoutRoutes: RouteObject[] = [
     //mychange------
     path: '/UploadListening',
     Component: UploadListening,
+  },
+  {
+    path: '/FullExamUpload',
+    Component: FullExamUpload,
   },
   {
     path: '/AdminUploadExams',
