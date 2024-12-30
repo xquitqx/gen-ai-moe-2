@@ -21,6 +21,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   
     
      try {
+      let questionID = "";
+      let questionID2 = "";
       const userID = event.requestContext.authorizer!.jwt.claims.sub; // Target user ID
       const bucketName = "mohdj-codecatalyst-sst-ap-extractedtxtbucket87b8ca-ijzohbu9cf75"; // Name of the S3 bucket
       const pdfBucket = Bucket.BucketTextract.bucketName;
@@ -42,6 +44,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       const transactItems: any[] = [];
       for (const question of parsedBody) {
         let id = uuidv4();
+  
         let checker = true;
     
         while(checker)
@@ -66,19 +69,54 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         }
         else {
           checker = false;
+          if(questionID != "")
+            questionID2 = id
+          else
+            questionID = id
         }
+        
        }
+       console.log("OUR id: ", id)
         transactItems.push({
-            Put: {
-                TableName: tableName,
-                Item: {
-                    PK: { S: "writing" },
-                    SK: { S: id },
-                    ...question,
+          Put: {
+            TableName: tableName,
+            Item: {
+                PK: { S: "writing" },
+                SK: { S: id },
+                P1: {
+                    M: {
+                        graphDescription: { S: "This is a description" },
+                        graphKey: { S: "graph123" },
+                        Question: { S: p1Question },
+                    },
                 },
+                P2:{
+                  M: {
+                  question: { S: p2Question },
+                }
+              }
             },
-        });
+        },
+        });     
     }
+    
+    transactItems.push({
+      Update: {
+          TableName: tableName,
+          Key: { // Key is required for Update
+              PK: { S: "writing" },
+              SK: { S: "index" },
+          },
+          UpdateExpression: "SET #index = list_append(if_not_exists(#index, :empty_list), :new_element)",
+          ExpressionAttributeNames: {
+              "#index": "index"
+          },
+          ExpressionAttributeValues: {
+              ":new_element": { L: [{ S: questionID }, { S: questionID2 }] },
+              ":empty_list": { L: [] } // Important for creating the list if it doesn't exist
+          },
+      },
+  });
     
 const transactParams = { TransactItems: transactItems };
 const command = new TransactWriteItemsCommand(transactParams);
