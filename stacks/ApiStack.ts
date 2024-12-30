@@ -303,6 +303,13 @@ export function ApiStack({ stack }: StackContext) {
           timeout: '60 seconds'
         },
       },
+      'GET /getExtractSpeaking': {
+        function: {
+          handler:'packages/functions/src/getTXTSpeaking.handler',
+          permissions:['s3:ListBucket','s3:GetObject'],
+          timeout: '60 seconds'
+        },
+      },
       'POST /approveListening': {
         function: {
           handler:'packages/functions/src/approveListening.handler',

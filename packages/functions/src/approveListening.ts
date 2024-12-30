@@ -21,7 +21,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
 
     // Find the object whose name contains the userID
     for (const obj of objects.Contents || []) {
-      if (obj.Key && obj.Key.includes(userID) && obj.Key.includes("Reading")) {
+      if (obj.Key && obj.Key.includes(userID) && obj.Key.includes("Listening")) {
         targetObjectKey = obj.Key;
         break;
       }

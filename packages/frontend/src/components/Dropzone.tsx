@@ -81,6 +81,10 @@ const Dropzone = ({ className, acceptedFileTypes }: DropzoneProps) => {
       setUploadStatus(`Upload failed: ${(error as Error).message}`);
     }
   };
+  const goExtract = () =>{
+    window.location.href = `/showExtracted${sectionName}`
+  }
+
   
 
   return (
@@ -109,6 +113,14 @@ const Dropzone = ({ className, acceptedFileTypes }: DropzoneProps) => {
             >
               Remove file
             </button>
+            <button
+              type="button"
+              onClick={goExtract}
+              className="showExtract-btn"
+            >
+              Extract
+            </button>
+
           </div>
 
           <ul className="file-list">

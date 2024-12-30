@@ -9,6 +9,8 @@ export const handler: APIGatewayProxyHandler = async event => {
   //const bucketName = 'hsn-codecatalyst-sst-app--buckettextractbucket4e81-9qp7bptepiwk';
   const bucketName = Bucket.BucketTextract.bucketName;
   console.log(bucketName);
+  const currentSection = event.queryStringParameters?.section;
+
 
   // Check if the body of the request exists
   if (!event.body) {
@@ -32,7 +34,7 @@ export const handler: APIGatewayProxyHandler = async event => {
 
   // Generate a unique file name using UUID
   const userID = event.requestContext.authorizer!.jwt.claims.sub;
-  const fileName = `${userID}.${
+  const fileName = `${userID}-${currentSection}.${
     contentType === 'application/pdf' ? 'docx' : 'pdf'
   }`;
   console.log("Received event body:", event.body);

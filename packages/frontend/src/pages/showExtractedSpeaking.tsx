@@ -11,7 +11,7 @@ const SpeakingExtractedFilePage: React.FC = () => {
       try {
         const response: any = await get({
           apiName: "myAPI",
-          path: "/getExtractWriting",
+          path: "/getExtractSpeaking",
         });
 
         // Resolve the nested Promise if it exists
@@ -44,28 +44,13 @@ const SpeakingExtractedFilePage: React.FC = () => {
   const container = document.getElementById("container") ? document.getElementById("container") : null;
 
   // Split text by "BREAK"
-  const sections = feedback.split("Question").filter(section => section.trim() !== "");
   const form = document.createElement("form");
   form.action = "/ApproveQuestions";
   form.method = "POST";
-
-
-  // Generate divs dynamically
-  sections.forEach(section => {
-    // Create a new div for each "BREAK" section
-    const div = document.createElement("div");
-    div.classList.add("question-section");
-    // Add question as a heading
-    const questionHeading = document.createElement("textarea");
-    questionHeading.value = section;
-    questionHeading.style.width = "100%";
-    questionHeading.style.border = "1px solid grey";
-    questionHeading.rows = 10
-    div.appendChild(document.createElement("br"));
-    div.appendChild(questionHeading);
-    div.appendChild(document.createElement("br"));
-    form.appendChild(div);
-  });
+  const paragraphs  = document.createElement("textarea")
+  paragraphs.value = feedback
+  form.appendChild(paragraphs)
+  
   container?.appendChild(form);
   const statusElement = document.getElementById("status");
   const buttonTry = document.getElementById("btnTry");

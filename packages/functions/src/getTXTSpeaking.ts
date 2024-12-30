@@ -16,7 +16,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
 
     // Find the object whose name contains the userID
     for (const obj of objects.Contents || []) {
-      if (obj.Key && obj.Key.includes(userID) && obj.Key.includes("Reading")) {
+      if (obj.Key && obj.Key.includes(userID) && obj.Key.includes("Speaking")) {
         targetObjectKey = obj.Key;
         break;
       }
@@ -35,42 +35,11 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       .promise();
 
     const objectContent = targetObject.Body?.toString('utf-8') || '';
-    // let question1 = `For every question in the provided text, append the word 'BREAK'  before each question number and keep all other text.  append \"CHOICE\"
-    //  before each  choice letter and keep all other text. Ensure this is done for all sections in the text without
-    //   altering the rest of the content.`
-    let  questions = `Include only the questions with their choices. Do NOT  include the answer of the questions.`;
-    let choices = 'For every question in the provided text, append the word "BREAK"  before each question number and keep all other text.  append "CHOICE" before each  choice letter and keep all other text. Ensure this is done for all sections in the text without altering the rest of the content.'
-    let getPassage1 = "Include only the first passage of the following text without the questions. ";
-    let getPassage2 = "Include only the second passage of the following text without the questions. ";
-    let getPassage3 = "Include only the third passage of the following text without the questions. ";
-
-    questions += objectContent
-    getPassage1 += objectContent
-    getPassage2 += objectContent
-    getPassage3 += objectContent
     
-    let feedbackResults = await runModel(questions);
-    choices += feedbackResults
-    feedbackResults = await runModel(choices)
-    const passage1 = await runModel(getPassage1);
-    const passage2 = await runModel(getPassage2);
-    const passage3 = await runModel(getPassage3);
-
-    console.log("listening prompt: ",feedbackResults)
-    console.log('Object Content:', objectContent);
-    console.log("First passage:" , passage1)
-    console.log("second passage:" , passage2)
-    console.log("third passage:" , passage3)
-
-
-
     return {
         statusCode: 200,
         body: JSON.stringify({
-          feedbackResults,
-          passage1,
-          passage2,
-          passage3,
+         objectContent
         }),
       };
   } catch (error) {
