@@ -110,7 +110,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     // const transactParams = { TransactItems: transactItems };
     // const command = new TransactWriteItemsCommand(transactParams);
     // const response = await dynamodb.transactWriteItems(transactParams).promise();
-    const id = "123"
+    const id = "12345"
     transactItems.push({
       Put: {
         TableName: tableName,
@@ -201,10 +201,206 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                 ]
               }
             }
+          },
+          P2: {
+            M: {
+                NumOfQuestions: { N: "3" },
+                Passage: { S: "This is a sample passage about the topic." },
+                PassageTitle: { S: "Sample Passage Title" },
+                Questions: {
+                    L: [
+                        {
+                            M: {
+                                NumOfSubQuestions: { N: "2" },
+                                Question: { S: "What is the main idea of the passage?" },
+                                QuestionType: { S: "MultipleChoice" },
+                                SubQuestion: {
+                                    L: [
+                                        {
+                                            M: {
+                                                choices: {
+                                                    L: [
+                                                        { S: "Option A" },
+                                                        { S: "Option B" },
+                                                        { S: "Option C" }
+                                                    ]
+                                                },
+                                                CorrectAnswer: { S: "Option A" },
+                                                QuestionText: { S: "Choose the correct answer." }
+                                            }
+                                        },
+                                        {
+                                            M: {
+                                                choices: {
+                                                    L: [
+                                                        { S: "Option 1" },
+                                                        { S: "Option 2" },
+                                                        { S: "Option 3" }
+                                                    ]
+                                                },
+                                                CorrectAnswer: { S: "Option 2" },
+                                                QuestionText: { S: "Select the second correct answer." }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            M: {
+                                NumOfSubQuestions: { N: "1" },
+                                Question: { S: "Explain the purpose of the passage." },
+                                QuestionType: { S: "OpenEnded" },
+                                SubQuestion: {
+                                    L: [
+                                        {
+                                            M: {
+                                                CorrectAnswers: {
+                                                    L: [
+                                                        {
+                                                            L: [{ S: "Purpose A" }, { S: "Purpose B" }]
+                                                        }
+                                                    ]
+                                                },
+                                                QuestionText: { S: "Describe the purpose." },
+                                                QuestionWeight: { N: "10" }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            M: {
+                                NumOfSubQuestions: { N: "1" },
+                                Question: { S: "What are the key points mentioned?" },
+                                QuestionType: { S: "MultipleChoice" },
+                                SubQuestion: {
+                                    L: [
+                                        {
+                                            M: {
+                                                choices: {
+                                                    L: [
+                                                        { S: "Key Point 1" },
+                                                        { S: "Key Point 2" },
+                                                        { S: "Key Point 3" }
+                                                    ]
+                                                },
+                                                CorrectAnswer: { S: "Key Point 3" },
+                                                QuestionText: { S: "Select the correct key point." }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+          },
+          P3: {
+          M: {
+              NumOfQuestions: { N: "3" },
+              Passage: { S: "This is a comprehension passage to analyze." },
+              PassageTitle: { S: "Comprehension Passage Title" },
+              Questions: {
+                  L: [
+                      {
+                          M: {
+                              NumOfSubQuestions: { N: "2" },
+                              Question: { S: "What is the central theme of the passage?" },
+                              QuestionType: { S: "MultipleChoice" },
+                              SubQuestion: {
+                                  L: [
+                                      {
+                                          M: {
+                                              choices: {
+                                                  L: [
+                                                      { S: "Theme A" },
+                                                      { S: "Theme B" },
+                                                      { S: "Theme C" }
+                                                  ]
+                                              },
+                                              CorrectAnswer: { S: "Theme B" },
+                                              QuestionText: { S: "Choose the most relevant theme." }
+                                          }
+                                      },
+                                      {
+                                          M: {
+                                              choices: {
+                                                  L: [
+                                                      { S: "Option 1" },
+                                                      { S: "Option 2" },
+                                                      { S: "Option 3" }
+                                                  ]
+                                              },
+                                              CorrectAnswer: { S: "Option 1" },
+                                              QuestionText: { S: "Identify another key theme." }
+                                          }
+                                      }
+                                  ]
+                              }
+                          }
+                      },
+                      {
+                          M: {
+                              NumOfSubQuestions: { N: "1" },
+                              Question: { S: "What evidence supports the theme?" },
+                              QuestionType: { S: "MultipleChoice" },
+                              SubQuestion: {
+                                  L: [
+                                      {
+                                          M: {
+                                              choices: {
+                                                  L: [
+                                                      { S: "Evidence 1" },
+                                                      { S: "Evidence 2" },
+                                                      { S: "Evidence 3" }
+                                                  ]
+                                              },
+                                              CorrectAnswer: { S: "Evidence 2" },
+                                              QuestionText: { S: "Select the best supporting evidence." }
+                                          }
+                                      }
+                                  ]
+                              }
+                          }
+                      },
+                      {
+                          M: {
+                              NumOfSubQuestions: { N: "1" },
+                              Question: { S: "What is the author's perspective?" },
+                              QuestionType: { S: "MultipleChoice" },
+                              SubQuestion: {
+                                  L: [
+                                      {
+                                          M: {
+                                              choices: {
+                                                  L: [
+                                                      { S: "Perspective A" },
+                                                      { S: "Perspective B" },
+                                                      { S: "Perspective C" }
+                                                  ]
+                                              },
+                                              CorrectAnswer: { S: "Perspective C" },
+                                              QuestionText: { S: "Identify the author's perspective." }
+                                          }
+                                      }
+                                  ]
+                              }
+                          }
+                      }
+                  ]
+              }
           }
+      }
         }
+        
       }
     });
+    
+
+  
     const transactParams = { TransactItems: transactItems };
     const command = new TransactWriteItemsCommand(transactParams);
     const response = await dynamodb.transactWriteItems(transactParams).promise();
