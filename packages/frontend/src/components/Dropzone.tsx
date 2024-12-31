@@ -74,18 +74,16 @@ const Dropzone = ({ className, acceptedFileTypes }: DropzoneProps) => {
           options: {
             body: formData,
           },
-        })
+        }),
       );
       setUploadStatus(response.message);
     } catch (error) {
       setUploadStatus(`Upload failed: ${(error as Error).message}`);
     }
   };
-  const goExtract = () =>{
-    window.location.href = `/showExtracted${sectionName}`
-  }
-
-  
+  const goExtract = () => {
+    window.location.href = `/showExtracted${sectionName}`;
+  };
 
   return (
     <div className="container">
@@ -120,7 +118,6 @@ const Dropzone = ({ className, acceptedFileTypes }: DropzoneProps) => {
             >
               Extract
             </button>
-
           </div>
 
           <ul className="file-list">
@@ -140,7 +137,7 @@ const Dropzone = ({ className, acceptedFileTypes }: DropzoneProps) => {
             <div className="rejected-message">
               <p className="error-message-text">
                 Some files were rejected because they are not of the accepted
-                formats. Please upload only supported files.
+                formats. Please upload only PDF files.
               </p>
             </div>
           )}

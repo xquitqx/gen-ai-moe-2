@@ -9,14 +9,14 @@ interface FileWithPreview extends File {
 
 interface DropzoneProps {
   className?: string;
-  acceptedFileTypes?: { [key: string]: string[] };
   onFileSelected?: (file: File | null) => void;
+  accept?: { [key: string]: string[] }; // Add accept to the props
 }
 
-const DropzoneListeningQfiles = ({
+const DropzoneImageFiles = ({
   className = '',
-  acceptedFileTypes,
   onFileSelected,
+  accept = { 'image/jpeg': [], 'image/png': [], 'image/gif': [] }, // Default accept values
 }: DropzoneProps) => {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [rejected, setRejected] = useState<FileRejection[]>([]);
@@ -40,7 +40,7 @@ const DropzoneListeningQfiles = ({
   );
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: acceptedFileTypes,
+    accept, // Pass the accept prop to useDropzone
     onDrop,
   });
 
@@ -52,8 +52,6 @@ const DropzoneListeningQfiles = ({
 
   return (
     <div className="upload-section">
-      {' '}
-      {/* Apply upload-section styling */}
       <div
         {...getRootProps({
           className: `dropzone ${className}`,
@@ -63,7 +61,7 @@ const DropzoneListeningQfiles = ({
         <div className="upload-icon-container">
           <ArrowUpTrayIcon className="upload-icon" />
           <p className="upload-text">
-            Drag & drop files here, or click to select files
+            Drag & drop image files here, or click to select files
           </p>
         </div>
       </div>
@@ -92,8 +90,8 @@ const DropzoneListeningQfiles = ({
         {rejected.length > 0 && (
           <div className="rejected-message">
             <p className="error-message-text">
-              Some files were rejected because they are not of the accepted
-              formats. Please upload only PDF files.
+              Some files were rejected because they are not images. Please
+              upload only image files.
             </p>
           </div>
         )}
@@ -102,4 +100,4 @@ const DropzoneListeningQfiles = ({
   );
 };
 
-export default DropzoneListeningQfiles;
+export default DropzoneImageFiles;
