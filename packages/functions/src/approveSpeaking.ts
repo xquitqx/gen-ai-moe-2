@@ -2,27 +2,25 @@
 import { S3 } from 'aws-sdk';
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { Bucket } from 'sst/node/bucket';
-import { DynamoDBClient, TransactWriteItemsCommand } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from 'uuid';
 import { Table } from 'sst/node/table';
 import * as AWS from 'aws-sdk';
+import { DynamoDBClient, TransactWriteItemsCommand } from "@aws-sdk/client-dynamodb";
+
 const s3 = new S3();
 
 export const handler: APIGatewayProxyHandler = async (event) => {
+  console.log("events:" , event.body);
   try {
     let questionID = "";
     let questionID2 = "";
-    const userID = event.requestContext.authorizer!.jwt.claims.sub; // Target user ID
-    const bucketName = "mohdj-codecatalyst-sst-ap-extractedtxtbucket87b8ca-ijzohbu9cf75"; // Name of the S3 bucket
-    const pdfBucket = Bucket.BucketTextract.bucketName;
-     const dynamodb = new AWS.DynamoDB();
+    const dynamodb = new AWS.DynamoDB();
           const tableName = Table.Records.tableName;
           if (!event.body) {
               return { statusCode: 400, body: JSON.stringify({ message: "No body provided in the event" }) };
           }
           let p1Question;
           let p2Question;
-          console.log("events:" , event.body);
           const parsedBody = JSON.parse(event.body)
           p1Question = parsedBody[0]
           p2Question = parsedBody[1]
@@ -109,6 +107,9 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     const transactParams = { TransactItems: transactItems };
     const command = new TransactWriteItemsCommand(transactParams);
     const response = await dynamodb.transactWriteItems(transactParams).promise();
+    const userID = event.requestContext.authorizer!.jwt.claims.sub; // Target user ID
+    const bucketName = "mohdj-codecatalyst-sst-ap-extractedtxtbucket87b8ca-ijzohbu9cf75"; // Name of the S3 bucket
+    const pdfBucket = Bucket.BucketTextract.bucketName;
 
     // List all objects in the S3 bucket
     const objects = await s3.listObjectsV2({ Bucket: bucketName }).promise();
@@ -121,7 +122,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
 
     // Find the object whose name contains the userID
     for (const obj of objects.Contents || []) {
-      if (obj.Key && obj.Key.includes(userID) && obj.Key.includes("Listening")) {
+      if (obj.Key && obj.Key.includes(userID) && obj.Key.includes("Speaking")) {
         targetObjectKey = obj.Key;
         break;
       }

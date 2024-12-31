@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { get } from "aws-amplify/api";
 import { post } from 'aws-amplify/api';
-import { toJSON } from '../utilities';
 
 const ReadingExtractedFilePage: React.FC = () => {
   const [feedback, setFeedback] = useState<string>(""); 
@@ -53,23 +52,49 @@ const ReadingExtractedFilePage: React.FC = () => {
 
     fetchExtractedFile();
   }, []);
+
   const approving = async (e: React.FormEvent) => {
-      try{
-        e.preventDefault();
-        (await toJSON(
-          post({
-            apiName: 'myAPI',
-            path: '/approveReading',
-            //options: { body: questionFormData },
-          }),
-        ))
-        window.location.href = '/adminLandingPage';
-      }
-         catch (error) {
-          // setUploadStatus(`Upload failed: ${(error as Error).message}`);
-          console.log(`Approve failed: ${(error as Error).message}`)
-        }
-      };
+    e.preventDefault();
+  
+    try {
+      // Gather the content of all "question-section" divs and their inputs
+      const sections = Array.from(document.getElementsByClassName("question-section")).map((section) => {
+        const question = (section.querySelector("input.question-input") as HTMLInputElement)?.value || "";
+  
+        // Gather choices
+        const choices = Array.from(section.querySelectorAll("input[type='text'].editable-choice")).map(
+          (input) => (input as HTMLInputElement).value
+        );
+  
+        // Gather selected answers
+        const selectedAnswer = (section.querySelector("input[type='radio']:checked") as HTMLInputElement)?.value || null;
+  
+        return {
+          question,
+          choices,
+          selectedAnswer,
+        };
+      });
+  
+      // Filter out empty questions
+      const validSections = sections.filter((section) => section.question.trim() !== "");
+      console.log(validSections)
+      // Send the gathered data to your Lambda function
+      const response = await post({
+        apiName: "myAPI",
+        path: "/approveReading",
+        options: { body: JSON.stringify(validSections) },
+      });
+  
+      console.log("Approve response:", response);
+  
+      // Redirect to admin landing page
+      window.location.href = "/adminLandingPage";
+    } catch (error) {
+      console.error(`Approve failed: ${(error as Error).message}`);
+    }
+  };
+  
        
   console.log("our feedback:", feedback); // for testing
 
@@ -91,6 +116,7 @@ const ReadingExtractedFilePage: React.FC = () => {
 
     // Add question as a heading
     const questionHeading = document.createElement("input");
+    questionHeading.classList.add("question-input");
     questionHeading.value = question;
     questionHeading.style.width = "100%";
     questionHeading.style.height = "auto";
