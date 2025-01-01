@@ -18,7 +18,7 @@ const ReadingExtractedFilePage: React.FC = () => {
 
         // Resolve the nested Promise if it exists
         const resolvedResponse = await response.response;
-        if(resolvedResponse.status >= 500){
+        if(resolvedResponse.statusCode >= 500){
           const statusElement = document.getElementById("status");
           if(statusElement)
           statusElement.textContent = `${resolvedResponse.body.message}, Please try again later`
@@ -49,7 +49,6 @@ const ReadingExtractedFilePage: React.FC = () => {
         setError("An error occurred while fetching the file.");
       }
     };
-
     fetchExtractedFile();
   }, []);
 

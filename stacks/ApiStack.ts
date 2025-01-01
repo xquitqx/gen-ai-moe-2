@@ -30,7 +30,7 @@ export function ApiStack({ stack }: StackContext) {
     audiobucket,
     userdataTable,
   } = use(DBStack);
-  const { bucket } = use(StorageStack);
+  const { bucket, bucket2 } = use(StorageStack);
   const { auth } = use(AuthStack);
   const { grammarToolDNS } = use(GrammarToolStack);
 
@@ -40,7 +40,7 @@ export function ApiStack({ stack }: StackContext) {
       authorizer: 'jwt',
       function: {
         // Bind the table name to our API
-        bind: [table, bucket],
+        bind: [table, bucket, bucket2],
       },
     },
     authorizers: {

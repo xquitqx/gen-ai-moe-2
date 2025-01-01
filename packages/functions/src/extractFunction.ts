@@ -1,5 +1,7 @@
 import AWS from 'aws-sdk';
 import { S3Event, Context } from 'aws-lambda';
+import { Bucket } from 'sst/node/bucket';
+import * as util from 'util';
 
 export const handler = async (event: S3Event, context: Context): Promise<void> => {
     console.log("Lambda is Triggered NOW in the safe mode :)");
@@ -45,6 +47,7 @@ export const handler = async (event: S3Event, context: Context): Promise<void> =
                 const tempFilePath = '/tmp/extracted.txt';
                 const fs = require('fs');
                 const writeStream = fs.createWriteStream(tempFilePath);
+                const finished = util.promisify(fs.WriteStream.prototype.on);
 
                 for (const block of finalResponse.Blocks || []) {
                     if (block.BlockType === 'LINE') {
@@ -54,24 +57,25 @@ export const handler = async (event: S3Event, context: Context): Promise<void> =
                 }
                 writeStream.end();
 
-                writeStream.on('finish', async () => {
+                await finished.call(writeStream, 'finish');
                     console.log("Finished writing to file. Preparing to upload...");
 
                     const stats = fs.statSync(tempFilePath);
                     console.log(`File size after writing: ${stats.size} bytes`);
 
                     const user = "Mohamed";
-                    const outputFileName = `${fileName.split('.').slice(0, -1).join('.')}_${user}_Reading_extracted_text.txt`;
+                    const outputFileName = `${fileName.split('.').slice(0, -1).join('.')}_${user}_extracted_text.txt`;
 
                     const s3Client = new AWS.S3();
                     await s3Client.upload({
-                        Bucket: "mohdj-codecatalyst-sst-ap-extractedtxtbucket87b8ca-ijzohbu9cf75",
+                        Bucket: Bucket.ExtractedTXT.bucketName,
                         Key: outputFileName,
                         Body: fs.createReadStream(tempFilePath)
                     }).promise();
 
                     console.log(`Uploaded extracted text to ${outputFileName} in bucket ${bucketName}`);
-                });
+                    fs.unlinkSync(tempFilePath);
+                    console.log("Deleted temporary file.");
             } else {
                 console.log("Document analysis failed!");
             }

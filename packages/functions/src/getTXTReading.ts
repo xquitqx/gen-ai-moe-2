@@ -1,13 +1,14 @@
 //const userID = event.requestContext.authorizer!.jwt.claims.sub;
 import { S3 } from 'aws-sdk';
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import { wsError, runModel } from './utilities';
+import { Bucket } from 'sst/node/bucket';
+import { runModel } from './utilities';
 const s3 = new S3();
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   try {
     const userID = "Mohamed"; // Target user ID
-    const bucketName = "mohdj-codecatalyst-sst-ap-extractedtxtbucket87b8ca-ijzohbu9cf75"; // Name of the S3 bucket
+    const bucketName = Bucket.ExtractedTXT.bucketName; // Name of the Extracted txt S3 bucket
 
     // List all objects in the S3 bucket
     const objects = await s3.listObjectsV2({ Bucket: bucketName }).promise();

@@ -66,6 +66,8 @@ const WritingExtractedFilePage: React.FC = () => {
     } catch (error) {
       console.error("Approve failed:", (error as Error).message);
     }
+    // Redirect to admin landing page
+    window.location.href = "/adminLandingPage";
   };
   
   console.log("our feedback:", feedback); // for testing

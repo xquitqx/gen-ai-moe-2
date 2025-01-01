@@ -14,205 +14,242 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   const requestBody = event.body ? JSON.parse(event.body) : null;
   console.log("Parsed event body:", requestBody);
   try {
-    let questionID = "";
-    let questionID2 = "";
-    const dynamodb = new AWS.DynamoDB();
-          const tableName = Table.Records.tableName;
-          if (!event.body) {
-              return { statusCode: 400, body: JSON.stringify({ message: "No body provided in the event" }) };
-          }
-          let p1Question;
-          let p2Question;
-          const parsedBody = JSON.parse(JSON.parse(event.body))
-          p1Question = parsedBody[0]
-          p2Question = parsedBody[1]
-          console.log(p1Question)
-          console.log(p2Question)
+      const dynamodb = new AWS.DynamoDB();
+      const tableName = Table.Records.tableName;
+      if (!event.body) {
+          return { statusCode: 400, body: JSON.stringify({ message: "No body provided in the event" }) };
+      }
+      let p1Question;
+      let p2Question;
+      const parsedBody = JSON.parse(JSON.parse(event.body))
+      p1Question = parsedBody[0]
+      p2Question = parsedBody[1]
+      console.log(p1Question)
+      console.log(p2Question)
           
     
-          const transactItems: any[] = [];
-    //       for (const question of parsedBody) {
-    //         let id = uuidv4();
-      
-    //         let checker = true;
-        
-    //         while(checker)
-    //         {
-            
-    //         const check = await dynamodb
-    //         .query({
-    //           TableName: tableName,
-    //           KeyConditionExpression: 'PK = :pk AND SK = :sk',
-    //           ExpressionAttributeValues: {
-    //             ':pk': { S: 'writing' },  // String value for PK
-    //             ':sk': { S: id },   // String value for SK
-    //             },
-    //             ProjectionExpression: 'PK, SK',
-    //         })
-    //         .promise(); 
-    //         const checkQuestion = check.Items?.[0];
-    //         if (checkQuestion) {
-    //           const writingKey = checkQuestion.PK?.S
-    //           const sortKey = checkQuestion.SK?.S
-    //           id = uuidv4();
-    //         }
-    //         else {
-    //           checker = false;
-    //           if(questionID != "")
-    //             questionID2 = id
-    //           else
-    //             questionID = id
-    //         }
-            
-    //        }
-    //        console.log("OUR id: ", id)
-    //         transactItems.push({
-    //           Put: {
-    //             TableName: tableName,
-    //             Item: {
-    //                 PK: { S: "writing" },
-    //                 SK: { S: id },
-    //                 P1: {
-    //                     M: {
-    //                         graphDescription: { S: "This is a description" },
-    //                         graphKey: { S: "graph123" },
-    //                         Question: { S: p1Question },
-    //                     },
-    //                 },
-    //                 P2:{
-    //                   M: {
-    //                   question: { S: p2Question },
-    //                 }
-    //               }
-    //             },
-    //         },
-    //         });     
-    //     }
-        
-    //     transactItems.push({
-    //       Update: {
-    //           TableName: tableName,
-    //           Key: { // Key is required for Update
-    //               PK: { S: "writing" },
-    //               SK: { S: "index" },
-    //           },
-    //           UpdateExpression: "SET #index = list_append(if_not_exists(#index, :empty_list), :new_element)",
-    //           ExpressionAttributeNames: {
-    //               "#index": "index"
-    //           },
-    //           ExpressionAttributeValues: {
-    //               ":new_element": { L: [{ S: questionID }, { S: questionID2 }] },
-    //               ":empty_list": { L: [] } // Important for creating the list if it doesn't exist
-    //           },
-    //       },
-    //   });
-        
-    // const transactParams = { TransactItems: transactItems };
-    // const command = new TransactWriteItemsCommand(transactParams);
-    // const response = await dynamodb.transactWriteItems(transactParams).promise();
-    const id = "12345"
-    transactItems.push({
-      Put: {
-        TableName: tableName,
-        Item: {
-          PK: { S: "passage" },
-          SK: { S: id },
-          P1: {
-            M: {
-              NumOfQuestions: { N: "3" },
-              Passage: { S: "This is a sample passage text used for testing." },
-              PassageTitle: { S: "Sample Passage Title" },
-              Questions: {
-                L: [
-                  {
-                    M: {
-                      NumOfSubQuestions: { N: "2" },
-                      Question: { S: "What is the main idea of the passage?" },
-                      QuestionType: { S: "Multiple Choice" },
-                      SubQuestion: {
-                        L: [
-                          {
-                            M: {
-                              CorrectAnswers: {
-                                L: [{L: [{ S: "A" }]}]
-                                
-                              },
-                              QuestionText: { S: "The main idea is:" },
-                              QuestionWeight: { N: "1" },
-                              RowTitle: { S: "Main Idea" }
+      const transactItems: any[] = [];
+      let id = uuidv4();
+      let checker = true;
+      while(checker) {
+        const check = await dynamodb
+        .query({
+          TableName: tableName,
+          KeyConditionExpression: 'PK = :pk AND SK = :sk',
+          ExpressionAttributeValues: {
+            ':pk': { S: 'reading' },  // String value for PK
+            ':sk': { S: id },   // String value for SK
+            },
+            ProjectionExpression: 'PK, SK',
+        })
+        .promise(); 
+        const checkQuestion = check.Items?.[0];
+        if (checkQuestion) {
+          // const sortKey = checkQuestion.SK?.S
+          id = uuidv4();
+        }
+        else {
+          checker = false;
+        }
+       }
+      transactItems.push({
+        Put: {
+          TableName: tableName,
+          Item: {
+            PK: { S: "reading" },
+            SK: { S: id },
+            P1: {
+              M: {
+                NumOfQuestions: { N: "3" },
+                Passage: { S: "This is a sample passage text used for testing." },
+                PassageTitle: { S: "Sample Passage Title" },
+                Questions: {
+                  L: [
+                    {
+                      M: {
+                        NumOfSubQuestions: { N: "2" },
+                        Question: { S: "What is the main idea of the passage?" },
+                        QuestionType: { S: "Multiple Choice" },
+                        SubQuestion: {
+                          L: [
+                            {
+                              M: {
+                                CorrectAnswers: {
+                                  L: [{L: [{ S: "A" }]}]
+                                  
+                                },
+                                QuestionText: { S: "The main idea is:" },
+                                QuestionWeight: { N: "1" },
+                                RowTitle: { S: "Main Idea" }
+                              }
+                            },
+                            {
+                              M: {
+                                CorrectAnswers: {
+                                  L: [{ S: "B" }]
+                                },
+                                QuestionText: { S: "The secondary idea is:" },
+                                QuestionWeight: { N: "1" },
+                                RowTitle: { S: "Secondary Idea" }
+                              }
                             }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      M: {
+                        List: { S: "a b c d e " },
+                        ListTitle: { S: "Sample List Title" },
+                        NumOfSubQuestions: { N: "1" },
+                        Question: { S: "Select the correct options from the list." },
+                        QuestionType: { S: "List Selection" },
+                        SubQuestions: {
+                          L: [
+                            {
+                              M: {
+                                choices: {
+                                  L: [{ S: "Option 1" }, { S: "Option 2" }, { S: "Option 3" }]
+                                },
+                                correctAnswer: { S: "Option 2" },
+                                QuestionText: { S: "Which option is correct?" }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      M: {
+                        NumOfSubQuestions: { N: "1" },
+                        Question: { S: "Which of these is an example of something described in the passage?" },
+                        QuestionType: { S: "Single Choice" },
+                        SubQuestions: {
+                          L: [
+                            {
+                              M: {
+                                choices: {
+                                  L: [{ S: "Example 1" }, { S: "Example 2" }, { S: "Example 3" }]
+                                },
+                                CorrectAnswer: { S: "Example 3" },
+                                QuestionText: { S: "Choose one correct example." }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            P2: {
+              M: {
+                  NumOfQuestions: { N: "3" },
+                  Passage: { S: "This is a sample passage about the topic." },
+                  PassageTitle: { S: "Sample Passage Title" },
+                  Questions: {
+                      L: [
+                          {
+                              M: {
+                                  NumOfSubQuestions: { N: "2" },
+                                  Question: { S: "What is the main idea of the passage?" },
+                                  QuestionType: { S: "MultipleChoice" },
+                                  SubQuestion: {
+                                      L: [
+                                          {
+                                              M: {
+                                                  choices: {
+                                                      L: [
+                                                          { S: "Option A" },
+                                                          { S: "Option B" },
+                                                          { S: "Option C" }
+                                                      ]
+                                                  },
+                                                  CorrectAnswer: { S: "Option A" },
+                                                  QuestionText: { S: "Choose the correct answer." }
+                                              }
+                                          },
+                                          {
+                                              M: {
+                                                  choices: {
+                                                      L: [
+                                                          { S: "Option 1" },
+                                                          { S: "Option 2" },
+                                                          { S: "Option 3" }
+                                                      ]
+                                                  },
+                                                  CorrectAnswer: { S: "Option 2" },
+                                                  QuestionText: { S: "Select the second correct answer." }
+                                              }
+                                          }
+                                      ]
+                                  }
+                              }
                           },
                           {
-                            M: {
-                              CorrectAnswers: {
-                                L: [{ S: "B" }]
-                              },
-                              QuestionText: { S: "The secondary idea is:" },
-                              QuestionWeight: { N: "1" },
-                              RowTitle: { S: "Secondary Idea" }
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  },
-                  {
-                    M: {
-                      List: { S: "a b c d e " },
-                      ListTitle: { S: "Sample List Title" },
-                      NumOfSubQuestions: { N: "1" },
-                      Question: { S: "Select the correct options from the list." },
-                      QuestionType: { S: "List Selection" },
-                      SubQuestions: {
-                        L: [
+                              M: {
+                                  NumOfSubQuestions: { N: "1" },
+                                  Question: { S: "Explain the purpose of the passage." },
+                                  QuestionType: { S: "OpenEnded" },
+                                  SubQuestion: {
+                                      L: [
+                                          {
+                                              M: {
+                                                  CorrectAnswers: {
+                                                      L: [
+                                                          {
+                                                              L: [{ S: "Purpose A" }, { S: "Purpose B" }]
+                                                          }
+                                                      ]
+                                                  },
+                                                  QuestionText: { S: "Describe the purpose." },
+                                                  QuestionWeight: { N: "10" }
+                                              }
+                                          }
+                                      ]
+                                  }
+                              }
+                          },
                           {
-                            M: {
-                              choices: {
-                                L: [{ S: "Option 1" }, { S: "Option 2" }, { S: "Option 3" }]
-                              },
-                              correctAnswer: { S: "Option 2" },
-                              QuestionText: { S: "Which option is correct?" }
-                            }
+                              M: {
+                                  NumOfSubQuestions: { N: "1" },
+                                  Question: { S: "What are the key points mentioned?" },
+                                  QuestionType: { S: "MultipleChoice" },
+                                  SubQuestion: {
+                                      L: [
+                                          {
+                                              M: {
+                                                  choices: {
+                                                      L: [
+                                                          { S: "Key Point 1" },
+                                                          { S: "Key Point 2" },
+                                                          { S: "Key Point 3" }
+                                                      ]
+                                                  },
+                                                  CorrectAnswer: { S: "Key Point 3" },
+                                                  QuestionText: { S: "Select the correct key point." }
+                                              }
+                                          }
+                                      ]
+                                  }
+                              }
                           }
-                        ]
-                      }
-                    }
-                  },
-                  {
-                    M: {
-                      NumOfSubQuestions: { N: "1" },
-                      Question: { S: "Which of these is an example of something described in the passage?" },
-                      QuestionType: { S: "Single Choice" },
-                      SubQuestions: {
-                        L: [
-                          {
-                            M: {
-                              choices: {
-                                L: [{ S: "Example 1" }, { S: "Example 2" }, { S: "Example 3" }]
-                              },
-                              CorrectAnswer: { S: "Example 3" },
-                              QuestionText: { S: "Choose one correct example." }
-                            }
-                          }
-                        ]
-                      }
-                    }
+                      ]
                   }
-                ]
               }
-            }
-          },
-          P2: {
+            },
+            P3: {
             M: {
                 NumOfQuestions: { N: "3" },
-                Passage: { S: "This is a sample passage about the topic." },
-                PassageTitle: { S: "Sample Passage Title" },
+                Passage: { S: "This is a comprehension passage to analyze." },
+                PassageTitle: { S: "Comprehension Passage Title" },
                 Questions: {
                     L: [
                         {
                             M: {
                                 NumOfSubQuestions: { N: "2" },
-                                Question: { S: "What is the main idea of the passage?" },
+                                Question: { S: "What is the central theme of the passage?" },
                                 QuestionType: { S: "MultipleChoice" },
                                 SubQuestion: {
                                     L: [
@@ -220,13 +257,13 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                             M: {
                                                 choices: {
                                                     L: [
-                                                        { S: "Option A" },
-                                                        { S: "Option B" },
-                                                        { S: "Option C" }
+                                                        { S: "Theme A" },
+                                                        { S: "Theme B" },
+                                                        { S: "Theme C" }
                                                     ]
                                                 },
-                                                CorrectAnswer: { S: "Option A" },
-                                                QuestionText: { S: "Choose the correct answer." }
+                                                CorrectAnswer: { S: "Theme B" },
+                                                QuestionText: { S: "Choose the most relevant theme." }
                                             }
                                         },
                                         {
@@ -238,8 +275,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                                         { S: "Option 3" }
                                                     ]
                                                 },
-                                                CorrectAnswer: { S: "Option 2" },
-                                                QuestionText: { S: "Select the second correct answer." }
+                                                CorrectAnswer: { S: "Option 1" },
+                                                QuestionText: { S: "Identify another key theme." }
                                             }
                                         }
                                     ]
@@ -249,31 +286,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                         {
                             M: {
                                 NumOfSubQuestions: { N: "1" },
-                                Question: { S: "Explain the purpose of the passage." },
-                                QuestionType: { S: "OpenEnded" },
-                                SubQuestion: {
-                                    L: [
-                                        {
-                                            M: {
-                                                CorrectAnswers: {
-                                                    L: [
-                                                        {
-                                                            L: [{ S: "Purpose A" }, { S: "Purpose B" }]
-                                                        }
-                                                    ]
-                                                },
-                                                QuestionText: { S: "Describe the purpose." },
-                                                QuestionWeight: { N: "10" }
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        },
-                        {
-                            M: {
-                                NumOfSubQuestions: { N: "1" },
-                                Question: { S: "What are the key points mentioned?" },
+                                Question: { S: "What evidence supports the theme?" },
                                 QuestionType: { S: "MultipleChoice" },
                                 SubQuestion: {
                                     L: [
@@ -281,13 +294,37 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                             M: {
                                                 choices: {
                                                     L: [
-                                                        { S: "Key Point 1" },
-                                                        { S: "Key Point 2" },
-                                                        { S: "Key Point 3" }
+                                                        { S: "Evidence 1" },
+                                                        { S: "Evidence 2" },
+                                                        { S: "Evidence 3" }
                                                     ]
                                                 },
-                                                CorrectAnswer: { S: "Key Point 3" },
-                                                QuestionText: { S: "Select the correct key point." }
+                                                CorrectAnswer: { S: "Evidence 2" },
+                                                QuestionText: { S: "Select the best supporting evidence." }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            M: {
+                                NumOfSubQuestions: { N: "1" },
+                                Question: { S: "What is the author's perspective?" },
+                                QuestionType: { S: "MultipleChoice" },
+                                SubQuestion: {
+                                    L: [
+                                        {
+                                            M: {
+                                                choices: {
+                                                    L: [
+                                                        { S: "Perspective A" },
+                                                        { S: "Perspective B" },
+                                                        { S: "Perspective C" }
+                                                    ]
+                                                },
+                                                CorrectAnswer: { S: "Perspective C" },
+                                                QuestionText: { S: "Identify the author's perspective." }
                                             }
                                         }
                                     ]
@@ -297,106 +334,28 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                     ]
                 }
             }
-          },
-          P3: {
-          M: {
-              NumOfQuestions: { N: "3" },
-              Passage: { S: "This is a comprehension passage to analyze." },
-              PassageTitle: { S: "Comprehension Passage Title" },
-              Questions: {
-                  L: [
-                      {
-                          M: {
-                              NumOfSubQuestions: { N: "2" },
-                              Question: { S: "What is the central theme of the passage?" },
-                              QuestionType: { S: "MultipleChoice" },
-                              SubQuestion: {
-                                  L: [
-                                      {
-                                          M: {
-                                              choices: {
-                                                  L: [
-                                                      { S: "Theme A" },
-                                                      { S: "Theme B" },
-                                                      { S: "Theme C" }
-                                                  ]
-                                              },
-                                              CorrectAnswer: { S: "Theme B" },
-                                              QuestionText: { S: "Choose the most relevant theme." }
-                                          }
-                                      },
-                                      {
-                                          M: {
-                                              choices: {
-                                                  L: [
-                                                      { S: "Option 1" },
-                                                      { S: "Option 2" },
-                                                      { S: "Option 3" }
-                                                  ]
-                                              },
-                                              CorrectAnswer: { S: "Option 1" },
-                                              QuestionText: { S: "Identify another key theme." }
-                                          }
-                                      }
-                                  ]
-                              }
-                          }
-                      },
-                      {
-                          M: {
-                              NumOfSubQuestions: { N: "1" },
-                              Question: { S: "What evidence supports the theme?" },
-                              QuestionType: { S: "MultipleChoice" },
-                              SubQuestion: {
-                                  L: [
-                                      {
-                                          M: {
-                                              choices: {
-                                                  L: [
-                                                      { S: "Evidence 1" },
-                                                      { S: "Evidence 2" },
-                                                      { S: "Evidence 3" }
-                                                  ]
-                                              },
-                                              CorrectAnswer: { S: "Evidence 2" },
-                                              QuestionText: { S: "Select the best supporting evidence." }
-                                          }
-                                      }
-                                  ]
-                              }
-                          }
-                      },
-                      {
-                          M: {
-                              NumOfSubQuestions: { N: "1" },
-                              Question: { S: "What is the author's perspective?" },
-                              QuestionType: { S: "MultipleChoice" },
-                              SubQuestion: {
-                                  L: [
-                                      {
-                                          M: {
-                                              choices: {
-                                                  L: [
-                                                      { S: "Perspective A" },
-                                                      { S: "Perspective B" },
-                                                      { S: "Perspective C" }
-                                                  ]
-                                              },
-                                              CorrectAnswer: { S: "Perspective C" },
-                                              QuestionText: { S: "Identify the author's perspective." }
-                                          }
-                                      }
-                                  ]
-                              }
-                          }
-                      }
-                  ]
-              }
-          }
-      }
         }
-        
-      }
+          }
+          
+        }
+      });
+
+      transactItems.push({
+        Update: {
+            TableName: tableName,
+            Key: { // Key is required for Update
+                PK: { S: "reading" },
+                SK: { S: "index" },
+            },
+            UpdateExpression: "SET #index = list_append(if_not_exists(#index, :empty_list), :new_element)",
+            ExpressionAttributeNames: {
+                "#index": "index"
+            },
+            ExpressionAttributeValues: {
+                ":new_element": { L: [{ S: id }] },
+                ":empty_list": { L: [] } // Important for creating the list if it doesn't exist
+            },
+        },
     });
     
 
@@ -405,7 +364,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     const command = new TransactWriteItemsCommand(transactParams);
     const response = await dynamodb.transactWriteItems(transactParams).promise();
     const userID = event.requestContext.authorizer!.jwt.claims.sub; // Target user ID
-    const bucketName = "mohdj-codecatalyst-sst-ap-extractedtxtbucket87b8ca-ijzohbu9cf75"; // Name of the S3 bucket
+    const bucketName = Bucket.ExtractedTXT.bucketName; // Name of the Extracted txt S3 bucket
     const pdfBucket = Bucket.BucketTextract.bucketName;
 
     // List all objects in the S3 bucket

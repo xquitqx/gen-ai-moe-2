@@ -2,13 +2,8 @@
 import { S3 } from 'aws-sdk';
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { Bucket } from 'sst/node/bucket';
-import { DynamoDBClient, TransactWriteItemsCommand } from "@aws-sdk/client-dynamodb";
+import { TransactWriteItemsCommand } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from 'uuid';
-import {
-  DynamoDBDocumentClient,
-  UpdateCommand,
-  PutCommand,
-} from '@aws-sdk/lib-dynamodb';
 import { Table } from 'sst/node/table';
 import * as AWS from 'aws-sdk';
 
@@ -21,10 +16,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   
     
      try {
-      let questionID = "";
-      let questionID2 = "";
       const userID = event.requestContext.authorizer!.jwt.claims.sub; // Target user ID
-      const bucketName = "mohdj-codecatalyst-sst-ap-extractedtxtbucket87b8ca-ijzohbu9cf75"; // Name of the S3 bucket
+      const bucketName = Bucket.ExtractedTXT.bucketName; // Name of the Extracted txt S3 bucket
       const pdfBucket = Bucket.BucketTextract.bucketName;
 
       const dynamodb = new AWS.DynamoDB();
@@ -42,14 +35,11 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       console.log(p2Question)
 
       const transactItems: any[] = [];
-      for (const question of parsedBody) {
+
         let id = uuidv4();
-  
         let checker = true;
     
-        while(checker)
-        {
-        
+        while(checker) {
         const check = await dynamodb
         .query({
           TableName: tableName,
@@ -63,18 +53,12 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         .promise(); 
         const checkQuestion = check.Items?.[0];
         if (checkQuestion) {
-          const writingKey = checkQuestion.PK?.S
-          const sortKey = checkQuestion.SK?.S
+          // const sortKey = checkQuestion.SK?.S
           id = uuidv4();
         }
         else {
           checker = false;
-          if(questionID != "")
-            questionID2 = id
-          else
-            questionID = id
         }
-        
        }
        console.log("OUR id: ", id)
         transactItems.push({
@@ -85,20 +69,19 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                 SK: { S: id },
                 P1: {
                     M: {
-                        graphDescription: { S: "This is a description" },
-                        graphKey: { S: "graph123" },
+                        GraphDescription: { S: "This is a description" },
+                        GraphKey: { S: "graph123" },
                         Question: { S: p1Question },
                     },
                 },
                 P2:{
                   M: {
-                  question: { S: p2Question },
+                  Question: { S: p2Question },
                 }
               }
             },
         },
-        });     
-    }
+        });
     
     transactItems.push({
       Update: {
@@ -112,7 +95,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
               "#index": "index"
           },
           ExpressionAttributeValues: {
-              ":new_element": { L: [{ S: questionID }, { S: questionID2 }] },
+              ":new_element": { L: [{ S: id }] },
               ":empty_list": { L: [] } // Important for creating the list if it doesn't exist
           },
       },
