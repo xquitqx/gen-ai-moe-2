@@ -39,39 +39,48 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     // let question1 = `For every question in the provided text, append the word 'BREAK'  before each question number and keep all other text.  append \"CHOICE\"
     //  before each  choice letter and keep all other text. Ensure this is done for all sections in the text without
     //   altering the rest of the content.`
-    let  questions = `Include only the questions with their choices. Do NOT  include the answer of the questions.`;
-    let choices = 'For every question in the provided text, append the word "BREAK"  before each question number and keep all other text.  append "CHOICE" before each  choice letter and keep all other text. Ensure this is done for all sections in the text without altering the rest of the content.'
-    let getPassage1 = "Include only the first passage of the following text without the questions. ";
-    let getPassage2 = "Include only the second passage of the following text without the questions. ";
-    let getPassage3 = "Include only the third passage of the following text without the questions. ";
+    let getPassage1 = "Include only the first passage of the following text without the questions. Append the word \"PASSAGE\" before the passage. append the word \"PASSTITLE\" before the passage title.";
+    let getPassage2 = "Include only the second passage of the following text without the questions. Append the word \"PASSAGE\" before the passage. append the word \"PASSTITLE\" before the passage title. ";
+    let getPassage3 = "Include only the third passage of the following text without the questions. Append the word \"PASSAGE\" before the passage. append the word \"PASSTITLE\" before the passage title. ";
+    let passage1Questions = "Include only the first passage of the follwoing text. For every question in the passage, append the word \"BREAK\"  before each question number and keep all other text.  append \"CHOICE\" before each choice letter and keep all other text. Ensure this is done for the first passage in the text without altering the rest of the content."
+    let passage2Questions = "Include only the second passage of the follwoing text. For every question in the passage, append the word \"BREAK\"  before each question number and keep all other text.  append \"CHOICE\" before each choice letter and keep all other text. Ensure this is done for the second passage in the text without altering the rest of the content."
+    let passage3Questions = "Include only the third passage of the follwoing text. For every question in the passage, append the word \"BREAK\"  before each question number and keep all other text.  append \"CHOICE\" before each choice letter and keep all other text. Ensure this is done for the third passage in the text without altering the rest of the content."
 
-    questions += objectContent
+    passage1Questions += objectContent
+    passage2Questions += objectContent
+    passage3Questions += objectContent
     getPassage1 += objectContent
     getPassage2 += objectContent
     getPassage3 += objectContent
     
-    let feedbackResults = await runModel(questions);
-    choices += feedbackResults
-    feedbackResults = await runModel(choices)
+    
     const passage1 = await runModel(getPassage1);
     const passage2 = await runModel(getPassage2);
     const passage3 = await runModel(getPassage3);
+    const firstQuestions = await runModel(passage1Questions)
+    const secondQuestions = await runModel(passage2Questions)
+    const thirdQuestions = await runModel(passage3Questions)
 
-    console.log("listening prompt: ",feedbackResults)
     console.log('Object Content:', objectContent);
     console.log("First passage:" , passage1)
     console.log("second passage:" , passage2)
     console.log("third passage:" , passage3)
+    console.log("first set of questions: " ,firstQuestions)
+    console.log("second set of questions: " ,secondQuestions)
+    console.log("third set of questions: " ,thirdQuestions)
+
 
 
 
     return {
         statusCode: 200,
         body: JSON.stringify({
-          feedbackResults,
           passage1,
           passage2,
           passage3,
+          firstQuestions,
+          secondQuestions,
+          thirdQuestions
         }),
       };
   } catch (error) {

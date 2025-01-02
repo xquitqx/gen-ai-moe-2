@@ -3,10 +3,13 @@ import { get } from "aws-amplify/api";
 import { post } from 'aws-amplify/api';
 
 const ReadingExtractedFilePage: React.FC = () => {
-  const [feedback, setFeedback] = useState<string>(""); 
+  const [feedback, /*setFeedback*/] = useState<string>(""); 
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [/*passages*/, setPassages] = useState<string[]>([]);
+  const [passages, setPassages] = useState<string[]>([]);
+  const [firstSetQuestions, setFirstSetQuestions] = useState<string | null>(null);
+  const [secondSetQuestions, setSecondSetQuestions] = useState<string | null>(null);
+  const [thirdSetQuestions, setThirdSetQuestions] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchExtractedFile = async () => {
@@ -31,16 +34,24 @@ const ReadingExtractedFilePage: React.FC = () => {
 
         if (parsedBody) {
           const fileContent = await parsedBody.text();
-          const feedbackResults = JSON.parse(fileContent).feedbackResults;
           const passage1 = JSON.parse(fileContent).passage1;
           const passage2 = JSON.parse(fileContent).passage2;
           const passage3 = JSON.parse(fileContent).passage3;
-          setFeedback(feedbackResults);
-          setPassages([passage1, passage2, passage3]);
+          const firstSetQuestions = JSON.parse(fileContent).firstQuestions;
+          const secondSetQuestions = JSON.parse(fileContent).secondQuestions;
+          const thirdSetQuestions = JSON.parse(fileContent).thirdQuestions;
+          setFirstSetQuestions(firstSetQuestions);
+          setSecondSetQuestions(secondSetQuestions);
+          setThirdSetQuestions(thirdSetQuestions);
+          setPassages([passage1, passage2, passage3,firstSetQuestions,secondSetQuestions,thirdSetQuestions]);
           setFileContent(feedback); // Update state with file content
-          console.log(passage1)
-          console.log(passage2)
-          console.log(passage3)
+          //console.log("The entire returned from Api:" , fileContent)
+          // console.log(passage1)
+          // console.log(passage2)
+          // console.log(passage3)
+          console.log(firstSetQuestions)
+          console.log(secondSetQuestions)
+          console.log(thirdSetQuestions)
         } else {
           setError("Failed to retrieve file content.");
         }
@@ -58,7 +69,7 @@ const ReadingExtractedFilePage: React.FC = () => {
     try {
       // Gather the content of all "question-section" divs and their inputs
       const sections = Array.from(document.getElementsByClassName("question-section")).map((section) => {
-        const question = (section.querySelector("input.question-input") as HTMLInputElement)?.value || "";
+      const question = (section.querySelector("input.question-input") as HTMLInputElement)?.value || "";
   
         // Gather choices
         const choices = Array.from(section.querySelectorAll("input[type='text'].editable-choice")).map(
@@ -94,16 +105,142 @@ const ReadingExtractedFilePage: React.FC = () => {
     }
   };
   
-       
+  
   console.log("our feedback:", feedback); // for testing
 
   const container = document.getElementById("container") ? document.getElementById("container") : null;
-  const sections = feedback.split(/BREAK/).filter(section => section.trim() !== "");
+  if (container && passages.length > 2) {
+    const passTitleRegex = /^PASSTITLE(.+)$/m; 
+    const passageRegex = /^PASSAGE([\s\S]+)$/m; 
+
+    const createTextArea = (passage: string) => {
+      const textArea = document.createElement("textarea");
+      textArea.classList.add("paragraph");
+      textArea.rows = 10; // Number of lines (height)
+      textArea.cols = 70; // Number of characters per line (width)
+      console.log(" the full current passage is: " , passage)
+      const passTitleMatch = passage.match(passTitleRegex);
+      const passageMatch = passage.match(passageRegex);
+      console.log("the title after regex: " , passTitleMatch)
+      console.log("the passage after regex: " , passTitleMatch)
+
+
+      const passageTitle = passTitleMatch ? passTitleMatch[1] : "";
+      const passageContent = passageMatch ? passageMatch[1] : "";
+      const completePassage = `${passageTitle}\n${passageContent}`; // Combine title and content
+
+      textArea.value = completePassage;
+      container.appendChild(textArea);
+      let breakLine = document.createElement("br")
+      container.appendChild(breakLine);
+
+    };
+
+    // Iterate through passages and create text areas
+    for (let i = 0; i < 3; i++) {
+      if (passages[i]) {
+        createTextArea(passages[i]);
+      }
+    }
+  }
+
+
+  if(firstSetQuestions && secondSetQuestions && thirdSetQuestions) {
   const form = document.createElement("form");
   form.action = "/ApproveQuestions";
   form.method = "POST";
+  const allQuestions = [firstSetQuestions, secondSetQuestions, thirdSetQuestions];
 
+  // Create a form element
 
+  // Iterate over each set of questions
+
+  allQuestions.forEach(questionSet => {
+  // Split the questions into sections using "BREAK" as the delimiter
+  const sections = questionSet.split(/BREAK\d+/).map(section => section.trim()).filter(Boolean);
+
+  sections.forEach(section => {
+    // Extract question and choices
+    const [question, ...choices] = section.split("CHOICE").map(line => line.trim()).filter(Boolean);
+
+    // Create a new div for each "BREAK" section
+    const div = document.createElement("div");
+    div.classList.add("question-section");
+
+    // Add question as a heading (editable input)
+    const questionHeading = document.createElement("input");
+    questionHeading.classList.add("question-input");
+    questionHeading.value = question;
+    questionHeading.style.width = "100%";
+    questionHeading.style.height = "auto";
+    questionHeading.style.border = "1px solid grey";
+
+    div.appendChild(document.createElement("br"));
+    div.appendChild(questionHeading);
+    div.appendChild(document.createElement("br"));
+
+    // Handle True/False questions separately
+    if (question.includes("True") && question.includes("False")) {
+      const trueRadio = document.createElement("input");
+      trueRadio.type = "radio";
+      trueRadio.name = question;
+      trueRadio.value = "True";
+
+      const trueInput = document.createElement("input");
+      trueInput.type = "text";
+      trueInput.value = "True";
+      trueInput.style.width = "90%";
+      trueInput.classList.add("editable-choice");
+      trueInput.style.border = "1px solid grey";
+
+      const falseRadio = document.createElement("input");
+      falseRadio.type = "radio";
+      falseRadio.name = question;
+      falseRadio.value = "False";
+
+      const falseInput = document.createElement("input");
+      falseInput.type = "text";
+      falseInput.value = "False";
+      falseInput.style.width = "90%";
+      falseInput.classList.add("editable-choice");
+      falseInput.style.border = "1px solid grey";
+
+      // Append True/False choices
+      div.appendChild(trueRadio);
+      div.appendChild(trueInput);
+      div.appendChild(document.createElement("br"));
+      div.appendChild(falseRadio);
+      div.appendChild(falseInput);
+    } else {
+      // Add radio buttons and text inputs for choices
+      choices.forEach(choice => {
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = question;
+        radio.value = choice;
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = choice;
+        input.style.width = "90%";
+        input.classList.add("editable-choice");
+        input.style.border = "1px solid grey";
+
+        div.appendChild(radio);
+        div.appendChild(input);
+        div.appendChild(document.createElement("br"));
+      });
+    }
+
+    form.appendChild(div);
+  });
+  });
+
+  // Append the form to the container
+  container?.appendChild(form);
+}
+
+  /*
   // Generate divs dynamically
   sections.forEach(section => {
     // Extract question and choices
@@ -181,13 +318,14 @@ const ReadingExtractedFilePage: React.FC = () => {
       div.appendChild(document.createElement("br"));
     });
 
-    // Append the div to the container
     form.appendChild(div);
   });
   container?.appendChild(form);
+  */
   const statusElement = document.getElementById("status");
   const buttonTry = document.getElementById("btnTry");
   const buttonApprove = document.getElementById("btnApprove");
+  
 
 
   if (statusElement && buttonTry && buttonApprove)
@@ -196,66 +334,10 @@ const ReadingExtractedFilePage: React.FC = () => {
     buttonTry.style.visibility = "visible";
     buttonApprove.style.visibility = "visible";
   }
+    
   
 
-  // Split text by "BREAK"
-  // const sections = feedback.split(/BREAK /).filter(section => section.trim() !== "");
-  // console.log(sections)
-  // const form = document.createElement("form");
-  // form.action = "/ApproveQuestions";
-  // form.method = "POST";
-
-  // let index = 0
-  // // Generate divs dynamically
-  // sections.forEach(section => {
-  //   // Extract question and choices
-  //   const [question] = section.split("\n").map(line => line.trim()).filter(line => line);
-
-  //   // Create a new div for each "BREAK" section
-  //   const div = document.createElement("div");
-  //   div.classList.add("question-section");
-  //   if (index == 0) {
-  //       const passageInput1 = document.createElement("input");
-  //       passageInput1.value = passages[0];
-  //       passageInput1.style.width = "700px";
-  //       div.appendChild(document.createElement("br"));
-  //       div.appendChild(passageInput1);
-  //       div.appendChild(document.createElement("br"));
-  //   }
-  //   if (index == 4) {
-  //       const passageInput2 = document.createElement("input");
-  //       passageInput2.value = passages[1];
-  //       passageInput2.style.width = "700px";
-  //       div.appendChild(document.createElement("br"));
-  //       div.appendChild(passageInput2);
-  //       div.appendChild(document.createElement("br"));
-  //   }
-  //   if (index == 8) {
-  //       const passageInput3 = document.createElement("input");
-  //       passageInput3.value = passages[2];
-  //       passageInput3.style.width = "700px";
-  //       div.appendChild(document.createElement("br"));
-  //       div.appendChild(passageInput3);
-  //       div.appendChild(document.createElement("br"));
-  //   }
-
-  //   // Add question as a heading
-  //   const questionHeading = document.createElement("input");
-  //   questionHeading.value = question;
-  //   questionHeading.style.width = "700px";
-  //   div.appendChild(document.createElement("br"));
-  //   div.appendChild(questionHeading);
-  //   div.appendChild(document.createElement("br"));
-
-  //   // Append the div to the container
-  //   form.appendChild(div);
-  //   index++;
-  // });
-  // container?.appendChild(form);
-  // const submitButton = document.createElement("button");
-  // submitButton.type = "submit";
-  // submitButton.textContent = "Submit";
-  // form.appendChild(submitButton);
+  
   return (
     <div
       style={{
