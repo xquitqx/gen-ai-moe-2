@@ -157,7 +157,7 @@ const ReadingExtractedFilePage: React.FC = () => {
 
   allQuestions.forEach(questionSet => {
   // Split the questions into sections using "BREAK" as the delimiter
-  const sections = questionSet.split(/BREAK\d+/).map(section => section.trim()).filter(Boolean);
+  const sections = questionSet.split(/BREAK/).map(section => section.trim()).filter(Boolean);
 
   sections.forEach(section => {
     // Extract question and choices
