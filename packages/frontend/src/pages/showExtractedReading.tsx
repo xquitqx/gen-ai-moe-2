@@ -46,9 +46,9 @@ const ReadingExtractedFilePage: React.FC = () => {
           setPassages([passage1, passage2, passage3,firstSetQuestions,secondSetQuestions,thirdSetQuestions]);
           setFileContent(feedback); // Update state with file content
           //console.log("The entire returned from Api:" , fileContent)
-          // console.log(passage1)
-          // console.log(passage2)
-          // console.log(passage3)
+          console.log(passage1)
+          console.log(passage2)
+          console.log(passage3)
           console.log(firstSetQuestions)
           console.log(secondSetQuestions)
           console.log(thirdSetQuestions)
@@ -62,17 +62,22 @@ const ReadingExtractedFilePage: React.FC = () => {
     };
     fetchExtractedFile();
   }, []);
-
+  let title1 = ""
+  let title2 = ""
+  let title3 = ""
+  let pass1 = ""
+  let pass2 = ""
+  let pass3 = ""
   const approving = async (e: React.FormEvent) => {
     e.preventDefault();
   
     try {
       // Gather the content of all "question-section" divs and their inputs
       const sections = Array.from(document.getElementsByClassName("question-section")).map((section) => {
-      const question = (section.querySelector("input.question-input") as HTMLInputElement)?.value || "";
-  
+      const question = (section.querySelector("input.question-input0") as HTMLInputElement)?.value || "";
+        
         // Gather choices
-        const choices = Array.from(section.querySelectorAll("input[type='text'].editable-choice")).map(
+        const choices = Array.from(section.querySelectorAll("input[type='text'].editable-choice0")).map(
           (input) => (input as HTMLInputElement).value
         );
   
@@ -83,11 +88,50 @@ const ReadingExtractedFilePage: React.FC = () => {
           question,
           choices,
           selectedAnswer,
+          
         };
       });
+      const sections2 = Array.from(document.getElementsByClassName("question-section")).map((section) => {
+        const question = (section.querySelector("input.question-input1") as HTMLInputElement)?.value || "";
+          
+          // Gather choices
+          const choices = Array.from(section.querySelectorAll("input[type='text'].editable-choice1")).map(
+            (input) => (input as HTMLInputElement).value
+          );
+    
+          // Gather selected answers
+          const selectedAnswer = (section.querySelector("input[type='radio']:checked") as HTMLInputElement)?.value || null;
+    
+          return {
+            question,
+            choices,
+            selectedAnswer,
+            
+          };
+        });
+        const sections3 = Array.from(document.getElementsByClassName("question-section")).map((section) => {
+          const question = (section.querySelector("input.question-input2") as HTMLInputElement)?.value || "";
+            
+            // Gather choices
+            const choices = Array.from(section.querySelectorAll("input[type='text'].editable-choice2")).map(
+              (input) => (input as HTMLInputElement).value
+            );
+      
+            // Gather selected answers
+            const selectedAnswer = (section.querySelector("input[type='radio']:checked") as HTMLInputElement)?.value || null;
+      
+            return {
+              question,
+              choices,
+              selectedAnswer,
+              
+            };
+          });
   
       // Filter out empty questions
-      const validSections = sections.filter((section) => section.question.trim() !== "");
+      
+      //const validSections = [pass1, pass2 , pass3 , title1 , title2 , title3 , sections.filter((section) => section.question.trim() !== "")];
+      const validSections = [    [title1, pass1, sections.filter((section) => section.question.trim() !== "")],[title2, pass2, sections2.filter((section) => section.question.trim() !== "")],[title3, pass3, sections3.filter((section) => section.question.trim() !== "")]    ]
       console.log(validSections)
       // Send the gathered data to your Lambda function
       const response = await post({
@@ -109,43 +153,10 @@ const ReadingExtractedFilePage: React.FC = () => {
   console.log("our feedback:", feedback); // for testing
 
   const container = document.getElementById("container") ? document.getElementById("container") : null;
-  if (container && passages.length > 2) {
-    const passTitleRegex = /^PASSTITLE(.+)$/m; 
-    const passageRegex = /^PASSAGE([\s\S]+)$/m; 
-
-    const createTextArea = (passage: string) => {
-      const textArea = document.createElement("textarea");
-      textArea.classList.add("paragraph");
-      textArea.rows = 10; // Number of lines (height)
-      textArea.cols = 70; // Number of characters per line (width)
-      console.log(" the full current passage is: " , passage)
-      const passTitleMatch = passage.match(passTitleRegex);
-      const passageMatch = passage.match(passageRegex);
-      console.log("the title after regex: " , passTitleMatch)
-      console.log("the passage after regex: " , passTitleMatch)
+  
 
 
-      const passageTitle = passTitleMatch ? passTitleMatch[1] : "";
-      const passageContent = passageMatch ? passageMatch[1] : "";
-      const completePassage = `${passageTitle}\n${passageContent}`; // Combine title and content
-
-      textArea.value = completePassage;
-      container.appendChild(textArea);
-      let breakLine = document.createElement("br")
-      container.appendChild(breakLine);
-
-    };
-
-    // Iterate through passages and create text areas
-    for (let i = 0; i < 3; i++) {
-      if (passages[i]) {
-        createTextArea(passages[i]);
-      }
-    }
-  }
-
-
-  if(firstSetQuestions && secondSetQuestions && thirdSetQuestions) {
+  if(firstSetQuestions && secondSetQuestions && thirdSetQuestions && container && passages.length > 2) {
   const form = document.createElement("form");
   form.action = "/ApproveQuestions";
   form.method = "POST";
@@ -154,22 +165,76 @@ const ReadingExtractedFilePage: React.FC = () => {
   // Create a form element
 
   // Iterate over each set of questions
-
+  let i = 0;
   allQuestions.forEach(questionSet => {
+    
   // Split the questions into sections using "BREAK" as the delimiter
   const sections = questionSet.split(/BREAK/).map(section => section.trim()).filter(Boolean);
-
+  let j = 0;
   sections.forEach(section => {
+    const div = document.createElement("div");
+      const passTitleRegex = /^PASSTITLE(.+)$/m; 
+      const passageRegex = /^PASSAGE([\s\S]+)$/m; 
+  
+      const createTextArea = (passage: string) => {
+        const textArea = document.createElement("textarea");
+        textArea.classList.add("paragraph");
+        textArea.rows = 10; // Number of lines (height)
+        textArea.cols = 70; // Number of characters per line (width)
+        console.log(" the full current passage is: " , passage)
+        const passTitleMatch = passage.match(passTitleRegex);
+        const passageMatch = passage.match(passageRegex);
+        console.log("the title after regex: " , passTitleMatch)
+        console.log("the passage after regex: " , passTitleMatch)
+        
+  
+        const passageTitle = passTitleMatch ? passTitleMatch[1] : "";
+        const passageContent = passageMatch ? passageMatch[1] : "";
+        const completePassage = `${passageTitle}\n${passageContent}`; // Combine title and content
+        if(i == 0){
+          title1 = passageTitle
+          pass1 = passageContent
+        }
+        else if(i == 1){
+          title2 = passageTitle
+          pass2 = passageContent
+        }
+        else if(i == 2){
+          title3 = passageTitle
+          pass3 = passageContent
+        }
+  
+        textArea.value = completePassage;
+        div.appendChild(textArea);
+        let breakLine = document.createElement("br")
+        div.appendChild(breakLine);
+  
+      };
+  
+      // Iterate through passages and create text areas
+    
+    if(i==0 && j==0){
+      console.log("passgae 0");
+      createTextArea(passages[0])
+    }
+    else if(i==1 && j==0 ){
+      console.log("passgae 1");
+      createTextArea(passages[1])
+    }
+    else if(i==2 && j==0){
+      console.log("passgae 2");
+      createTextArea(passages[2])}
+    j++;
     // Extract question and choices
     const [question, ...choices] = section.split("CHOICE").map(line => line.trim()).filter(Boolean);
 
     // Create a new div for each "BREAK" section
-    const div = document.createElement("div");
+    // const div = document.createElement("div");
     div.classList.add("question-section");
 
     // Add question as a heading (editable input)
     const questionHeading = document.createElement("input");
-    questionHeading.classList.add("question-input");
+    questionHeading.classList.add(`question-input${i}`);
     questionHeading.value = question;
     questionHeading.style.width = "100%";
     questionHeading.style.height = "auto";
@@ -190,7 +255,7 @@ const ReadingExtractedFilePage: React.FC = () => {
       trueInput.type = "text";
       trueInput.value = "True";
       trueInput.style.width = "90%";
-      trueInput.classList.add("editable-choice");
+      trueInput.classList.add(`editable-choice${i}`);
       trueInput.style.border = "1px solid grey";
 
       const falseRadio = document.createElement("input");
@@ -202,7 +267,7 @@ const ReadingExtractedFilePage: React.FC = () => {
       falseInput.type = "text";
       falseInput.value = "False";
       falseInput.style.width = "90%";
-      falseInput.classList.add("editable-choice");
+      falseInput.classList.add(`editable-choice${i}`);
       falseInput.style.border = "1px solid grey";
 
       // Append True/False choices
@@ -223,7 +288,7 @@ const ReadingExtractedFilePage: React.FC = () => {
         input.type = "text";
         input.value = choice;
         input.style.width = "90%";
-        input.classList.add("editable-choice");
+        input.classList.add(`editable-choice${i}`);
         input.style.border = "1px solid grey";
 
         div.appendChild(radio);
@@ -234,6 +299,7 @@ const ReadingExtractedFilePage: React.FC = () => {
 
     form.appendChild(div);
   });
+  i++
   });
 
   // Append the form to the container

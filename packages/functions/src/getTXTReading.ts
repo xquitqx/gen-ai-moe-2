@@ -43,8 +43,9 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     let getPassage2 = "Include only the second passage of the following text without the questions. Append the word \"PASSAGE\" before the passage. append the word \"PASSTITLE\" before the passage title. ";
     let getPassage3 = "Include only the third passage of the following text without the questions. Append the word \"PASSAGE\" before the passage. append the word \"PASSTITLE\" before the passage title. ";
     let passage1Questions = "From the following text, create a formatted version of the questions of the first passage only. Append \"BREAK\" before each question number and state the question. Append \"CHOICE\" before each choice letter for every question."
-    let passage2Questions = "From the following text, create a formatted version of the questions of the first passage only. Append \"BREAK\" before each question number and state the question. Append \"CHOICE\" before each choice letter for every question."
-    let passage3Questions = "From the following text, create a formatted version of the questions of the first passage only. Append \"BREAK\" before each question number and state the question. Append \"CHOICE\" before each choice letter for every question."
+    let passage2Questions = "From the following text, create a formatted version of ALL questions of the second passage only. Append \"BREAK\" before each question number and state the question. Append \"CHOICE\" before each choice letter for every question."
+    //let passage2Questions = "Consider only the questions of the second passage. Append the word \"BREAK\" before every question number only. Third, append the word \"CHOICE\" before every choice letter only. You must show the questions for the second passage "
+    let passage3Questions = "From the following text, create a formatted version of the questions of the third passage only. Append \"BREAK\" before each question number and state the question. Append \"CHOICE\" before each choice letter for every question."
 
     passage1Questions += objectContent
     passage2Questions += objectContent

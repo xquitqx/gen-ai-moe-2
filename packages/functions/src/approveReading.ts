@@ -11,6 +11,7 @@ import { json } from 'stream/consumers';
 const s3 = new S3();
 
 export const handler: APIGatewayProxyHandler = async (event) => {
+
   const requestBody = event.body ? JSON.parse(event.body) : null;
   console.log("Parsed event body:", requestBody);
   try {
@@ -19,13 +20,19 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       if (!event.body) {
           return { statusCode: 400, body: JSON.stringify({ message: "No body provided in the event" }) };
       }
-      let p1Question;
-      let p2Question;
+      
       const parsedBody = JSON.parse(JSON.parse(event.body))
-      p1Question = parsedBody[0]
-      p2Question = parsedBody[1]
-      console.log(p1Question)
-      console.log(p2Question)
+      let p1 = parsedBody[0]
+      let p2 = parsedBody[1]
+      let p3 = parsedBody[2]
+      
+
+      console.log(p1)
+      console.log(p2)
+      console.log("the first passage title ", p1[0])
+      console.log("The  number of questions", p1[2].length)
+      console.log("The first question: " , p1[2][0].question)
+      
           
     
       const transactItems: any[] = [];
@@ -52,140 +59,105 @@ export const handler: APIGatewayProxyHandler = async (event) => {
           checker = false;
         }
        }
-      transactItems.push({
-        Put: {
-          TableName: tableName,
-          Item: {
-            PK: { S: "reading" },
-            SK: { S: id },
-            P1: {
-              M: {
-                NumOfQuestions: { N: "3" },
-                Passage: { S: "This is a sample passage text used for testing." },
-                PassageTitle: { S: "Sample Passage Title" },
-                Questions: {
-                  L: [
-                    {
-                      M: {
-                        NumOfSubQuestions: { N: "2" },
-                        Question: { S: "What is the main idea of the passage?" },
-                        QuestionType: { S: "Multiple Choice" },
-                        SubQuestion: {
-                          L: [
-                            {
-                              M: {
-                                CorrectAnswers: {
-                                  L: [{L: [{ S: "A" }]}]
-                                  
-                                },
-                                QuestionText: { S: "The main idea is:" },
-                                QuestionWeight: { N: "1" },
-                                RowTitle: { S: "Main Idea" }
-                              }
-                            },
-                            {
-                              M: {
-                                CorrectAnswers: {
-                                  L: [{ S: "B" }]
-                                },
-                                QuestionText: { S: "The secondary idea is:" },
-                                QuestionWeight: { N: "1" },
-                                RowTitle: { S: "Secondary Idea" }
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    },
-                    {
-                      M: {
-                        List: { S: "a b c d e " },
-                        ListTitle: { S: "Sample List Title" },
-                        NumOfSubQuestions: { N: "1" },
-                        Question: { S: "Select the correct options from the list." },
-                        QuestionType: { S: "List Selection" },
-                        SubQuestions: {
-                          L: [
-                            {
-                              M: {
-                                choices: {
-                                  L: [{ S: "Option 1" }, { S: "Option 2" }, { S: "Option 3" }]
-                                },
-                                correctAnswer: { S: "Option 2" },
-                                QuestionText: { S: "Which option is correct?" }
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    },
-                    {
-                      M: {
-                        NumOfSubQuestions: { N: "1" },
-                        Question: { S: "Which of these is an example of something described in the passage?" },
-                        QuestionType: { S: "Single Choice" },
-                        SubQuestions: {
-                          L: [
-                            {
-                              M: {
-                                choices: {
-                                  L: [{ S: "Example 1" }, { S: "Example 2" }, { S: "Example 3" }]
-                                },
-                                CorrectAnswer: { S: "Example 3" },
-                                QuestionText: { S: "Choose one correct example." }
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            },
+       id = "sleep";
+       const subQuestionsListP1 = []; // Initialize empty list for subquestions
+       const subQuestionsListP2 = []; // Initialize empty list for subquestions
+       const subQuestionsListP3 = []; // Initialize empty list for subquestions
+       
+       // Loop through each subquestion in p1[2]
+       for (let i = 0; i < p1[2].length; i++) {
+         const subQuestionData = p1[2][i];
+         const { question, choices, selectedAnswer } = subQuestionData;
+       
+         // Construct a subquestion mapping
+         subQuestionsListP1.push({
+          M: {
+            CorrectAnswer: { S: selectedAnswer  },  
+            QuestionText: { S: question },
+            choices: {
+              L: choices.map((choice: any) => ({ S: choice })) // Map each choice as { S: value }
+            }
+          }
+         });
+       }
+
+      // For P2 --------------------------------------------------------------------------------------------------
+       for (let i = 0; i < p2[2].length; i++) {
+        const subQuestionData = p2[2][i];
+        const { question, choices, selectedAnswer } = subQuestionData;
+      
+        // Construct a subquestion mapping
+        subQuestionsListP2.push({
+         M: {
+           CorrectAnswer: { S: selectedAnswer  },  
+           QuestionText: { S: question },
+           choices: {
+             L: choices.map((choice: any) => ({ S: choice })) // Map each choice as { S: value }
+           }
+         }
+        });
+      }
+      // For P3 --------------------------------------------------------------------------------------------------
+      for (let i = 0; i < p3[2].length; i++) {
+        const subQuestionData = p3[2][i];
+        const { question, choices, selectedAnswer } = subQuestionData;
+      
+        // Construct a subquestion mapping
+        subQuestionsListP3.push({
+         M: {
+           CorrectAnswer: { S: selectedAnswer  },  
+           QuestionText: { S: question },
+           choices: {
+             L: choices.map((choice: any) => ({ S: choice })) // Map each choice as { S: value }
+           }
+         }
+        });
+      }
+       
+       // Push the constructed subquestions to DynamoDB
+       transactItems.push({
+         Put: {
+           TableName: tableName,
+           Item: {
+             PK: { S: "reading" },
+             SK: { S: id },
+             P1: {
+               M: {
+                 NumOfQuestions: { N: "1" },
+                 Passage: { S: p1[1] },
+                 PassageTitle: { S: p1[0] },
+                 Questions: {
+                   L: [
+                     {
+                       M: {
+                         NumOfSubQuestions: { N: `${p1[2].length}` },
+                         Question: { S: "Read the following passage and answer the questions." },
+                         QuestionType: { S: "Multiple Choice and True or False" },
+                         SubQuestion: {
+                           L: subQuestionsListP1 // Dynamically generated subquestions
+                         }
+                       }
+                     }
+                   ]
+                 }
+               }
+             },
             P2: {
               M: {
-                  NumOfQuestions: { N: "3" },
-                  Passage: { S: "This is a sample passage about the topic." },
-                  PassageTitle: { S: "Sample Passage Title" },
+                  NumOfQuestions: { N: "1" },
+                  Passage: { S:  p2[1] },
+                  PassageTitle: { S: p2[0] },
                   Questions: {
                       L: [
-                          {
-                              M: {
-                                  NumOfSubQuestions: { N: "2" },
-                                  Question: { S: "What is the main idea of the passage?" },
-                                  QuestionType: { S: "MultipleChoice" },
-                                  SubQuestion: {
-                                      L: [
-                                          {
-                                              M: {
-                                                  choices: {
-                                                      L: [
-                                                          { S: "Option A" },
-                                                          { S: "Option B" },
-                                                          { S: "Option C" }
-                                                      ]
-                                                  },
-                                                  CorrectAnswer: { S: "Option A" },
-                                                  QuestionText: { S: "Choose the correct answer." }
-                                              }
-                                          },
-                                          {
-                                              M: {
-                                                  choices: {
-                                                      L: [
-                                                          { S: "Option 1" },
-                                                          { S: "Option 2" },
-                                                          { S: "Option 3" }
-                                                      ]
-                                                  },
-                                                  CorrectAnswer: { S: "Option 2" },
-                                                  QuestionText: { S: "Select the second correct answer." }
-                                              }
-                                          }
-                                      ]
-                                  }
+                          { 
+                            M: {
+                              NumOfSubQuestions: { N: `${p1[2].length}` },
+                              Question: { S: "Read the following passage and answer the questions." },
+                              QuestionType: { S: "Multiple Choice and True or False" },
+                              SubQuestion: {
+                                L: subQuestionsListP2 // Dynamically generated subquestions
                               }
+                            }
                           },
                           {
                               M: {
@@ -240,105 +212,53 @@ export const handler: APIGatewayProxyHandler = async (event) => {
               }
             },
             P3: {
-            M: {
-                NumOfQuestions: { N: "3" },
-                Passage: { S: "This is a comprehension passage to analyze." },
-                PassageTitle: { S: "Comprehension Passage Title" },
+              M: {
+                NumOfQuestions: { N: "1" },
+                Passage: { S: p3[1] },
+                PassageTitle: { S: p3[0] },
                 Questions: {
-                    L: [
-                        {
-                            M: {
-                                NumOfSubQuestions: { N: "2" },
-                                Question: { S: "What is the central theme of the passage?" },
-                                QuestionType: { S: "MultipleChoice" },
-                                SubQuestion: {
-                                    L: [
-                                        {
-                                            M: {
-                                                choices: {
-                                                    L: [
-                                                        { S: "Theme A" },
-                                                        { S: "Theme B" },
-                                                        { S: "Theme C" }
-                                                    ]
-                                                },
-                                                CorrectAnswer: { S: "Theme B" },
-                                                QuestionText: { S: "Choose the most relevant theme." }
-                                            }
-                                        },
-                                        {
-                                            M: {
-                                                choices: {
-                                                    L: [
-                                                        { S: "Option 1" },
-                                                        { S: "Option 2" },
-                                                        { S: "Option 3" }
-                                                    ]
-                                                },
-                                                CorrectAnswer: { S: "Option 1" },
-                                                QuestionText: { S: "Identify another key theme." }
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        },
-                        {
-                            M: {
-                                NumOfSubQuestions: { N: "1" },
-                                Question: { S: "What evidence supports the theme?" },
-                                QuestionType: { S: "MultipleChoice" },
-                                SubQuestion: {
-                                    L: [
-                                        {
-                                            M: {
-                                                choices: {
-                                                    L: [
-                                                        { S: "Evidence 1" },
-                                                        { S: "Evidence 2" },
-                                                        { S: "Evidence 3" }
-                                                    ]
-                                                },
-                                                CorrectAnswer: { S: "Evidence 2" },
-                                                QuestionText: { S: "Select the best supporting evidence." }
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        },
-                        {
-                            M: {
-                                NumOfSubQuestions: { N: "1" },
-                                Question: { S: "What is the author's perspective?" },
-                                QuestionType: { S: "MultipleChoice" },
-                                SubQuestion: {
-                                    L: [
-                                        {
-                                            M: {
-                                                choices: {
-                                                    L: [
-                                                        { S: "Perspective A" },
-                                                        { S: "Perspective B" },
-                                                        { S: "Perspective C" }
-                                                    ]
-                                                },
-                                                CorrectAnswer: { S: "Perspective C" },
-                                                QuestionText: { S: "Identify the author's perspective." }
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
+                  L: [
+                    {
+                      M: {
+                        NumOfSubQuestions: { N: `${p3[2].length}` },
+                        Question: { S: "Read the following passage and answer the questions." },
+                        QuestionType: { S: "Multiple Choice and True or False" },
+                        SubQuestion: {
+                          L: subQuestionsListP3 // Dynamically generated subquestions
                         }
-                    ]
+                      }
+                    }
+                  ]
                 }
-            }
+              }
         }
-          }
-          
-        }
-      });
+
+           }
+         }
+       });
+       
+       // Update existing DynamoDB item to add subquestions
+      //  transactItems.push({
+      //    Update: {
+      //      TableName: tableName,
+      //      Key: {
+      //        PK: { S: "reading" },
+      //        SK: { S: id }
+      //      },
+      //      UpdateExpression: "SET #questions[0].SubQuestion = :subQuestions",
+      //      ExpressionAttributeNames: {
+      //        "#questions": "P1.Questions"
+      //      },
+      //      ExpressionAttributeValues: {
+      //        ":subQuestions": {
+      //          L: subQuestionsList
+      //        }
+      //      }
+      //    }
+      //  });
+       
+       console.log("Transaction items:", JSON.stringify(transactItems, null, 2));
+       
 
       transactItems.push({
         Update: {
@@ -379,12 +299,14 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     // Find the object whose name contains the userID
     for (const obj of objects.Contents || []) {
       if (obj.Key && obj.Key.includes(userID) && obj.Key.includes("Reading")) {
+        console.log("I enter to delete the txt file with ID:" , userID)
         targetObjectKey = obj.Key;
         break;
       }
     }
     for (const obj of objectsPDF.Contents || []) {
         if (obj.Key && obj.Key.includes(userID) /*&&  obj.Key.includes("Listening")*/) {
+          console.log("I enter to delete the txt file with ID:" , userID)
           targetObjectKeyPDF = obj.Key;
           break;
         }
