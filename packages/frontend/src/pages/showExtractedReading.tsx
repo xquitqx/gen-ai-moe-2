@@ -70,8 +70,12 @@ const ReadingExtractedFilePage: React.FC = () => {
   let pass3 = ""
   const approving = async (e: React.FormEvent) => {
     e.preventDefault();
+    let validInput = true;
   
     try {
+      const buttonApprove = document.getElementById("btnApprove") as HTMLButtonElement | null;
+      if(buttonApprove)
+        buttonApprove.disabled = true;
       // Gather the content of all "question-section" divs and their inputs
       const sections = Array.from(document.getElementsByClassName("question-section")).map((section) => {
       const question = (section.querySelector("input.question-input0") as HTMLInputElement)?.value || "";
@@ -83,6 +87,10 @@ const ReadingExtractedFilePage: React.FC = () => {
   
         // Gather selected answers
         const selectedAnswer = (section.querySelector("input[type='radio']:checked") as HTMLInputElement)?.value || null;
+        if(question && !selectedAnswer){
+          alert(`Please selected the correct answer for \"${question}\"`)
+          validInput = false;
+        }
   
         return {
           question,
@@ -101,6 +109,10 @@ const ReadingExtractedFilePage: React.FC = () => {
     
           // Gather selected answers
           const selectedAnswer = (section.querySelector("input[type='radio']:checked") as HTMLInputElement)?.value || null;
+          if(question && !selectedAnswer){
+            alert(`Please selected the correct answer for \"${question}\"`)
+            validInput = false;
+          }
     
           return {
             question,
@@ -119,6 +131,10 @@ const ReadingExtractedFilePage: React.FC = () => {
       
             // Gather selected answers
             const selectedAnswer = (section.querySelector("input[type='radio']:checked") as HTMLInputElement)?.value || null;
+            if(question && !selectedAnswer){
+              alert(`Please selected the correct answer for \"${question}\"`)
+              validInput = false;
+            }
       
             return {
               question,
@@ -131,6 +147,8 @@ const ReadingExtractedFilePage: React.FC = () => {
       // Filter out empty questions
       
       //const validSections = [pass1, pass2 , pass3 , title1 , title2 , title3 , sections.filter((section) => section.question.trim() !== "")];
+
+      if (validInput){
       const validSections = [    [title1, pass1, sections.filter((section) => section.question.trim() !== "")],[title2, pass2, sections2.filter((section) => section.question.trim() !== "")],[title3, pass3, sections3.filter((section) => section.question.trim() !== "")]    ]
       console.log(validSections)
       // Send the gathered data to your Lambda function
@@ -141,11 +159,19 @@ const ReadingExtractedFilePage: React.FC = () => {
       });
   
       console.log("Approve response:", response);
-  
+
+      alert("Questions Saved Successfully!")
       // Redirect to admin landing page
       window.location.href = "/adminLandingPage";
+    }else{
+    if(buttonApprove)
+      buttonApprove.disabled = false;
+    }
     } catch (error) {
       console.error(`Approve failed: ${(error as Error).message}`);
+      const buttonApprove = document.getElementById("btnApprove") as HTMLButtonElement | null;
+      if(buttonApprove)
+        buttonApprove.disabled = false;
     }
   };
   

@@ -46,6 +46,9 @@ const WritingExtractedFilePage: React.FC = () => {
     e.preventDefault();
     
     try {
+      const buttonApprove = document.getElementById("btnApprove") as HTMLButtonElement | null;
+      if(buttonApprove)
+        buttonApprove.disabled = true;
       // Gather the content of all "textarea" elements within the "question-section" divs
       const sections = Array.from(document.getElementsByClassName("question-section")).map((section) => {
         const textarea = section.querySelector("textarea");
@@ -63,11 +66,16 @@ const WritingExtractedFilePage: React.FC = () => {
       });
   
       console.log("Approve response:", response);
+      alert("Questions Saved Successfully!")
+      // Redirect to admin landing page
+    window.location.href = "/adminLandingPage";
     } catch (error) {
       console.error("Approve failed:", (error as Error).message);
+      const buttonApprove = document.getElementById("btnApprove") as HTMLButtonElement | null;
+      if(buttonApprove)
+        buttonApprove.disabled = false;
     }
-    // Redirect to admin landing page
-    window.location.href = "/adminLandingPage";
+    
   };
   
   console.log("our feedback:", feedback); // for testing
