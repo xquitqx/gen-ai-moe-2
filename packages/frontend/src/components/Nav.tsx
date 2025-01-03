@@ -26,7 +26,7 @@ export const Nav: React.FC<NavProps> = props => {
   const itemStyle = 'nav-item hover-darken';
 
   const logo = showLogo ? (
-    <Link className={`${itemStyle} text-xl font-bold px-7`} to="/home">
+    <Link className={`${itemStyle} text-xl font-bold px-7`} to="/">
       <div>LINGUI</div>
     </Link>
   ) : null;
@@ -99,8 +99,12 @@ const MobileMenu = ({
           </button>
           {links}
           <button className={`${itemStyle} mt-auto`}>
-            <span>Sign In?</span>
-            <BsBoxArrowRight className="ml-auto" />
+            <Link to="/sign-in">
+              <span>Sign In?</span>
+            </Link>
+            <Link to="/sign-out">
+              <BsBoxArrowRight className="ml-auto" />
+            </Link>
           </button>
         </div>
       </div>
@@ -123,18 +127,15 @@ const ProfileMenu: React.FC<{ user: AuthInfo['user'] }> = ({ user }) => {
   const menuContent = (
     <>
       {user && (
-        <Link className={linkStyling} to="../profilePage">
-          <div>View Profile</div>
-        </Link>
-      )  }
-      {user && (<Link className={linkStyling} to="sign-out">
+        <Link className={linkStyling} to="/sign-out">
           <div>Sign Out</div>
-        </Link>)}
+        </Link>
+      )}
       {user == undefined && (
-        <Link className={linkStyling} to="sign-in">
+        <Link className={linkStyling} to="/sign-in">
           <div>Sign In</div>
         </Link>
-      ) }
+      )}
     </>
   );
 

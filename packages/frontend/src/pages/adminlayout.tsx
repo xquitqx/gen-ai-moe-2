@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'; // Import the Link component for navigation
 import '../components/AdminStyle/adminLandingPage.css'; // Link to your custom styles
-import { Nav } from '../components/Nav'; // Assuming you have a Nav component
+import { Nav } from '../components/Nav'; 
 
 const AdminLandingPage = () => {
   const navLinks = [

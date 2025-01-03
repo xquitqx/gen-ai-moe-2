@@ -87,15 +87,6 @@
   font-size: 18px;
 }
 
-/* Graph section */
-.graph-section {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center; /* Center-align graphs horizontally */
-  width: 100%; /* Stretch the section to fit the container width */
-}
-
 .graphs-container {
   display: flex;
   justify-content: space-between;
@@ -104,8 +95,17 @@
   width: 100%;
 }
 
+.graphs-container2 {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
 .graph-left,
-.graph-right {
+.graph-right,
+.scatter-plot {
   flex: 1;
   background-color: #fff;
   padding: 20px;
@@ -115,7 +115,7 @@
 }
 
 .graph-left h3,
-.graph-right h3 {
+.graph-right h3 ,.scatter-plot h3 {
   font-size: 1.5rem;
   margin-bottom: 15px;
   color: #4a6e77;
@@ -157,9 +157,12 @@
   .graphs-container {
     flex-direction: column;
   }
+  .graphs-container2 {
+    flex-direction: column;
+  }
 
   .graph-left,
-  .graph-right {
+  .graph-right .scatter-plot {
     width: 100%; /* Ensure both graphs take full width on smaller screens */
   }
 
