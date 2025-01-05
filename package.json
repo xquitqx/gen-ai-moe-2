@@ -29,6 +29,7 @@
     "@aws-sdk/client-apigatewaymanagementapi": "^3.569.0",
     "@aws-sdk/client-bedrock-runtime": "^3.540.0",
     "@aws-sdk/client-dynamodb": "^3.712.0",
+    "@aws-sdk/client-ses": "^3.721.0",
     "@aws-sdk/lib-dynamodb": "^3.712.0",
     "@expo/vector-icons": "^14.0.4",
     "@fontsource/inter": "^5.0.18",

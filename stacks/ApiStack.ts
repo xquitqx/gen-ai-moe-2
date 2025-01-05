@@ -244,8 +244,11 @@ export function ApiStack({ stack }: StackContext) {
         function: {
           handler:
             'packages/functions/src/streaks/incrementUserStreaks.handler',
-          permissions: ['dynamodb:PutItem', 'dynamodb:UpdateItem'],
+          permissions: ['dynamodb:PutItem', 'dynamodb:UpdateItem', 'ses:SendEmail'],
           timeout: '120 seconds',
+          environment: {
+            s3Bucket: uploads_bucket.bucketName,
+          },
         },
       },
       'GET /getUserLevel': {
