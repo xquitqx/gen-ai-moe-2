@@ -4,6 +4,10 @@ import { get, post } from 'aws-amplify/api';
 import { ProgressBar } from '../components/ProgressBar';
 import Button from '../components/FButton';
 import { useNavigate } from 'react-router-dom';
+import badge3 from '../assets/3.png';
+import badge7 from '../assets/7.png';
+import badge14 from '../assets/14.png';
+import badge30 from '../assets/30.png';
 
 export interface Question {
   QuestionText: string;
@@ -17,12 +21,21 @@ export interface Option {
   isCorrect: boolean;
 }
 
+const milestoneImages: Record<number, string> = {
+  3: badge3,
+  7: badge7,
+  14: badge14,
+  30: badge30,
+};
+
 const optionsStyle =
   'bg-white border border-gray-300 p-2 text-black text-lg my-4 hover:cursor-pointer hover:bg-gray-300';
 
 const getLevelFromQuestion = (question: string) => {
   return question.split('#')[1];
-}
+};
+
+const MILESTONES = [3, 7, 14, 30];
 
 export const QuestionsByLevel = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -32,6 +45,7 @@ export const QuestionsByLevel = () => {
   const [showResults, setShowResults] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [streakCount, setStreakCount] = useState<number | null>(null);
+  const [milestoneImage, setMilestoneImage] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -74,8 +88,15 @@ export const QuestionsByLevel = () => {
       );
 
       if (response && response.Attributes && response.Attributes.StreakCounter) {
-        setStreakCount(response.Attributes.StreakCounter);
-        setShowPopup(true);
+        const streak = response.Attributes.StreakCounter;
+        setStreakCount(streak);
+
+        if (MILESTONES.includes(streak)) {
+          setMilestoneImage(milestoneImages[streak]);
+          setShowPopup(true);
+        } else {
+          navigate('/Exercises');
+        }
       } else {
         navigate('/Exercises');
       }
@@ -86,8 +107,11 @@ export const QuestionsByLevel = () => {
   };
 
   const handleContinue = () => {
+    setShowPopup(false);
+    setMilestoneImage(null);
     navigate('/Exercises');
   };
+
   const progressPercentage = (currentQuestionIndex + 1) / questions.length;
 
   if (loading) {
@@ -106,7 +130,6 @@ export const QuestionsByLevel = () => {
     );
   }
 
-
   if (showResults) {
     return (
       <main className="bg-[#FBF9F1] h-full min-h-screen flex flex-col items-center justify-center">
@@ -123,12 +146,22 @@ export const QuestionsByLevel = () => {
           </div>
         </section>
 
-        {showPopup && streakCount && (
+        {showPopup && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg text-center">
-              <div className="text-4xl mb-4">🎉🥳🎊</div>
-              <h2 className="text-2xl mb-2">Congratulations!</h2>
-              <p className="mb-4">You've increased your streak to {streakCount}!</p>
+            <div className="bg-white p-6 rounded-lg text-center animate__animated animate__zoomIn">
+              {milestoneImage ? (
+                <>
+                  <img src={milestoneImage} alt="Milestone Badge" className="w-32 h-32 mx-auto mb-4" />
+                  <h2 className="text-2xl mb-4 font-bold">Milestone Reached!</h2>
+                  <p className="text-lg mb-4">You hit a streak of {streakCount}!</p>
+                </>
+              ) : (
+                <>
+                  <div className="text-4xl mb-4">🎉🥳🎊</div>
+                  <h2 className="text-2xl mb-2">Congratulations!</h2>
+                  <p className="mb-4">You've increased your streak to {streakCount}!</p>
+                </>
+              )}
               <button
                 onClick={handleContinue}
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
