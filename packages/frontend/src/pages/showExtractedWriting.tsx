@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { get } from "aws-amplify/api";
 import { post } from 'aws-amplify/api';
-import { toJSON } from '../utilities';
+//import { toJSON } from '../utilities';
 
 const WritingExtractedFilePage: React.FC = () => {
   const [feedback, setFeedback] = useState<string>(""); 
@@ -40,29 +40,49 @@ const WritingExtractedFilePage: React.FC = () => {
 
     fetchExtractedFile();
   }, []);
-  const approving = async (e: React.FormEvent) => {
-        try{
-          e.preventDefault();
-          (await toJSON(
-            post({
-              apiName: 'myAPI',
-              path: '/approveWriting',
-              //options: { body: questionFormData },
-            }),
-          ))
-          window.location.href = '/adminLandingPage';
 
-        }
-           catch (error) {
-            // setUploadStatus(`Upload failed: ${(error as Error).message}`);
-            console.log(`Approve failed: ${(error as Error).message}`)
-          }
-        };
+
+  const approving = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const buttonApprove = document.getElementById("btnApprove") as HTMLButtonElement | null;
+      if(buttonApprove)
+        buttonApprove.disabled = true;
+      // Gather the content of all "textarea" elements within the "question-section" divs
+      const sections = Array.from(document.getElementsByClassName("question-section")).map((section) => {
+        const textarea = section.querySelector("textarea");
+        return textarea ? textarea.value : null;
+      });
+  
+      // Filter out null or empty values
+      const validSections = sections.filter((content) => content !== null && content.trim() !== "");
+  
+      // Send the gathered content to your Lambda function
+      const response = await post({
+        apiName: "myAPI",
+        path: "/approveWriting",
+        options: { body:  validSections  },
+      });
+  
+      console.log("Approve response:", response);
+      alert("Questions Saved Successfully!")
+      // Redirect to admin landing page
+    window.location.href = "/adminLandingPage";
+    } catch (error) {
+      console.error("Approve failed:", (error as Error).message);
+      const buttonApprove = document.getElementById("btnApprove") as HTMLButtonElement | null;
+      if(buttonApprove)
+        buttonApprove.disabled = false;
+    }
+    
+  };
+  
   console.log("our feedback:", feedback); // for testing
 
   const container = document.getElementById("container") ? document.getElementById("container") : null;
 
-  // Split text by "BREAK"
+  // Split text by "Question"
   const sections = feedback.split("Question").filter(section => section.trim() !== "");
   const form = document.createElement("form");
   form.action = "/ApproveQuestions";

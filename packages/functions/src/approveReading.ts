@@ -2,12 +2,288 @@
 import { S3 } from 'aws-sdk';
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { Bucket } from 'sst/node/bucket';
+import { v4 as uuidv4 } from 'uuid';
+import { Table } from 'sst/node/table';
+import * as AWS from 'aws-sdk';
+import { DynamoDBClient, TransactWriteItemsCommand } from "@aws-sdk/client-dynamodb";
+import { json } from 'stream/consumers';
+
 const s3 = new S3();
 
 export const handler: APIGatewayProxyHandler = async (event) => {
+
+  const requestBody = event.body ? JSON.parse(event.body) : null;
+  console.log("Parsed event body:", requestBody);
   try {
+      const dynamodb = new AWS.DynamoDB();
+      const tableName = Table.Records.tableName;
+      if (!event.body) {
+          return { statusCode: 400, body: JSON.stringify({ message: "No body provided in the event" }) };
+      }
+      
+      const parsedBody = JSON.parse(JSON.parse(event.body))
+      let p1 = parsedBody[0]
+      let p2 = parsedBody[1]
+      let p3 = parsedBody[2]
+      
+
+      console.log(p1)
+      console.log(p2)
+      console.log("the first passage title ", p1[0])
+      console.log("The  number of questions", p1[2].length)
+      console.log("The first question: " , p1[2][0].question)
+      
+          
+    
+      const transactItems: any[] = [];
+      let id = uuidv4();
+      let checker = true;
+      while(checker) {
+        const check = await dynamodb
+        .query({
+          TableName: tableName,
+          KeyConditionExpression: 'PK = :pk AND SK = :sk',
+          ExpressionAttributeValues: {
+            ':pk': { S: 'reading' },  // String value for PK
+            ':sk': { S: id },   // String value for SK
+            },
+            ProjectionExpression: 'PK, SK',
+        })
+        .promise(); 
+        const checkQuestion = check.Items?.[0];
+        if (checkQuestion) {
+          // const sortKey = checkQuestion.SK?.S
+          id = uuidv4();
+        }
+        else {
+          checker = false;
+        }
+       }
+       const subQuestionsListP1 = []; // Initialize empty list for subquestions
+       const subQuestionsListP2 = []; // Initialize empty list for subquestions
+       const subQuestionsListP3 = []; // Initialize empty list for subquestions
+       
+       // Loop through each subquestion in p1[2]
+       for (let i = 0; i < p1[2].length; i++) {
+         const subQuestionData = p1[2][i];
+         const { question, choices, selectedAnswer } = subQuestionData;
+       
+         // Construct a subquestion mapping
+         subQuestionsListP1.push({
+          M: {
+            CorrectAnswer: { S: selectedAnswer  },  
+            QuestionText: { S: question },
+            choices: {
+              L: choices.map((choice: any) => ({ S: choice })) // Map each choice as { S: value }
+            }
+          }
+         });
+       }
+
+      // For P2 --------------------------------------------------------------------------------------------------
+       for (let i = 0; i < p2[2].length; i++) {
+        const subQuestionData = p2[2][i];
+        const { question, choices, selectedAnswer } = subQuestionData;
+      
+        // Construct a subquestion mapping
+        subQuestionsListP2.push({
+         M: {
+           CorrectAnswer: { S: selectedAnswer  },  
+           QuestionText: { S: question },
+           choices: {
+             L: choices.map((choice: any) => ({ S: choice })) // Map each choice as { S: value }
+           }
+         }
+        });
+      }
+      // For P3 --------------------------------------------------------------------------------------------------
+      for (let i = 0; i < p3[2].length; i++) {
+        const subQuestionData = p3[2][i];
+        const { question, choices, selectedAnswer } = subQuestionData;
+      
+        // Construct a subquestion mapping
+        subQuestionsListP3.push({
+         M: {
+           CorrectAnswer: { S: selectedAnswer  },  
+           QuestionText: { S: question },
+           choices: {
+             L: choices.map((choice: any) => ({ S: choice })) // Map each choice as { S: value }
+           }
+         }
+        });
+      }
+       
+       // Push the constructed subquestions to DynamoDB
+       transactItems.push({
+         Put: {
+           TableName: tableName,
+           Item: {
+             PK: { S: "reading" },
+             SK: { S: id },
+             P1: {
+               M: {
+                 NumOfQuestions: { N: "1" },
+                 Passage: { S: p1[1] },
+                 PassageTitle: { S: p1[0] },
+                 Questions: {
+                   L: [
+                     {
+                       M: {
+                         NumOfSubQuestions: { N: `${p1[2].length}` },
+                         Question: { S: "Read the following passage and answer the questions." },
+                         QuestionType: { S: "Multiple Choice and True or False" },
+                         SubQuestion: {
+                           L: subQuestionsListP1 // Dynamically generated subquestions
+                         }
+                       }
+                     }
+                   ]
+                 }
+               }
+             },
+            P2: {
+              M: {
+                  NumOfQuestions: { N: "1" },
+                  Passage: { S:  p2[1] },
+                  PassageTitle: { S: p2[0] },
+                  Questions: {
+                      L: [
+                          { 
+                            M: {
+                              NumOfSubQuestions: { N: `${p1[2].length}` },
+                              Question: { S: "Read the following passage and answer the questions." },
+                              QuestionType: { S: "Multiple Choice and True or False" },
+                              SubQuestion: {
+                                L: subQuestionsListP2 // Dynamically generated subquestions
+                              }
+                            }
+                          },
+                          {
+                              M: {
+                                  NumOfSubQuestions: { N: "1" },
+                                  Question: { S: "Explain the purpose of the passage." },
+                                  QuestionType: { S: "OpenEnded" },
+                                  SubQuestion: {
+                                      L: [
+                                          {
+                                              M: {
+                                                  CorrectAnswers: {
+                                                      L: [
+                                                          {
+                                                              L: [{ S: "Purpose A" }, { S: "Purpose B" }]
+                                                          }
+                                                      ]
+                                                  },
+                                                  QuestionText: { S: "Describe the purpose." },
+                                                  QuestionWeight: { N: "10" }
+                                              }
+                                          }
+                                      ]
+                                  }
+                              }
+                          },
+                          {
+                              M: {
+                                  NumOfSubQuestions: { N: "1" },
+                                  Question: { S: "What are the key points mentioned?" },
+                                  QuestionType: { S: "MultipleChoice" },
+                                  SubQuestion: {
+                                      L: [
+                                          {
+                                              M: {
+                                                  choices: {
+                                                      L: [
+                                                          { S: "Key Point 1" },
+                                                          { S: "Key Point 2" },
+                                                          { S: "Key Point 3" }
+                                                      ]
+                                                  },
+                                                  CorrectAnswer: { S: "Key Point 3" },
+                                                  QuestionText: { S: "Select the correct key point." }
+                                              }
+                                          }
+                                      ]
+                                  }
+                              }
+                          }
+                      ]
+                  }
+              }
+            },
+            P3: {
+              M: {
+                NumOfQuestions: { N: "1" },
+                Passage: { S: p3[1] },
+                PassageTitle: { S: p3[0] },
+                Questions: {
+                  L: [
+                    {
+                      M: {
+                        NumOfSubQuestions: { N: `${p3[2].length}` },
+                        Question: { S: "Read the following passage and answer the questions." },
+                        QuestionType: { S: "Multiple Choice and True or False" },
+                        SubQuestion: {
+                          L: subQuestionsListP3 // Dynamically generated subquestions
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+        }
+
+           }
+         }
+       });
+       
+       // Update existing DynamoDB item to add subquestions
+      //  transactItems.push({
+      //    Update: {
+      //      TableName: tableName,
+      //      Key: {
+      //        PK: { S: "reading" },
+      //        SK: { S: id }
+      //      },
+      //      UpdateExpression: "SET #questions[0].SubQuestion = :subQuestions",
+      //      ExpressionAttributeNames: {
+      //        "#questions": "P1.Questions"
+      //      },
+      //      ExpressionAttributeValues: {
+      //        ":subQuestions": {
+      //          L: subQuestionsList
+      //        }
+      //      }
+      //    }
+      //  });
+       
+       console.log("Transaction items:", JSON.stringify(transactItems, null, 2));
+       
+
+      transactItems.push({
+        Update: {
+            TableName: tableName,
+            Key: { // Key is required for Update
+                PK: { S: "reading" },
+                SK: { S: "index" },
+            },
+            UpdateExpression: "SET #index = list_append(if_not_exists(#index, :empty_list), :new_element)",
+            ExpressionAttributeNames: {
+                "#index": "index"
+            },
+            ExpressionAttributeValues: {
+                ":new_element": { L: [{ S: id }] },
+                ":empty_list": { L: [] } // Important for creating the list if it doesn't exist
+            },
+        },
+    });
+    
+
+  
+    const transactParams = { TransactItems: transactItems };
+    const command = new TransactWriteItemsCommand(transactParams);
+    const response = await dynamodb.transactWriteItems(transactParams).promise();
     const userID = event.requestContext.authorizer!.jwt.claims.sub; // Target user ID
-    const bucketName = "mohdj-codecatalyst-sst-ap-extractedtxtbucket87b8ca-ijzohbu9cf75"; // Name of the S3 bucket
+    const bucketName = Bucket.ExtractedTXT.bucketName; // Name of the Extracted txt S3 bucket
     const pdfBucket = Bucket.BucketTextract.bucketName;
 
     // List all objects in the S3 bucket
@@ -22,12 +298,14 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     // Find the object whose name contains the userID
     for (const obj of objects.Contents || []) {
       if (obj.Key && obj.Key.includes(userID) && obj.Key.includes("Reading")) {
+        console.log("I enter to delete the txt file with ID:" , userID)
         targetObjectKey = obj.Key;
         break;
       }
     }
     for (const obj of objectsPDF.Contents || []) {
         if (obj.Key && obj.Key.includes(userID) /*&&  obj.Key.includes("Listening")*/) {
+          console.log("I enter to delete the txt file with ID:" , userID)
           targetObjectKeyPDF = obj.Key;
           break;
         }

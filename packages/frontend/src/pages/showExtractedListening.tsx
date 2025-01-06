@@ -1,14 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { get } from "aws-amplify/api";
 //import { /*ToastContainer*/ toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { post } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
+import WaveSurfer from "wavesurfer.js";
+
 
 const ListeningExtractedFilePage: React.FC = () => {
-  const [feedback, setFeedback] = useState<string>(""); 
-  const [fileContent, setFileContent] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+const [feedback, setFeedback] = useState<string>(""); 
+const [fileContent, setFileContent] = useState<string | null>(null);
+const [error, setError] = useState<string | null>(null);
+const [audioUrls, setAudioUrls] = useState<string[] | null>(null);
+const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveSurfer instances for each audio file
+
+  
 
   useEffect(() => {
     const fetchExtractedFile = async () => {
@@ -38,10 +44,80 @@ const ListeningExtractedFilePage: React.FC = () => {
         console.error("Error fetching file:", err);
         setError("An error occurred while fetching the file.");
       }
+      try {
+              const audioResponse: any = await get({
+                apiName: "myAPI",
+                path: "/getAudioFiles", // Ensure this matches your API Gateway path
+              });
+      
+              const actualAudioFiles = await audioResponse.response;
+              const AudioFiles =
+                typeof actualAudioFiles.body === "string"
+                  ? JSON.parse(actualAudioFiles.body)
+                  : actualAudioFiles.body;
+      
+              const txtFiles = await AudioFiles.text();
+              console.log("We got it now right? ", txtFiles);
+      
+              const parsedFiles = JSON.parse(txtFiles);
+      
+              const myAudioFiles = parsedFiles.mp3Files;
+              const choosed = myAudioFiles.slice(0, 7);
+              setAudioUrls(choosed);
+      
+              console.log("Only the files here: ", myAudioFiles);
+      
+              if (myAudioFiles && myAudioFiles.length > 0) {
+                console.log("Fetched audio files:", myAudioFiles);
+              } else {
+                console.log("No MP3 files found in the S3 bucket.");
+              }
+            } catch (error) {
+              console.error("Error in fetching audio files:", error);
+            }
     };
 
     fetchExtractedFile();
   }, []);
+  useEffect(() => {
+    // Initialize WaveSurfer instances for each audio URL
+    let i = 0;
+  if (audioUrls && audioUrls.length > 0) {
+  for (let index = 0; index < audioUrls.length; index++) {
+    if (i === 7) break; // Stop after 3 elements
+
+    const url = audioUrls[index];
+    const waveSurferInstance = WaveSurfer.create({
+      container: `#wavesurfer-container-${index}`,
+      waveColor: "#9ca3af",
+      progressColor: "#4caf50",
+      height: 60,
+      barWidth: 3,
+      barRadius: 2,
+      barGap: 2,
+    });
+
+    wavesurferRefs.current[index] = waveSurferInstance; // Store instance for each URL
+    waveSurferInstance.load(url);
+    i++;
+  }
+}
+
+  }, [audioUrls]); // Add audioUrls as a dependency
+
+  const togglePlay = (index: number) => {
+    const waveSurferInstance = wavesurferRefs.current[index];
+    if (waveSurferInstance) {
+      if (waveSurferInstance.isPlaying()) {
+        waveSurferInstance.pause();
+      } else {
+        waveSurferInstance.play();
+      }
+    }
+  };
+
+
+
   // const handleToastClose = () => {
   //   window.location.href = '/adminLandingPage';
   //};
@@ -53,7 +129,7 @@ const ListeningExtractedFilePage: React.FC = () => {
         post({
           apiName: 'myAPI',
           path: '/approveListening',
-          //options: { body: questionFormData },
+          //options: { body: JSON.stringify(document.getElementById("container")) },
         }),
       ))
       window.location.href = '/adminLandingPage';
@@ -100,8 +176,20 @@ const ListeningExtractedFilePage: React.FC = () => {
   console.log("our feedback:", feedback); // for testing
 
   const container = document.getElementById("container") ? document.getElementById("container") : null;
-
-  // Split text by "BREAK"
+   useEffect(() => {
+      // Create form and textarea only once
+      if (container) {
+        const statusElement = document.getElementById("status");
+        const buttonTry = document.getElementById("btnTry");
+        const buttonApprove = document.getElementById("btnApprove");
+  
+        if (statusElement && buttonTry && buttonApprove) { 
+          statusElement.style.visibility = "hidden";
+          buttonTry.style.visibility = "visible";
+          buttonApprove.style.visibility = "visible";
+        }
+      }
+      // Split text by "BREAK"
   const sections = feedback.split(/BREAK /).filter(section => section.trim() !== "");
   const form = document.createElement("form");
   form.action = "/ApproveQuestions";
@@ -156,17 +244,10 @@ const ListeningExtractedFilePage: React.FC = () => {
     form.appendChild(div);
   });
   container?.appendChild(form);
-  const statusElement = document.getElementById("status");
-  const buttonTry = document.getElementById("btnTry");
-  const buttonApprove = document.getElementById("btnApprove");
+    }, [feedback]);
 
-
-  if (statusElement && buttonTry && buttonApprove)
-  { 
-    statusElement.style.visibility = "hidden";
-    buttonTry.style.visibility = "visible";
-    buttonApprove.style.visibility = "visible";
-  }
+  
+  
   return (
     <div
       style={{
@@ -238,8 +319,59 @@ const ListeningExtractedFilePage: React.FC = () => {
           </button>          
 
           </div>
-          
         )}
+      </div>
+      {/* Render audio files as separate icons with start/pause buttons */}
+      <div
+        style={{
+          marginTop: "20px",
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          width: "80%",
+        }}
+      >
+        {audioUrls &&
+          audioUrls.map((url, index) => (
+            console.log(url),
+            <div
+              key={index}
+              style={{
+                margin: "10px",
+                padding: "20px",
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+                backgroundColor: "#fff",
+                textAlign: "center",
+                width: "200px",
+              }}
+            >
+              <div
+                id={`wavesurfer-container-${index}`}
+                style={{
+                  width: "100%",
+                  height: "60px",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                  marginBottom: "10px",
+                }}
+              ></div>
+              <button
+                onClick={() => togglePlay(index)}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#4caf50",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
+              >
+                Play / Pause
+              </button>
+            </div>
+          ))}
       </div>
     </div>
   );

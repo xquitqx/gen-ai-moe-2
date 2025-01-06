@@ -1,26 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { get } from "aws-amplify/api";
+import WaveSurfer from "wavesurfer.js";
 
 const SpeakingExtractedFilePage: React.FC = () => {
   const [feedback, setFeedback] = useState<string>(""); 
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [audioUrls, setAudioUrls] = useState<string[] | null>(null);
+
+  const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveSurfer instances for each audio file
+  //const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const fetchExtractedFile = async () => {
       try {
         const response: any = await get({
           apiName: "myAPI",
-          path: "/getExtractWriting",
+          path: "/getExtractSpeaking",
         });
 
-        // Resolve the nested Promise if it exists
         const resolvedResponse = await response.response;
-        // Check if body is already an object
         const parsedBody =
           typeof resolvedResponse.body === "string"
-            ? JSON.parse(resolvedResponse.body) // Parse if it's a string
-            : resolvedResponse.body; // Use directly if it's an object
+            ? JSON.parse(resolvedResponse.body)
+            : resolvedResponse.body;
 
         if (parsedBody) {
           const fileContent = await parsedBody.text();
@@ -34,50 +37,108 @@ const SpeakingExtractedFilePage: React.FC = () => {
         console.error("Error fetching file:", err);
         setError("An error occurred while fetching the file.");
       }
+
+      try {
+        const audioResponse: any = await get({
+          apiName: "myAPI",
+          path: "/getAudioFiles", // Ensure this matches your API Gateway path
+        });
+
+        const actualAudioFiles = await audioResponse.response;
+        const AudioFiles =
+          typeof actualAudioFiles.body === "string"
+            ? JSON.parse(actualAudioFiles.body)
+            : actualAudioFiles.body;
+
+        const txtFiles = await AudioFiles.text();
+        console.log("We got it now right? ", txtFiles);
+
+        const parsedFiles = JSON.parse(txtFiles);
+
+        const myAudioFiles = parsedFiles.mp3Files;
+        const choosed = myAudioFiles.slice(0, 7);
+        setAudioUrls(choosed);
+
+        console.log("Only the files here: ", myAudioFiles);
+
+        if (myAudioFiles && myAudioFiles.length > 0) {
+          console.log("Fetched audio files:", myAudioFiles);
+        } else {
+          console.log("No MP3 files found in the S3 bucket.");
+        }
+      } catch (error) {
+        console.error("Error in fetching audio files:", error);
+      }
     };
 
     fetchExtractedFile();
   }, []);
 
-  console.log("our feedback:", feedback); // for testing
+  useEffect(() => {
+    // Initialize WaveSurfer instances for each audio URL
+    let i = 0;
+  if (audioUrls && audioUrls.length > 0) {
+  for (let index = 0; index < audioUrls.length; index++) {
+    if (i === 7) break; // Stop after 3 elements
+
+    const url = audioUrls[index];
+    const waveSurferInstance = WaveSurfer.create({
+      container: `#wavesurfer-container-${index}`,
+      waveColor: "#9ca3af",
+      progressColor: "#4caf50",
+      height: 60,
+      barWidth: 3,
+      barRadius: 2,
+      barGap: 2,
+    });
+
+    wavesurferRefs.current[index] = waveSurferInstance; // Store instance for each URL
+    waveSurferInstance.load(url);
+    i++;
+  }
+}
+
+  }, [audioUrls]); // Add audioUrls as a dependency
+
+  const togglePlay = (index: number) => {
+    const waveSurferInstance = wavesurferRefs.current[index];
+    if (waveSurferInstance) {
+      if (waveSurferInstance.isPlaying()) {
+        waveSurferInstance.pause();
+      } else {
+        waveSurferInstance.play();
+      }
+    }
+  };
+  
 
   const container = document.getElementById("container") ? document.getElementById("container") : null;
 
-  // Split text by "BREAK"
-  const sections = feedback.split("Question").filter(section => section.trim() !== "");
-  const form = document.createElement("form");
-  form.action = "/ApproveQuestions";
-  form.method = "POST";
+  useEffect(() => {
+    // Create form and textarea only once
+    if (container) {
+      const form = document.createElement("form");
+      form.action = "/ApproveQuestions";
+      form.method = "POST";
+      const paragraphs = document.createElement("textarea");
+      paragraphs.rows = 10;
+      paragraphs.style.width = "95%";
+      paragraphs.value = feedback;
+      form.appendChild(paragraphs);
+      container.appendChild(form);
 
+      const statusElement = document.getElementById("status");
+      const buttonTry = document.getElementById("btnTry");
+      const buttonApprove = document.getElementById("btnApprove");
 
-  // Generate divs dynamically
-  sections.forEach(section => {
-    // Create a new div for each "BREAK" section
-    const div = document.createElement("div");
-    div.classList.add("question-section");
-    // Add question as a heading
-    const questionHeading = document.createElement("textarea");
-    questionHeading.value = section;
-    questionHeading.style.width = "100%";
-    questionHeading.style.border = "1px solid grey";
-    questionHeading.rows = 10
-    div.appendChild(document.createElement("br"));
-    div.appendChild(questionHeading);
-    div.appendChild(document.createElement("br"));
-    form.appendChild(div);
-  });
-  container?.appendChild(form);
-  const statusElement = document.getElementById("status");
-  const buttonTry = document.getElementById("btnTry");
-  const buttonApprove = document.getElementById("btnApprove");
+      if (statusElement && buttonTry && buttonApprove) { 
+        statusElement.style.visibility = "hidden";
+        buttonTry.style.visibility = "visible";
+        buttonApprove.style.visibility = "visible";
+      }
+    }
+  }, [feedback]);
 
-
-  if (statusElement && buttonTry && buttonApprove)
-  { 
-    statusElement.style.visibility = "hidden";
-    buttonTry.style.visibility = "visible";
-    buttonApprove.style.visibility = "visible";
-  }
   return (
     <div
       style={{
@@ -85,7 +146,7 @@ const SpeakingExtractedFilePage: React.FC = () => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
+        height: "750px",
         backgroundColor: "#f8f9fa",
       }}
     >
@@ -93,64 +154,124 @@ const SpeakingExtractedFilePage: React.FC = () => {
         Here is the extracted file:
       </h1>
       <div
-        id="container" // Add the id attribute here
+        id="container"
         style={{
           marginTop: "20px",
           padding: "20px",
           border: "1px solid #ddd",
           borderRadius: "8px",
           backgroundColor: "rgba(255, 255, 255, 0.9)",
-          width: "80%", // Adjust to take more horizontal space
-          maxHeight: "auto", // Limit height
-          overflowY: "auto", // Add vertical scrolling if needed
-          wordWrap: "break-word", // Ensure long words break properly
-          overflowWrap: "break-word", // Break long words within content
-          whiteSpace: "pre-wrap", // Preserve whitespace and line breaks
-          textAlign: "left", // Align text to the left
+          width: "80%",
+          height: "500px",
+          maxHeight: "auto",
+          overflowY: "auto",
+          wordWrap: "break-word",
+          overflowWrap: "break-word",
+          whiteSpace: "pre-wrap",
+          textAlign: "left",
         }}
       >
         {error ? (
           <p style={{ color: "red" }}>{error}</p>
         ) : fileContent ? (
           <pre>{fileContent}</pre>
-        ) : (<div style={{textAlign: "center"}}>
-          <button id="btnTry" onClick={() => location.reload()} style={{
-            backgroundColor: "#4c929f",
-            color: "white",
-            padding: "1rem 2rem",
-            border: "none",
-            borderRadius: "0.5rem",
-            cursor: "pointer",
-            marginTop: "1.5rem",
-            fontWeight: "bold",
-            visibility: "hidden",
-            //float: "right",
-            display: "inline-block",
-            marginRight: "25px",
-          }}>Try again</button>
-          <p style={{display: "inline-block",}} id="status">Loading...</p>
-          <button id="btnApprove"
-          style={{
-            backgroundColor: "#4c929f",
-            color: "white",
-            padding: "1rem 2rem",
-            border: "none",
-            borderRadius: "0.5rem",
-            cursor: "pointer",
-            marginTop: "1.5rem",
-            fontWeight: "bold",
-            visibility: "hidden",
-            //float: "right",
-            display: "inline-block",
-            marginLeft: "25px",
-          }}
-          >
-            Approve questions
-          </button>          
-
+        ) : (
+          <div style={{ textAlign: "center" }}>
+            <button
+              id="btnTry"
+              onClick={() => location.reload()}
+              style={{
+                backgroundColor: "#4c929f",
+                color: "white",
+                padding: "1rem 2rem",
+                border: "none",
+                borderRadius: "0.5rem",
+                cursor: "pointer",
+                marginTop: "1.5rem",
+                fontWeight: "bold",
+                visibility: "hidden",
+                display: "inline-block",
+                marginRight: "25px",
+              }}
+            >
+              Try again
+            </button>
+            <p style={{ display: "inline-block" }} id="status">
+              Loading...
+            </p>
+            <button
+              id="btnApprove"
+              style={{
+                backgroundColor: "#4c929f",
+                color: "white",
+                padding: "1rem 2rem",
+                border: "none",
+                borderRadius: "0.5rem",
+                cursor: "pointer",
+                marginTop: "1.5rem",
+                fontWeight: "bold",
+                visibility: "hidden",
+                display: "inline-block",
+                marginLeft: "25px",
+              }}
+            >
+              Approve questions
+            </button>
           </div>
-          
         )}
+      </div>
+
+      {/* Render audio files as separate icons with start/pause buttons */}
+      <div
+        style={{
+          marginTop: "20px",
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          width: "80%",
+        }}
+      >
+        {audioUrls &&
+          audioUrls.map((url, index) => (
+            console.log(url),
+            <div
+              key={index}
+              style={{
+                margin: "10px",
+                padding: "20px",
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+                backgroundColor: "#fff",
+                textAlign: "center",
+                width: "200px",
+              }}
+            >
+              <div
+                id={`wavesurfer-container-${index}`}
+                style={{
+                  width: "100%",
+                  height: "60px",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                  marginBottom: "10px",
+                }}
+              ></div>
+              <button
+                onClick={() => togglePlay(index)}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#4caf50",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
+              >
+                Play / Pause
+              </button>
+            </div>
+          ))}
       </div>
     </div>
   );

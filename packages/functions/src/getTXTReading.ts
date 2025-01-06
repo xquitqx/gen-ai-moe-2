@@ -1,13 +1,13 @@
-//const userID = event.requestContext.authorizer!.jwt.claims.sub;
 import { S3 } from 'aws-sdk';
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import { wsError, runModel } from './utilities';
+import { Bucket } from 'sst/node/bucket';
+import { runModel } from './utilities';
 const s3 = new S3();
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   try {
-    const userID = "Mohamed"; // Target user ID
-    const bucketName = "mohdj-codecatalyst-sst-ap-extractedtxtbucket87b8ca-ijzohbu9cf75"; // Name of the S3 bucket
+    const userID = event.requestContext.authorizer!.jwt.claims.sub; // Target user ID
+    const bucketName = Bucket.ExtractedTXT.bucketName; // Name of the Extracted txt S3 bucket
 
     // List all objects in the S3 bucket
     const objects = await s3.listObjectsV2({ Bucket: bucketName }).promise();
@@ -38,39 +38,49 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     // let question1 = `For every question in the provided text, append the word 'BREAK'  before each question number and keep all other text.  append \"CHOICE\"
     //  before each  choice letter and keep all other text. Ensure this is done for all sections in the text without
     //   altering the rest of the content.`
-    let  questions = `Include only the questions with their choices. Do NOT  include the answer of the questions.`;
-    let choices = 'For every question in the provided text, append the word "BREAK"  before each question number and keep all other text.  append "CHOICE" before each  choice letter and keep all other text. Ensure this is done for all sections in the text without altering the rest of the content.'
-    let getPassage1 = "Include only the first passage of the following text without the questions. ";
-    let getPassage2 = "Include only the second passage of the following text without the questions. ";
-    let getPassage3 = "Include only the third passage of the following text without the questions. ";
+    let getPassage1 = "Include only the first passage of the following text without the questions. Append the word \"PASSAGE\" before the passage. append the word \"PASSTITLE\" before the passage title.";
+    let getPassage2 = "Include only the second passage of the following text without the questions. Append the word \"PASSAGE\" before the passage. append the word \"PASSTITLE\" before the passage title. ";
+    let getPassage3 = "Include only the third passage of the following text without the questions. Append the word \"PASSAGE\" before the passage. append the word \"PASSTITLE\" before the passage title. ";
+    let passage1Questions = "From the following text, create a formatted version of the questions of the first passage only. Append \"BREAK\" before each question number and state the question. Append \"CHOICE\" before each choice letter for every question."
+    let passage2Questions = "From the following text, create a formatted version of ALL questions of the second passage only. Append \"BREAK\" before each question number and state the question. Append \"CHOICE\" before each choice letter for every question."
+    //let passage2Questions = "Consider only the questions of the second passage. Append the word \"BREAK\" before every question number only. Third, append the word \"CHOICE\" before every choice letter only. You must show the questions for the second passage "
+    let passage3Questions = "From the following text, create a formatted version of the questions of the third passage only. Append \"BREAK\" before each question number and state the question. Append \"CHOICE\" before each choice letter for every question."
 
-    questions += objectContent
+    passage1Questions += objectContent
+    passage2Questions += objectContent
+    passage3Questions += objectContent
     getPassage1 += objectContent
     getPassage2 += objectContent
     getPassage3 += objectContent
     
-    let feedbackResults = await runModel(questions);
-    choices += feedbackResults
-    feedbackResults = await runModel(choices)
+    
     const passage1 = await runModel(getPassage1);
     const passage2 = await runModel(getPassage2);
     const passage3 = await runModel(getPassage3);
+    const firstQuestions = await runModel(passage1Questions)
+    const secondQuestions = await runModel(passage2Questions)
+    const thirdQuestions = await runModel(passage3Questions)
 
-    console.log("listening prompt: ",feedbackResults)
     console.log('Object Content:', objectContent);
     console.log("First passage:" , passage1)
     console.log("second passage:" , passage2)
     console.log("third passage:" , passage3)
+    console.log("first set of questions: " ,firstQuestions)
+    console.log("second set of questions: " ,secondQuestions)
+    console.log("third set of questions: " ,thirdQuestions)
+
 
 
 
     return {
         statusCode: 200,
         body: JSON.stringify({
-          feedbackResults,
           passage1,
           passage2,
           passage3,
+          firstQuestions,
+          secondQuestions,
+          thirdQuestions
         }),
       };
   } catch (error) {

@@ -6,7 +6,6 @@ import { Bucket } from 'sst/node/bucket';
 const s3 = new S3Client({});
 
 export const handler: APIGatewayProxyHandler = async event => {
-  //const bucketName = 'hsn-codecatalyst-sst-app--buckettextractbucket4e81-9qp7bptepiwk';
   const bucketName = Bucket.BucketTextract.bucketName;
   console.log(bucketName);
 

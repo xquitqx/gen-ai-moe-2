@@ -30,7 +30,7 @@ export function ApiStack({ stack }: StackContext) {
     audiobucket,
     userdataTable,
   } = use(DBStack);
-  const { bucket } = use(StorageStack);
+  const { bucket, bucket2 } = use(StorageStack);
   const { auth } = use(AuthStack);
   const { grammarToolDNS } = use(GrammarToolStack);
 
@@ -40,7 +40,7 @@ export function ApiStack({ stack }: StackContext) {
       authorizer: 'jwt',
       function: {
         // Bind the table name to our API
-        bind: [table, bucket],
+        bind: [table, bucket, bucket2],
       },
     },
     authorizers: {
@@ -181,7 +181,6 @@ export function ApiStack({ stack }: StackContext) {
         },
       },
 
-
       'GET /schoolsstudenttable': {
         function: {
           handler: 'packages/functions/src/fetchtheschoolsstudentdata.handler',
@@ -298,6 +297,16 @@ export function ApiStack({ stack }: StackContext) {
           timeout: '120 seconds',
         },
       },
+      'POST /adminUploadImage': {
+        function: {
+          handler: 'packages/functions/src/s3adminUploadImage.handler',
+          permissions: ['s3:PutObject', 's3:PutObjectAcl'],
+          environment: {
+            bucket: bucket.bucketName,
+          },
+          timeout: '120 seconds',
+        },
+      },
       'GET /getExtract': {
         function: {
           handler: 'packages/functions/src/getTXT.handler',
@@ -309,34 +318,48 @@ export function ApiStack({ stack }: StackContext) {
         function: {
           handler: 'packages/functions/src/getTXTReading.handler',
           permissions: ['s3:ListBucket', 's3:GetObject', 'bedrock:InvokeModel'],
-          timeout: '120 seconds'
+          timeout: '120 seconds',
         },
       },
       'GET /getExtractWriting': {
         function: {
           handler: 'packages/functions/src/getTXTWriting.handler',
           permissions: ['s3:ListBucket', 's3:GetObject'],
-          timeout: '60 seconds'
+          timeout: '60 seconds',
+        },
+      },
+      'GET /getExtractSpeaking': {
+        function: {
+          handler: 'packages/functions/src/getTXTSpeaking.handler',
+          permissions: ['s3:ListBucket', 's3:GetObject'],
+          timeout: '60 seconds',
         },
       },
       'POST /approveListening': {
         function: {
           handler: 'packages/functions/src/approveListening.handler',
           permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject'],
-          timeout: '60 seconds'
+          timeout: '60 seconds',
         },
       },
       'POST /approveReading': {
         function: {
           handler: 'packages/functions/src/approveReading.handler',
           permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject'],
-          timeout: '60 seconds'
+          timeout: '60 seconds',
         },
       },
       'POST /approveWriting': {
         function: {
           handler: 'packages/functions/src/approveWriting.handler',
           permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject'],
+          timeout: '60 seconds',
+        },
+      },
+      'GET /getAudioFiles': {
+        function: {
+          handler:'packages/functions/src/getAudioFiles.handler',
+          permissions:['s3:ListBucket','s3:GetObject'],
           timeout: '60 seconds'
         },
       },

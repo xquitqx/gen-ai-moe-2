@@ -6,10 +6,9 @@ import { Bucket } from 'sst/node/bucket';
 const s3 = new S3Client({});
 
 export const handler: APIGatewayProxyHandler = async event => {
+  //const bucketName = 'hsn-codecatalyst-sst-app--buckettextractbucket4e81-9qp7bptepiwk';
   const bucketName = Bucket.BucketTextract.bucketName;
   console.log(bucketName);
-  const currentSection = event.queryStringParameters?.section;
-
 
   // Check if the body of the request exists
   if (!event.body) {
@@ -33,31 +32,30 @@ export const handler: APIGatewayProxyHandler = async event => {
 
   // Generate a unique file name using UUID
   const userID = event.requestContext.authorizer!.jwt.claims.sub;
-  const fileName = `${userID}-${currentSection}.${
-    contentType === 'application/pdf' ? 'docx' : 'pdf'
+  const fileName = `${userID}.${
+    contentType === 'image/jpeg'
+      ? 'jpeg'
+      : contentType === 'image/png'
+      ? 'png'
+      : 'unknown'
   }`;
-  console.log("Received event body:", event.body);
-  // let parsedBody;
-  // try {
-  //   parsedBody = JSON.parse(event.body); // Parse JSON string
-  // } catch (error) {
-  //   console.error("Failed to parse event body:", error);
-  //   return {
-  //     statusCode: 400,
-  //     body: JSON.stringify({ message: "Invalid JSON format" }),
-  //   };
-  // }
-  // const { section, files } = parsedBody
-  // console.log("Parsed Section!: " , section)
-  const fileData = Buffer.from(event.body, 'base64');
-  console.log(fileName);
+
+  if (fileName.endsWith('unknown')) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: 'Invalid Content-Type. Only JPEG and PNG are supported.',
+      }),
+    };
+  }
 
   try {
+    const fileData = Buffer.from(event.body, 'base64'); // Decode base64 image data
     const command = new PutObjectCommand({
       Bucket: bucketName,
       Key: fileName,
       Body: fileData,
-      ContentType: 'application/pdf',
+      ContentType: contentType, // Dynamic based on input header
     });
 
     await s3.send(command);

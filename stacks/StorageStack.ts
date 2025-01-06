@@ -1,12 +1,12 @@
 import { Bucket, Function, StackContext } from 'sst/constructs';
 
 export function StorageStack({ stack }: StackContext) {
-  // Create the Lambda function
+  //Create the Lambda function
   const notificationFunction = new Function(stack, 'NotificationFunctionPY', {
     handler:
-      'packages/functions/src/sample-python-lambda/textNotification.main',
+      'packages/functions/src/extractFunction.handler',
     timeout: 900,
-    runtime: "python3.9", 
+    //runtime: "python3.9", 
     permissions: ["textract:AmazonTextractFullAccesss","s3:GetObject" ,"textract:StartDocumentAnalysis", "textract:GetDocumentAnalysis" ,"s3:PutObject"],
   });
 
@@ -19,7 +19,9 @@ export function StorageStack({ stack }: StackContext) {
       },
     },
   });
+
   const bucket2 = new Bucket(stack, "ExtractedTXT");
+  notificationFunction.bind([bucket2]);
   // Outputs
   stack.addOutputs({
     BucketName: bucket.bucketName,
