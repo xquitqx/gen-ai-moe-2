@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useDropzone, FileRejection } from 'react-dropzone';
-import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
+// import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
 import '../components/AdminStyle/Dropzone.css';
 
 interface FileWithPreview extends File {
@@ -59,7 +59,7 @@ const DropzoneImageFiles = ({
       >
         <input {...getInputProps()} />
         <div className="upload-icon-container">
-          <ArrowUpTrayIcon className="upload-icon" />
+          {/* <ArrowUpTrayIcon className="upload-icon" /> */}
           <p className="upload-text">
             Drag & drop image files here, or click to select files
           </p>

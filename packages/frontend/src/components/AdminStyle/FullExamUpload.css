@@ -1,7 +1,9 @@
+/* Scoped styles for the Full Exam Upload page */
 .full-exam-upload-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative; /* Ensures proper positioning of child elements */
 }
 
 .wizard-container {
@@ -11,6 +13,8 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative; /* Ensures it's placed above navbar */
+  z-index: 10; /* Ensure this is above the navbar */
 }
 
 .wizard-title {
@@ -102,4 +106,10 @@
 .next-btn {
   background-color: #4c929f;
   color: white;
+}
+
+/* Style for Navbar */
+.navbar {
+  position: relative; /* Set navbar position */
+  z-index: 5; /* Ensure navbar is below the content */
 }

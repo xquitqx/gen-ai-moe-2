@@ -1,13 +1,23 @@
-import Header from '../components/AdminHeader';
-import Navbar from '../components/Navbar';
+import React, { useState } from 'react';
+import { Nav } from '../components/Nav'; // Correct import for Nav
 import DropzoneAudio from '../components/DropzoneAudio';
 import DropzoneListeningQfiles from '../components/DropzoneListeningQfiles';
 import '../components/AdminStyle/Upload.css';
-import { useState } from 'react';
 import { post } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
 
-const UploadSpeaking = ({ hideLayout = false }) => {
+interface UploadSpeakingProps {
+  hideLayout?: boolean; // Adding the hideLayout prop
+}
+
+const UploadSpeaking = ({ hideLayout }: UploadSpeakingProps) => {
+  const navLinks = [
+    { text: 'Home', to: '/' },
+    { text: 'Dashboard', to: '/admin-home' },
+    { text: 'Upload Exam', to: '/AdminUploadExams' },
+    { text: 'Top achievers', to: '/studentperformance' },
+  ];
+
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [questionFile, setQuestionFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
@@ -23,7 +33,6 @@ const UploadSpeaking = ({ hideLayout = false }) => {
     setUploadStatus(null);
 
     try {
-      const section = 'Speaking'
       // Prepare the form data for audio file
       if (audioFile) {
         const audioFormData = new FormData();
@@ -32,7 +41,7 @@ const UploadSpeaking = ({ hideLayout = false }) => {
         await toJSON(
           post({
             apiName: 'myAPI',
-            path: `/adminUploadAudio?section=${encodeURIComponent(section)}`,
+            path: '/adminUploadAudio',
             options: { body: audioFormData },
           }),
         );
@@ -42,6 +51,7 @@ const UploadSpeaking = ({ hideLayout = false }) => {
       if (questionFile) {
         const questionFormData = new FormData();
         questionFormData.append('file', questionFile);
+        const section = 'Speaking';
 
         await toJSON(
           post({
@@ -60,8 +70,9 @@ const UploadSpeaking = ({ hideLayout = false }) => {
 
   return (
     <div className="upload-page">
-      {!hideLayout && <Header />}
-      {!hideLayout && <Navbar />}
+      {/* Conditionally render Nav component based on hideLayout */}
+      {!hideLayout && <Nav entries={navLinks} />}{' '}
+      {/* Conditionally render Nav */}
       <div className="container">
         <div className="upload-section">
           <h1 className="page-title">Upload Your Speaking Files</h1>
@@ -93,7 +104,7 @@ const UploadSpeaking = ({ hideLayout = false }) => {
           {uploadStatus && (
             <p
               className={`upload-status ${
-                uploadStatus.startsWith('Upload successful')
+                uploadStatus.startsWith('Upload successfully')
                   ? 'success'
                   : 'error'
               }`}

@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 import { useDropzone, FileRejection } from 'react-dropzone';
-import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
 import '../components/AdminStyle/Dropzone.css';
 
 interface FileWithPreview extends File {
@@ -19,12 +18,21 @@ const DropzoneAudio = ({ className, onFileSelected }: DropzoneAudioProps) => {
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       if (acceptedFiles?.length) {
-        const file = acceptedFiles[0];
-        const fileWithPreview = Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        }) as FileWithPreview;
-        setFiles([fileWithPreview]);
-        onFileSelected?.(file); // Notify the parent component
+        const newFiles = acceptedFiles.map(file => {
+          const fileWithPreview = Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          }) as FileWithPreview;
+          return fileWithPreview;
+        });
+
+        // Update state with only the first 7 files
+        setFiles(prevFiles => {
+          const allFiles = [...prevFiles, ...newFiles];
+          return allFiles.slice(0, 7); // Keep only the first 7 files
+        });
+
+        // Notify the parent with the first file in the batch
+        onFileSelected?.(newFiles[0]);
       }
 
       if (rejectedFiles?.length) {
@@ -37,6 +45,7 @@ const DropzoneAudio = ({ className, onFileSelected }: DropzoneAudioProps) => {
   const { getRootProps, getInputProps } = useDropzone({
     accept: { 'audio/*': ['.mp3', '.wav', '.aac', '.m4a'] },
     maxSize: Infinity,
+    maxFiles: 7, // Limit to 7 files
     onDrop,
   });
 
@@ -51,8 +60,6 @@ const DropzoneAudio = ({ className, onFileSelected }: DropzoneAudioProps) => {
 
   return (
     <div className="upload-section">
-      {' '}
-      {/* Use upload-section class here */}
       <div
         {...getRootProps({
           className: `dropzone ${className}`, // Add dropzone styles
@@ -60,7 +67,6 @@ const DropzoneAudio = ({ className, onFileSelected }: DropzoneAudioProps) => {
       >
         <input {...getInputProps()} />
         <div className="upload-icon-container">
-          <ArrowUpTrayIcon className="upload-icon" />
           <p className="upload-text">
             Drag & drop audio files here, or click to select files
           </p>
@@ -70,7 +76,7 @@ const DropzoneAudio = ({ className, onFileSelected }: DropzoneAudioProps) => {
         <div className="flex justify-between items-center">
           <h2 className="title">Your Uploads</h2>
           <button type="button" onClick={removeAll} className="remove-all-btn">
-            Remove file
+            Remove all
           </button>
         </div>
         <ul className="file-list">
