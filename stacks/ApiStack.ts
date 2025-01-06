@@ -165,7 +165,7 @@ export function ApiStack({ stack }: StackContext) {
           timeout: '60 seconds',
           environment: {
             tableName: userdataTable.tableName,
-            tableName2:table.tableName,
+            tableName2: table.tableName,
           },
         },
       },
@@ -176,12 +176,12 @@ export function ApiStack({ stack }: StackContext) {
           timeout: '60 seconds',
           environment: {
             tableName: userdataTable.tableName,
-            tableName2:table.tableName,
+            tableName2: table.tableName,
           },
         },
       },
-      
-      
+
+
       'GET /schoolsstudenttable': {
         function: {
           handler: 'packages/functions/src/fetchtheschoolsstudentdata.handler',
@@ -199,7 +199,7 @@ export function ApiStack({ stack }: StackContext) {
           timeout: '60 seconds',
           environment: {
             tableName: userdataTable.tableName,
-            tableName2:table.tableName,
+            tableName2: table.tableName,
           },
         },
       },
@@ -254,8 +254,11 @@ export function ApiStack({ stack }: StackContext) {
         function: {
           handler:
             'packages/functions/src/streaks/incrementUserStreaks.handler',
-          permissions: ['dynamodb:PutItem', 'dynamodb:UpdateItem'],
+          permissions: ['dynamodb:PutItem', 'dynamodb:UpdateItem', 'ses:SendEmail'],
           timeout: '120 seconds',
+          environment: {
+            s3Bucket: uploads_bucket.bucketName,
+          },
         },
       },
       'GET /getUserLevel': {
@@ -270,6 +273,9 @@ export function ApiStack({ stack }: StackContext) {
           handler: 'packages/functions/src/streaks/getQuestionsByLevel.handler',
           permissions: ['dynamodb:Query'],
           timeout: '120 seconds',
+          environment: {
+            cefrQuestionsTableName: cefrQuestionsTable.tableName,
+          },
         },
       },
       'POST /adminUpload': {
@@ -294,43 +300,43 @@ export function ApiStack({ stack }: StackContext) {
       },
       'GET /getExtract': {
         function: {
-          handler:'packages/functions/src/getTXT.handler',
-          permissions:['s3:ListBucket','s3:GetObject', 'bedrock:InvokeModel'],
+          handler: 'packages/functions/src/getTXT.handler',
+          permissions: ['s3:ListBucket', 's3:GetObject', 'bedrock:InvokeModel'],
           timeout: '120 seconds',
         },
       },
       'GET /getExtractReading': {
         function: {
-          handler:'packages/functions/src/getTXTReading.handler',
-          permissions:['s3:ListBucket','s3:GetObject', 'bedrock:InvokeModel'],
+          handler: 'packages/functions/src/getTXTReading.handler',
+          permissions: ['s3:ListBucket', 's3:GetObject', 'bedrock:InvokeModel'],
           timeout: '120 seconds'
         },
       },
       'GET /getExtractWriting': {
         function: {
-          handler:'packages/functions/src/getTXTWriting.handler',
-          permissions:['s3:ListBucket','s3:GetObject'],
+          handler: 'packages/functions/src/getTXTWriting.handler',
+          permissions: ['s3:ListBucket', 's3:GetObject'],
           timeout: '60 seconds'
         },
       },
       'POST /approveListening': {
         function: {
-          handler:'packages/functions/src/approveListening.handler',
-          permissions:['s3:ListBucket','s3:GetObject', 's3:DeleteObject'],
+          handler: 'packages/functions/src/approveListening.handler',
+          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject'],
           timeout: '60 seconds'
         },
       },
       'POST /approveReading': {
         function: {
-          handler:'packages/functions/src/approveReading.handler',
-          permissions:['s3:ListBucket','s3:GetObject', 's3:DeleteObject'],
+          handler: 'packages/functions/src/approveReading.handler',
+          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject'],
           timeout: '60 seconds'
         },
       },
       'POST /approveWriting': {
         function: {
-          handler:'packages/functions/src/approveWriting.handler',
-          permissions:['s3:ListBucket','s3:GetObject', 's3:DeleteObject'],
+          handler: 'packages/functions/src/approveWriting.handler',
+          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject'],
           timeout: '60 seconds'
         },
       },
@@ -469,10 +475,11 @@ export function ApiStack({ stack }: StackContext) {
   const resetStreaksCron = new Cron(stack, 'DailyResetStreaksCron', {
     schedule: 'cron(0 0 * * ? *)', // Runs daily at midnight UTC
     job: {
-      function:{
-      handler: 'packages/functions/src/streaks/resetStreaks.handler',
-      permissions: ['dynamodb:Scan', 'dynamodb:UpdateItem'],
-      timeout: '120 seconds',},
+      function: {
+        handler: 'packages/functions/src/streaks/resetStreaks.handler',
+        permissions: ['dynamodb:Scan', 'dynamodb:UpdateItem'],
+        timeout: '120 seconds',
+      },
     },
   });
 
