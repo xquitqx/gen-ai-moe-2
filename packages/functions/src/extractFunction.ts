@@ -63,8 +63,7 @@ export const handler = async (event: S3Event, context: Context): Promise<void> =
                     const stats = fs.statSync(tempFilePath);
                     console.log(`File size after writing: ${stats.size} bytes`);
 
-                    const user = "Mohamed";
-                    const outputFileName = `${fileName.split('.').slice(0, -1).join('.')}_${user}_extracted_text.txt`;
+                    const outputFileName = `${fileName.split('.').slice(0, -1).join('.')}_extracted_text.txt`;
 
                     const s3Client = new AWS.S3();
                     await s3Client.upload({

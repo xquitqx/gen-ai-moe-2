@@ -41,11 +41,12 @@ const UploadListening = ({ hideLayout = false }) => {
       if (questionFile) {
         const questionFormData = new FormData();
         questionFormData.append('file', questionFile);
+        const section = 'Listening'
 
         await toJSON(
           post({
             apiName: 'myAPI',
-            path: '/adminUpload',
+            path: `/adminUpload?section=${encodeURIComponent(section)}`,
             options: { body: questionFormData },
           }),
         );
