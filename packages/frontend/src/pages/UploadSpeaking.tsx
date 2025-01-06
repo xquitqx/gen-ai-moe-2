@@ -23,6 +23,7 @@ const UploadSpeaking = ({ hideLayout = false }) => {
     setUploadStatus(null);
 
     try {
+      const section = 'Speaking'
       // Prepare the form data for audio file
       if (audioFile) {
         const audioFormData = new FormData();
@@ -31,7 +32,7 @@ const UploadSpeaking = ({ hideLayout = false }) => {
         await toJSON(
           post({
             apiName: 'myAPI',
-            path: '/adminUploadAudio',
+            path: `/adminUploadAudio?section=${encodeURIComponent(section)}`,
             options: { body: audioFormData },
           }),
         );
@@ -41,7 +42,6 @@ const UploadSpeaking = ({ hideLayout = false }) => {
       if (questionFile) {
         const questionFormData = new FormData();
         questionFormData.append('file', questionFile);
-        const section = 'Speaking'
 
         await toJSON(
           post({
