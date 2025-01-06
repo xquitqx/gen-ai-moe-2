@@ -189,9 +189,7 @@ const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveS
           buttonApprove.style.visibility = "visible";
         }
       }
-    }, [feedback]);
-
-  // Split text by "BREAK"
+      // Split text by "BREAK"
   const sections = feedback.split(/BREAK /).filter(section => section.trim() !== "");
   const form = document.createElement("form");
   form.action = "/ApproveQuestions";
@@ -245,11 +243,11 @@ const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveS
     // Append the div to the container
     form.appendChild(div);
   });
-  if (container) {
-    container.innerHTML = ""; // Clear existing content
-    container.appendChild(form);
-  }
-    
+  container?.appendChild(form);
+    }, [feedback]);
+
+  
+  
   return (
     <div
       style={{

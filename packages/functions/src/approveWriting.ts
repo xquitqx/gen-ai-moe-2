@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Table } from 'sst/node/table';
 import * as AWS from 'aws-sdk';
 
-
+// TODO: ADD IMAGE!!!!!!!
 
 
 const s3 = new S3();
