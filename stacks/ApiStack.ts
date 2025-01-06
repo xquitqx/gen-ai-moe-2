@@ -148,6 +148,16 @@ export function ApiStack({ stack }: StackContext) {
           },
         },
       },
+      'GET /correlation': {
+        function: {
+          handler: 'packages/functions/src/correlation.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: userdataTable.tableName,
+          },
+        },
+      },
       'GET /studentperformance': {
         function: {
           handler: 'packages/functions/src/studentperformance.handler',
@@ -243,8 +253,11 @@ export function ApiStack({ stack }: StackContext) {
         function: {
           handler:
             'packages/functions/src/streaks/incrementUserStreaks.handler',
-          permissions: ['dynamodb:PutItem', 'dynamodb:UpdateItem'],
+          permissions: ['dynamodb:PutItem', 'dynamodb:UpdateItem', 'ses:SendEmail'],
           timeout: '120 seconds',
+          environment: {
+            s3Bucket: uploads_bucket.bucketName,
+          },
         },
       },
       'GET /getUserLevel': {
@@ -259,6 +272,9 @@ export function ApiStack({ stack }: StackContext) {
           handler: 'packages/functions/src/streaks/getQuestionsByLevel.handler',
           permissions: ['dynamodb:Query'],
           timeout: '120 seconds',
+          environment: {
+            cefrQuestionsTableName: cefrQuestionsTable.tableName,
+          },
         },
       },
       'POST /adminUpload': {

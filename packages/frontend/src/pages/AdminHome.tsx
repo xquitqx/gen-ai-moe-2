@@ -6,6 +6,9 @@ import { get } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
 import ChartComponent from '../components/AdminStyle/ChartComponent'; // Correct import for ChartComponent
 import { ChartData, ChartOptions } from 'chart.js';
+import { Scatter } from 'react-chartjs-2';
+import { PointElement } from 'chart.js';
+import ChartjsPluginTrendline from 'chartjs-plugin-trendline';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -21,9 +24,11 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
+  PointElement,
   Title,
   Tooltip,
   Legend,
+  ChartjsPluginTrendline,
 );
 
 function AdminHome() {
@@ -43,6 +48,27 @@ function AdminHome() {
   const [schoolScores, setSchoolScores] = useState<
     { schoolName: string; avg_overall_avg: number }[]
   >([]); // New state to hold school scores for the second graph
+  const [readingVsListening, setReadingVsListening] = useState<
+    { x: number; y: number }[]
+  >([]);
+  const [readingVsWriting, setReadingVsWriting] = useState<
+    { x: number; y: number }[]
+  >([]);
+  const [readingVsSpeaking, setReadingVsSpeaking] = useState<
+    { x: number; y: number }[]
+  >([]);
+  const [listeningVsWriting, setListeningVsWriting] = useState<
+    { x: number; y: number }[]
+  >([]);
+  const [listeningVsSpeaking, setListeningVsSpeaking] = useState<
+    { x: number; y: number }[]
+  >([]);
+  const [writingVsSpeaking, setWritingVsSpeaking] = useState<
+    { x: number; y: number }[]
+  >([]);
+  const [scatterData, setScatterData] = useState<{ x: number; y: number }[]>(
+    [],
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -121,6 +147,36 @@ function AdminHome() {
 
     fetchSchoolScores();
   }, []);
+  useEffect(() => {
+    const fetchCorrelationData = async () => {
+      try {
+        const response = await toJSON(
+          get({
+            apiName: 'myAPI',
+            path: '/correlation',
+          }),
+        );
+        console.log('API response:', response); // Logs the API response to the console
+
+        // Assuming response.graphData contains the data for the 7 graphs
+        if (response && response.graphData) {
+          setScatterData(response.graphData.avg); // Example: Set the first graph data
+          // Set the other graphs data
+          setReadingVsListening(response.graphData.readingVsListening);
+          setReadingVsWriting(response.graphData.readingVsWriting);
+          setReadingVsSpeaking(response.graphData.readingVsSpeaking);
+          setListeningVsWriting(response.graphData.listeningVsWriting);
+          setListeningVsSpeaking(response.graphData.listeningVsSpeaking);
+          setWritingVsSpeaking(response.graphData.writingVsSpeaking);
+        }
+      } catch (error) {
+        console.error('Error fetching correlation data:', error);
+        setError('Failed to fetch correlation data.');
+      }
+    };
+
+    fetchCorrelationData();
+  }, []);
 
   // Handle school change
   const handleSchoolChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -182,6 +238,121 @@ function AdminHome() {
       },
     },
   };
+  const avgChartData: ChartData<'scatter'> = {
+    datasets: [
+      {
+        label: 'Exams Solved vs. Average Score',
+        data: scatterData,
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        pointRadius: 5,
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+        },
+      } as any, // Cast the dataset to `any`
+    ],
+  };
+
+  const readingVsListeningData: ChartData<'scatter'> = {
+    datasets: [
+      {
+        label: 'Reading Score vs Listening Score',
+        data: readingVsListening,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        pointRadius: 5,
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+        },
+      } as any, // Cast the dataset to `any`
+    ],
+  };
+  const readingVsWritingData: ChartData<'scatter'> = {
+    datasets: [
+      {
+        label: 'Reading vs. Writing Score',
+        data: readingVsWriting,
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        pointRadius: 5,
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+        },
+      } as any, // Cast the dataset to `any`
+    ],
+  };
+
+  const readingVsSpeakingData: ChartData<'scatter'> = {
+    datasets: [
+      {
+        label: 'Reading Score vs speaking Score',
+        data: readingVsSpeaking,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        pointRadius: 5,
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+        },
+      } as any, // Cast the dataset to `any`
+    ],
+  };
+  const listeningVsWritingData: ChartData<'scatter'> = {
+    datasets: [
+      {
+        label: 'listening Score vs writing Score',
+        data: listeningVsWriting,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        pointRadius: 5,
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+        },
+      } as any, // Cast the dataset to `any`
+    ],
+  };
+  const listeningVsSpeakingData: ChartData<'scatter'> = {
+    datasets: [
+      {
+        label: 'listening Score vs speaking Score',
+        data: listeningVsSpeaking,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        pointRadius: 5,
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+        },
+      } as any, // Cast the dataset to `any`
+    ],
+  };
+  const writingVsSpeakingData: ChartData<'scatter'> = {
+    datasets: [
+      {
+        label: 'Writing Score vs speaking Score',
+        data: writingVsSpeaking,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        pointRadius: 5,
+
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+        },
+      } as any, // Cast the dataset to `any`
+    ],
+  };
 
   return (
     <div>
@@ -212,7 +383,7 @@ function AdminHome() {
           </div>
         </div>
         <div>
-          <h1 className='page-title'>Student Performance Across Bahrain</h1>
+          <h1 className="page-title">Student Performance Across Bahrain</h1>
         </div>
 
         <div className="graphs-container">
@@ -222,7 +393,91 @@ function AdminHome() {
           </div>
           <div className="graph-right">
             <h3>Average School-by-School Performance</h3>
-            <ChartComponent data={secondChartData} options={chartOptions} />
+            <ChartComponent data={secondChartData} />
+          </div>
+        </div>
+
+        <div className="graphs-container">
+          <div className="scatter-plot">
+            <h3>Correlation: Exams Solved vs. Average Score</h3>
+            {scatterData.length > 0 ? (
+              <Scatter data={avgChartData} />
+            ) : error ? (
+              <p>{error}</p>
+            ) : (
+              <p>Loading scatter plot data...</p>
+            )}
+          </div>
+
+          <div className="scatter-plot">
+            <h3>Correlation: Reading vs Listening</h3>
+            {readingVsListening.length > 0 ? (
+              <Scatter data={readingVsListeningData} />
+            ) : error ? (
+              <p>{error}</p>
+            ) : (
+              <p>Loading data...</p>
+            )}
+          </div>
+        </div>
+
+        <div className="graphs-container">
+          <div className="scatter-plot">
+            <h3>Correlation: Reading vs Writing</h3>
+            {readingVsWriting.length > 0 ? (
+              <Scatter data={readingVsWritingData} />
+            ) : error ? (
+              <p>{error}</p>
+            ) : (
+              <p>Loading data...</p>
+            )}
+          </div>
+          <div className="scatter-plot">
+            <h3>Correlation: Reading vs Speaking</h3>
+            {readingVsSpeaking.length > 0 ? (
+              <Scatter data={readingVsSpeakingData} />
+            ) : error ? (
+              <p>{error}</p>
+            ) : (
+              <p>Loading data...</p>
+            )}
+          </div>
+        </div>
+
+        <div className="graphs-container">
+          <div className="scatter-plot">
+            <h3>Correlation: Listening vs Writing</h3>
+            {listeningVsWriting.length > 0 ? (
+              <Scatter data={listeningVsWritingData} />
+            ) : error ? (
+              <p>{error}</p>
+            ) : (
+              <p>Loading data...</p>
+            )}
+          </div>
+
+          <div className="scatter-plot">
+            <h3>Correlation: Listening vs Speaking</h3>
+            {listeningVsSpeaking.length > 0 ? (
+              <Scatter data={listeningVsSpeakingData} />
+            ) : error ? (
+              <p>{error}</p>
+            ) : (
+              <p>Loading data...</p>
+            )}
+          </div>
+        </div>
+
+        <div className="graphs-container">
+          <div className="scatter-plot">
+            <h3>Correlation: Writing vs Speaking</h3>
+            {writingVsSpeaking.length > 0 ? (
+              <Scatter data={writingVsSpeakingData} />
+            ) : error ? (
+              <p>{error}</p>
+            ) : (
+              <p>Loading data...</p>
+            )}
           </div>
         </div>
 
