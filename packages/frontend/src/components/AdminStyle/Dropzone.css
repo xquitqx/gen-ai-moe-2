@@ -39,11 +39,9 @@
   cursor: pointer;
 }
 
-
 .showExtract-btn:hover {
   background-color: #2b8931;
 }
-
 
 .submit-btn {
   background-color: #4c929f;

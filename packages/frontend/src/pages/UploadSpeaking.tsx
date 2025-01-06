@@ -1,27 +1,105 @@
 import Header from '../components/AdminHeader';
 import Navbar from '../components/Navbar';
-import Dropzone from '../components/Dropzone';
+import DropzoneAudio from '../components/DropzoneAudio';
+import DropzoneListeningQfiles from '../components/DropzoneListeningQfiles';
 import '../components/AdminStyle/Upload.css';
+import { useState } from 'react';
+import { post } from 'aws-amplify/api';
+import { toJSON } from '../utilities';
 
 const UploadSpeaking = ({ hideLayout = false }) => {
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [questionFile, setQuestionFile] = useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+
+  // Callback to collect the audio file from DropzoneAudio
+  const handleAudioFile = (file: File | null) => setAudioFile(file);
+
+  // Callback to collect the question file from Dropzone
+  const handleQuestionFile = (file: File | null) => setQuestionFile(file);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUploadStatus(null);
+
+    try {
+      // Prepare the form data for audio file
+      if (audioFile) {
+        const audioFormData = new FormData();
+        audioFormData.append('file', audioFile);
+
+        await toJSON(
+          post({
+            apiName: 'myAPI',
+            path: '/adminUploadAudio',
+            options: { body: audioFormData },
+          }),
+        );
+      }
+
+      // Prepare the form data for question file
+      if (questionFile) {
+        const questionFormData = new FormData();
+        questionFormData.append('file', questionFile);
+
+        await toJSON(
+          post({
+            apiName: 'myAPI',
+            path: '/adminUpload',
+            options: { body: questionFormData },
+          }),
+        );
+      }
+
+      setUploadStatus('Upload successfully!');
+    } catch (error) {
+      setUploadStatus(`Upload failed: ${(error as Error).message}`);
+    }
+  };
+
   return (
     <div className="upload-page">
       {!hideLayout && <Header />}
       {!hideLayout && <Navbar />}
-
       <div className="container">
         <div className="upload-section">
           <h1 className="page-title">Upload Your Speaking Files</h1>
           <p className="page-description">
-            Please upload your question files here. Accepted files are of type
-            .pdf
+            Upload your audio files and question files.
           </p>
-          <Dropzone
+
+          {/* Dropzone for Audio Files */}
+          <h2 className="subtitle">Audio Files</h2>
+          <DropzoneAudio
+            className="dropzone-container"
+            onFileSelected={handleAudioFile} // Pass callback
+          />
+
+          {/* Dropzone for Question Files */}
+          <h2 className="subtitle">Question Files</h2>
+          <DropzoneListeningQfiles
             className="dropzone-container"
             acceptedFileTypes={{
-              'application/pdf': [],
+              'application/pdf': [], // .pdf files
             }}
+            onFileSelected={handleQuestionFile} // Pass callback
           />
+
+          <button className="submit-btn" onClick={handleSubmit}>
+            Submit
+          </button>
+
+          {uploadStatus && (
+            <p
+              className={`upload-status ${
+                uploadStatus.startsWith('Upload successful')
+                  ? 'success'
+                  : 'error'
+              }`}
+            >
+              {uploadStatus}
+            </p>
+          )}
         </div>
       </div>
     </div>
