@@ -9,6 +9,7 @@ import InputLabel from '@mui/material/InputLabel';
 import { useNavigate } from 'react-router-dom';
 import { toJSON } from '../utilities';
 import { get } from 'aws-amplify/api';
+import { Link } from 'react-router-dom';
 
 const buttonLabels = [
   'Listening',
@@ -113,13 +114,12 @@ const levelCardLabels = [
   'Writing',
 ] as const;
 
-
 const Exercises: React.FC = () => {
   const [level, setLevel] = useState<string | null>(null);
   const [streakCounter, setStreakCounter] = useState<number>(0);
-  console.log("🚀 ~ streakCounter:", streakCounter)
+  console.log('🚀 ~ streakCounter:', streakCounter);
   const [loadingStreak, setLoadingStreak] = useState<boolean>(true);
-  console.log("🚀 ~ loadingStreak:", loadingStreak)
+  console.log('🚀 ~ loadingStreak:', loadingStreak);
 
   const navigate = useNavigate();
 
@@ -129,19 +129,17 @@ const Exercises: React.FC = () => {
         apiName: 'myAPI',
         path: '/getUserLevel',
       }),
-    )
-      .then(response => {
-        setLevel(response.CEFRLevel);
-        setStreakCounter(response.StreakCounter);
-        setLoadingStreak(false);
-        console.log('level', level);
-      })
+    ).then(response => {
+      setLevel(response.CEFRLevel);
+      setStreakCounter(response.StreakCounter);
+      setLoadingStreak(false);
+      console.log('level', level);
+    });
   }, []);
-
 
   const navigateToQuestions = () => {
     level ? navigate('/questions-by-level') : navigate('/PlacementTest');
-  }
+  };
 
   return (
     <main className="flex flex-col items-center gap-y-16">
@@ -154,14 +152,10 @@ const Exercises: React.FC = () => {
             </span>
           )}
         </h1>
-
       </div>
       <div className="hidden md:flex w-1/2 justify-between">
         <ThemeProvider theme={buttonsTheme} key={'Grammer & Vocabulary'}>
-          <Button
-            variant={'contained'}
-            color="primary"
-          >
+          <Button variant={'contained'} color="primary">
             <h1 className="font-semibold">{'Grammer & Vocabulary'}</h1>
           </Button>
         </ThemeProvider>
@@ -176,7 +170,10 @@ const Exercises: React.FC = () => {
               value={'Grammer & Vocabulary'}
               label="Select Plan"
             >
-              <MenuItem key={'Grammer & Vocabulary'} value={'Grammer & Vocabulary'}>
+              <MenuItem
+                key={'Grammer & Vocabulary'}
+                value={'Grammer & Vocabulary'}
+              >
                 Grammer & Vocabulary{' '}
               </MenuItem>
             </Select>
@@ -185,7 +182,9 @@ const Exercises: React.FC = () => {
       </div>
       <div className="w-3/4 border-2 rounded-lg min-h-28 flex flex-col items-center justify-center gap-y-5 md:w-1/2">
         <h1 className="font-semibold text-xl text-center">
-          {level ? 'Practice more to get to the next level!' : 'You need to take the placement test!'}
+          {level
+            ? 'Practice more to get to the next level!'
+            : 'You need to take the placement test!'}
         </h1>
         <ThemeProvider theme={buttonsTheme}>
           <div onClick={navigateToQuestions}>
@@ -204,11 +203,24 @@ const Exercises: React.FC = () => {
         />
       )}
 
-      <div className="w-full md:w-3/4">
-        <h1 className="text-4xl font-bold underline underline-offset-[14px] decoration-4 decoration-blue-4">
-          What is it ?
-        </h1>
+      <div className="flex flex-col items-center w-full space-y-6">
+        {/* Question Section */}
+        <div className="w-full md:w-3/4 text-center">
+          <h1 className="text-4xl font-bold underline underline-offset-[14px] decoration-4 decoration-blue-4">
+            What is {level}?
+          </h1>
+        </div>
+
+        {/* Click Here Section */}
+        <div className="flex justify-center items-center w-full">
+          <Link to="/about" className="w-full md:w-1/3">
+            <h1 className="flex flex-col justify-center items-center text-center border-2 border-gray-200 p-4 rounded-lg bg-white shadow-md w-full text-base md:text-lg font-semibold hover:bg-gray-100 transition duration-300">
+              Click here
+            </h1>
+          </Link>
+        </div>
       </div>
+
       <div className="flex flex-wrap w-full md:w-3/4 justify-center gap-16 max-md:flex-col">
         {levelCardLabels.map(button => {
           const plan = plans[button];
@@ -250,5 +262,4 @@ const LevelCard = (icon: string, level: string, description: string) => (
       </div>
     )}
   </>
-
 );

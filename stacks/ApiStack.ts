@@ -148,6 +148,16 @@ export function ApiStack({ stack }: StackContext) {
           },
         },
       },
+      'GET /correlation': {
+        function: {
+          handler: 'packages/functions/src/correlation.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: userdataTable.tableName,
+          },
+        },
+      },
       'GET /studentperformance': {
         function: {
           handler: 'packages/functions/src/studentperformance.handler',
