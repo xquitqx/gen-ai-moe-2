@@ -331,6 +331,13 @@ export function ApiStack({ stack }: StackContext) {
           timeout: '60 seconds'
         },
       },
+      'GET /getAudioFiles': {
+        function: {
+          handler:'packages/functions/src/getAudioFiles.handler',
+          permissions:['s3:ListBucket','s3:GetObject'],
+          timeout: '60 seconds'
+        },
+      },
     },
   });
 
