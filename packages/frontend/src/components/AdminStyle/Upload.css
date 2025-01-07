@@ -1,63 +1,86 @@
-.container {
+/* Scoped styles for the UploadListening page */
+.upload-page {
+  min-height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-/* .upload-page {
-    background-color: white; } */
-
-.page-title {
-  font-size: 2rem;
-  color: hsl(0, 0%, 20%);
-  text-align: center;
-  margin-bottom: 10px;
-  font-weight: bold;
+.upload-page .container {
+  max-width: 900px;
+  margin: 40px auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative; /* Ensure this is at a higher layer than the navbar */
+  z-index: 10; /* Set z-index to ensure it's above navbar */
 }
 
-.page-description {
+.upload-page .upload-section {
+  text-align: center;
+}
+
+.upload-page .page-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.upload-page .page-description {
   font-size: 1.2rem;
   color: #555;
-  text-align: center;
   margin-bottom: 20px;
 }
 
-.dropzone-container {
+.upload-page .dropzone-container {
   margin: 0 auto;
   max-width: 500px;
   border: 2px dashed #555;
   padding: 20px;
   border-radius: 10px;
   text-align: center;
-  align-items: center;
-  justify-content: center;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  position: relative; /* Ensures the dropzone is within the higher z-index container */
+  z-index: 10; /* Set z-index to 10 */
 }
 
-.upload-icon {
+.upload-page .dropzone-container:hover {
+  background-color: #f0f0f0;
+}
+
+.upload-page .dropzone-container .upload-icon {
   width: 30px;
   height: 30px;
   color: #555;
-  align-items: center;
 }
 
-.file-name {
-  justify-content: center;
-  text-align: center;
+.upload-page .dropzone-container .file-name {
   font-size: 1rem;
   color: #333;
   margin-top: 10px;
 }
 
-.rejected-message {
+.upload-page .rejected-message {
   margin-top: 1rem;
   padding: 1rem;
   background-color: #f8d7da;
   border: 1px solid #f5c6cb;
   border-radius: 0.25rem;
-  text-align: center;
+  color: #721c24;
 }
 
-.error-message-text {
-  color: #721c24;
+.upload-page .error-message-text {
   font-size: 1rem;
+  color: #721c24;
+}
+
+/* Style for navbar */
+.navbar {
+  position: relative; /* Ensure navbar has relative positioning */
+  z-index: 5; /* Set a lower z-index to prevent overlap */
 }
