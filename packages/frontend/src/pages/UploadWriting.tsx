@@ -1,13 +1,23 @@
-import Header from '../components/AdminHeader';
-import Navbar from '../components/Navbar';
+import React, { useState } from 'react';
+import { Nav } from '../components/Nav'; // Corrected import with curly braces
 import DropzoneListeningQfiles from '../components/DropzoneListeningQfiles';
 import '../components/AdminStyle/Upload.css';
-import { useState } from 'react';
 import { post } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
 import DropzoneImageFiles from '../components/DropzoneImagefiles';
 
-const UploadWriting = ({ hideLayout = false }) => {
+interface UploadWritingProps {
+  hideLayout?: boolean; // Adding the hideLayout prop
+}
+
+const UploadWriting = ({ hideLayout }: UploadWritingProps) => {
+  const navLinks = [
+    { text: 'Home', to: '/' },
+    { text: 'Dashboard', to: '/admin-home' },
+    { text: 'Upload Exam', to: '/AdminUploadExams' },
+    { text: 'Top achievers', to: '/studentperformance' },
+  ];
+
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [questionFile, setQuestionFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
@@ -23,8 +33,7 @@ const UploadWriting = ({ hideLayout = false }) => {
     setUploadStatus(null);
 
     try {
-      const section = 'Writing'
-      // Prepare the form data for image file
+      // Prepare the form data for the image file
       if (imageFile) {
         const imageFormData = new FormData();
         imageFormData.append('file', imageFile);
@@ -32,22 +41,21 @@ const UploadWriting = ({ hideLayout = false }) => {
         await toJSON(
           post({
             apiName: 'myAPI',
-            path: `/adminUploadImage?section=${encodeURIComponent(section)}`,
+            path: '/adminUploadImage',
             options: { body: imageFormData },
           }),
         );
       }
 
-      // Prepare the form data for question file
+      // Prepare the form data for the question file
       if (questionFile) {
         const questionFormData = new FormData();
         questionFormData.append('file', questionFile);
-        
 
         await toJSON(
           post({
             apiName: 'myAPI',
-            path: `/adminUpload?section=${encodeURIComponent(section)}`,
+            path: '/adminUpload',
             options: { body: questionFormData },
           }),
         );
@@ -61,8 +69,9 @@ const UploadWriting = ({ hideLayout = false }) => {
 
   return (
     <div className="upload-page">
-      {!hideLayout && <Header />}
-      {!hideLayout && <Navbar />}
+      {/* Conditionally render Nav component based on hideLayout */}
+      {!hideLayout && <Nav entries={navLinks} />}{' '}
+      {/* Conditionally render Nav */}
       <div className="container">
         <div className="upload-section">
           <h1 className="page-title">Upload Your Writing Files</h1>
@@ -94,7 +103,7 @@ const UploadWriting = ({ hideLayout = false }) => {
           {uploadStatus && (
             <p
               className={`upload-status ${
-                uploadStatus.startsWith('Upload successful')
+                uploadStatus.startsWith('Upload successfully')
                   ? 'success'
                   : 'error'
               }`}

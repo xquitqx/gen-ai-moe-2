@@ -4,8 +4,7 @@ import UploadListening from './UploadListening';
 import UploadWriting from './UploadWriting';
 import UploadReading from './UploadReading';
 import UploadSpeaking from './UploadSpeaking';
-import Header from '../components/AdminHeader';
-import Navbar from '../components/Navbar';
+import { Nav } from '../components/Nav'; // Correct import for Nav
 import '../components/AdminStyle/FullExamUpload.css';
 
 const FullExamUpload = () => {
@@ -42,11 +41,17 @@ const FullExamUpload = () => {
     }
   };
 
+  const navLinks = [
+    { text: 'Home', to: '/' },
+    { text: 'Dashboard', to: '/admin-home' },
+    { text: 'Upload Exam', to: '/AdminUploadExams' },
+    { text: 'Top achievers', to: '/studentperformance' },
+  ];
+
   return (
     <div className="full-exam-upload-page">
-      <Header />
-      <Navbar />
-
+      {/* Replace Header and Navbar with Nav */}
+      <Nav entries={navLinks} /> {/* Use Nav component here */}
       <div className="wizard-container">
         <div className="wizard-steps">
           <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>

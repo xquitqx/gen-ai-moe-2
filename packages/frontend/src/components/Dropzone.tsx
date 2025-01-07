@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useDropzone, FileRejection } from 'react-dropzone';
-import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
+// import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
 import { post } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
 import '../components/AdminStyle/Dropzone.css';
@@ -95,7 +95,7 @@ const Dropzone = ({ className, acceptedFileTypes }: DropzoneProps) => {
         >
           <input {...getInputProps()} />
           <div className="upload-icon-container">
-            <ArrowUpTrayIcon className="upload-icon" />
+            {/* <ArrowUpTrayIcon className="upload-icon" /> */}
             <p className="upload-text">
               Drag & drop files here, or click to select files
             </p>

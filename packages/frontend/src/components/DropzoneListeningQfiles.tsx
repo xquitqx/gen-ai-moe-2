@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useDropzone, FileRejection } from 'react-dropzone';
-import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
+import { Link } from 'react-router-dom'; // Import Link for navigation
 import '../components/AdminStyle/Dropzone.css';
 
 interface FileWithPreview extends File {
@@ -52,7 +52,6 @@ const DropzoneListeningQfiles = ({
 
   return (
     <div className="upload-section">
-      {' '}
       {/* Apply upload-section styling */}
       <div
         {...getRootProps({
@@ -61,12 +60,13 @@ const DropzoneListeningQfiles = ({
       >
         <input {...getInputProps()} />
         <div className="upload-icon-container">
-          <ArrowUpTrayIcon className="upload-icon" />
+          {/* <ArrowUpTrayIcon className="upload-icon" /> */}
           <p className="upload-text">
             Drag & drop files here, or click to select files
           </p>
         </div>
       </div>
+
       <section className="mt-10">
         <div className="flex justify-between items-center">
           <h2 className="title">Your Uploads</h2>
@@ -96,6 +96,13 @@ const DropzoneListeningQfiles = ({
               formats. Please upload only PDF files.
             </p>
           </div>
+        )}
+
+        {/* Navigation to the showExtractedListening page */}
+        {files.length > 0 && (
+          <Link to="/showExtractedListening" className="show-extracted-btn">
+            Show Extracted Listening
+          </Link>
         )}
       </section>
     </div>
