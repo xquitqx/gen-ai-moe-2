@@ -5,6 +5,7 @@ import DropzoneListeningQfiles from '../components/DropzoneListeningQfiles';
 import '../components/AdminStyle/Upload.css';
 import { post } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
+import { Link } from 'react-router-dom'; // Import Link for navigation
 
 interface UploadListeningProps {
   hideLayout?: boolean; // Adding the hideLayout prop
@@ -21,6 +22,7 @@ const UploadListening = ({ hideLayout }: UploadListeningProps) => {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [questionFile, setQuestionFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false); // Track if form is submitted
 
   // Callback to collect the audio file from DropzoneAudio
   const handleAudioFile = (file: File | null) => setAudioFile(file);
@@ -63,6 +65,7 @@ const UploadListening = ({ hideLayout }: UploadListeningProps) => {
       }
 
       setUploadStatus('Upload successfully!');
+      setIsSubmitted(true); // Mark the form as submitted
     } catch (error) {
       setUploadStatus(`Upload failed: ${(error as Error).message}`);
     }
@@ -71,7 +74,7 @@ const UploadListening = ({ hideLayout }: UploadListeningProps) => {
   return (
     <div className="upload-page">
       {/* Use Nav component here */}
-      {!hideLayout && <Nav entries={navLinks} />}{' '}
+      {!hideLayout && <Nav entries={navLinks} />}
       {/* Conditionally render Nav based on hideLayout */}
       <div className="container">
         <div className="upload-section">
@@ -97,9 +100,19 @@ const UploadListening = ({ hideLayout }: UploadListeningProps) => {
             onFileSelected={handleQuestionFile} // Pass callback
           />
 
-          <button className="submit-btn" onClick={handleSubmit}>
-            Submit
-          </button>
+          <div className="button-container">
+            <button className="submit-btn" onClick={handleSubmit}>
+              Submit
+            </button>
+            <Link to="/showExtractedListening">
+              <button
+                className="extract-btn"
+                disabled={!isSubmitted} // Disable until submit is clicked
+              >
+                Extract
+              </button>
+            </Link>
+          </div>
 
           {uploadStatus && (
             <p
