@@ -22,7 +22,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     const folderName = currentSection;
     let fileLimit
     if(currentSection === "Listening")
-      fileLimit = 3;
+      fileLimit = 4;
     else if(currentSection === "Speaking")
       fileLimit = 7;
     else if(currentSection === "Writing")
@@ -44,7 +44,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     let image = null;
     if(folderName != "Writing"){
        mp3Files = response.Contents?.filter(
-      (object) => object.Key?.endsWith(".mp3") && object.Key?.includes(userID)
+      (object) => /*object.Key?.endsWith(".mp3") &&*/ object.Key?.includes(userID)
     )
       .map((object) => `${BUCKET_URL}${object.Key}`) // Generate full URLs
       .slice(0, fileLimit); // Limit to the required number of files
