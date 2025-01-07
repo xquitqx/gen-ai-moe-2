@@ -113,6 +113,44 @@ const levelCardLabels = [
   'Reading',
   'Writing',
 ] as const;
+const levelDetails = [
+  {
+    title: 'Elementary',
+    description:
+      'Learners who achieve A1 Elementary level can communicate using familiar everyday expressions and very basic phrases. They can introduce themselves and others and ask and answer simple questions about personal details.',
+    level: 'A1',
+  },
+  {
+    title: 'Pre-intermediate',
+    description:
+      'Learners who achieve A2 Pre-intermediate level can communicate using frequently used expressions in everyday situations. They can interact in simple and direct exchanges of information and can describe things around them and things they need.',
+    level: 'A2',
+  },
+  {
+    title: 'Intermediate',
+    description:
+      'Learners who achieve B1 Intermediate level can understand information about familiar topics. They can communicate in most situations whilst travelling in an English-speaking area. They can write simple connected texts on familiar topics.',
+    level: 'B1',
+  },
+  {
+    title: 'Upper intermediate',
+    description:
+      'Learners who achieve B2 Upper intermediate level can understand the main ideas of complex texts. They can interact with some fluency and communicate easily. They can write clear, detailed texts on a wide range of topics and express their opinions.',
+    level: 'B2',
+  },
+  {
+    title: ' Advanced',
+    description:
+      'Learners who achieve C1 Advanced level can understand a wide range of long, complex texts. They can interact and express themselves fluently and spontaneously and use language flexibly and effectively in social, academic, and professional situations.',
+    level: 'C1',
+  },
+  {
+    title: ' Proficiency',
+    description:
+      'Learners who achieve C2 Proficiency level can easily understand almost everything they hear or read. They can express themselves fluently and spontaneously with precision in complex situations.',
+    level: 'C2',
+  },
+];
 
 const Exercises: React.FC = () => {
   const [level, setLevel] = useState<string | null>(null);
@@ -211,11 +249,34 @@ const Exercises: React.FC = () => {
           </h1>
         </div>
 
+        {/*display level desc Section */}
+
+        <div className="flex flex-wrap w-full md:w-3/4 justify-center gap-16 max-md:flex-col">
+          {levelDetails.map(levelDetail => {
+            if (level === levelDetail.level) {
+              return (
+                <div
+                  key={levelDetail.level}
+                  className="flex flex-col items-center md:flex-row md:items-start border-2 border-gray-200 p-4 rounded-lg bg-white shadow-md w-full md:w-1/3 mb-4 md:mb-0"
+                >
+                  <div className="text-2xl md:text-4xl font-bold text-gray-800 text-center md:text-left mb-2 md:mb-0">
+                    {levelDetail.title}
+                  </div>
+                  <div className="text-sm md:text-base text-gray-500 mt-1 text-center md:text-left max-w-full">
+                    {levelDetail.description}
+                  </div>
+                </div>
+              );
+            }
+            return null; // If no match, return nothing
+          })}
+        </div>
+
         {/* Click Here Section */}
         <div className="flex justify-center items-center w-full">
           <Link to="/about" className="w-full md:w-1/3">
-            <h1 className="flex flex-col justify-center items-center text-center border-2 border-gray-200 p-4 rounded-lg bg-white shadow-md w-full text-base md:text-lg font-semibold hover:bg-gray-100 transition duration-300">
-              Click here
+            <h1 className="w-3/4 border-2 rounded-lg min-h-28 flex flex-col items-center justify-center gap-y-5 md:w-1/2">
+              Click here To know more about other levels Click here
             </h1>
           </Link>
         </div>

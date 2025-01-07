@@ -28,9 +28,11 @@ export const handler: APIGatewayProxyHandler = async (event, context) => {
       return item[key]?.N ? +item[key].N : 0;
     };
 
-    // Filter out items where SK = 'TOTALS' and then map the rest to extract the school name and avg_overall_avg
+    // Filter out items where SK = 'TOTALS' or SK = 'MOE' and then map the rest to extract the school name and avg_overall_avg
     const result = aggregates
-      .filter((item: AWS.DynamoDB.AttributeMap) => item.SK?.S !== 'TOTALS') // Skip items where SK = 'TOTALS'
+      .filter((item: AWS.DynamoDB.AttributeMap) => 
+        item.SK?.S !== 'TOTALS' && item.SK?.S !== 'MOE' // Skip items where SK = 'TOTALS' or 'MOE'
+      )
       .map((item: AWS.DynamoDB.AttributeMap) => {
         const schoolName = item.SK?.S; // Extract the school name from the SK attribute
         const avgOverallAvg = getNumberValue(item, 'Avg_overall_avg');

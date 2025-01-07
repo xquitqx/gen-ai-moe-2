@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import AdminHeader from '../components/AdminHeader';
-import Navbar from '../components/Navbar';
 import '../components/AdminStyle/AdminHome.css';
 import '../components/AdminStyle/schools.css';
 import { get } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
 import ChartComponent from '../components/AdminStyle/ChartComponent'; // Correct import for ChartComponent
 import { ChartData, ChartOptions } from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+import { Nav } from '../components/Nav';
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -40,6 +41,9 @@ function Schooldatafetch() {
   const [error, setError] = useState<string | null>(null);
   const [records, setRecords] = useState<any[]>([]); // State to hold the records
   const [userDetails, setUserChartRecords] = useState<any[]>([]); // State for the new chart data
+  const [topByOverallAvg, setTopByOverallAvg] = useState<any[]>([]); // State for top students by overall average
+  const [topByExamsSolved, setTopByExamsSolved] = useState<any[]>([]); // State for top students by exams solved
+  const [topByHighestStreak, setTopByHighestStreak] = useState<any[]>([]); // State for top students by highest streak
 
   // Extract school name from the URL
   const queryParams = new URLSearchParams(window.location.search);
@@ -120,6 +124,43 @@ function Schooldatafetch() {
     }
   }, [schoolName]);
 
+  // Fetch top students by overall average, exams solved, and highest streak
+  useEffect(() => {
+    const fetchTopStudents = async () => {
+      try {
+        setLoading(true);
+
+        // Pass the school name as part of the API path
+        const response = await toJSON(
+          get({
+            apiName: 'myAPI',
+            path: `/schooltopachievers?school=${encodeURIComponent(
+              schoolName || '',
+            )}`,
+          }),
+        );
+        console.log(response); // Add this line to inspect the response
+        if (response) {
+          setTopByOverallAvg(response.topByOverallAvg || []);
+          setTopByExamsSolved(response.topByExamsSolved || []);
+          setTopByHighestStreak(response.topByHighestStreak || []); // New data for highest streak
+        }
+      } catch (error) {
+        console.error('Error fetching top students:', error);
+        setError('Failed to fetch top students data.');
+      } finally {
+        setLoading(false); // Set loading to false after the data is fetched
+      }
+    };
+
+    fetchTopStudents();
+  }, []);
+
+  const navLinks = [
+    { text: 'Dashboard', to: '/admin-home' },
+    { text: 'Upload Exam', to: '/AdminUploadExams' },
+  ];
+
   // Define chart data for the sections (reading, writing, etc.)
   const sectionChartData: ChartData<'bar'> = {
     labels: ['Reading', 'Writing', 'Listening', 'Speaking'],
@@ -173,10 +214,37 @@ function Schooldatafetch() {
     },
   };
 
+  // Bar chart data for each metric
+  const getBarChartData = (students: any[], label: string) => {
+    console.log(`Bar chart data for ${label}:`, students); // Debugging log
+    return {
+      labels: students.map(student => student.username),
+      datasets: [
+        {
+          label: label,
+          data: students.map(student => {
+            switch (label) {
+              case 'Highest Streak':
+                return student.streakCounter; // Use streakCounter for highest streak
+              case 'Overall Average':
+                return student.overallAvg; // Use overallAvg for overall average
+              case 'Exams Solved':
+                return student.numberOfExamsSolved; // Use numberOfExamsSolved for exams solved
+              default:
+                return 0;
+            }
+          }),
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+        },
+      ],
+    };
+  };
   return (
-    <div>
-      <AdminHeader />
-      <Navbar />
+        <div >
+      {/* Navigation Bar */}
+      <Nav entries={navLinks} />
       <main className="admin-home">
         <div className="dashboard-cards">
           <div className="dashboard-card">
@@ -219,9 +287,35 @@ function Schooldatafetch() {
           </div>
         </div>
 
+        <div className="graphs-container">
+          <div className="graph-left">
+            <h3>Top 3 Students by Highest Streak 🔥</h3>
+            <Bar
+              data={getBarChartData(topByHighestStreak, 'Highest Streak')}
+              options={{ responsive: true }}
+            />
+          </div>
+
+          <div className="graph-right">
+            <h3>Top 3 Students by Overall Average</h3>
+            <Bar
+              data={getBarChartData(topByOverallAvg, 'Overall Average')}
+              options={{ responsive: true }}
+            />
+          </div>
+        </div>
+
+        <div className="graph-right">
+          <h3>Top 3 Students by Exams Solved 📄</h3>
+          <Bar
+            data={getBarChartData(topByExamsSolved, 'Exams Solved')}
+            options={{ responsive: true }}
+          />{' '}
+        </div>
+
         <div className="table-header">All Records for {schoolName}</div>
 
-        <div className="records-table" >
+        <div className="records-table">
           <table className="styled-table">
             <thead>
               <tr>

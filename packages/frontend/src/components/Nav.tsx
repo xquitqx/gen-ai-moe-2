@@ -22,7 +22,6 @@ const milestoneImages: Record<number, string> = {
   30: badge30,
 };
 
-
 type NavProps = {
   showLogo?: boolean;
   entries?: Entry[];
@@ -33,7 +32,7 @@ type Entry = { text: string; to: To };
 
 const _containerStyling = 'flex flex-1 font-montserrat text-md text-white ';
 
-export const Nav: React.FC<NavProps> = (props) => {
+export const Nav: React.FC<NavProps> = props => {
   const { showLogo = true, entries = [], isLanding = false } = props;
 
   const authInfo = useContext(AuthContext);
@@ -46,10 +45,10 @@ export const Nav: React.FC<NavProps> = (props) => {
         path: '/getUserLevel',
       }),
     )
-      .then((response) => {
+      .then(response => {
         setStreakCounter(response.StreakCounter || 0);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error fetching streak:', error);
       });
   }, []);
@@ -62,7 +61,10 @@ export const Nav: React.FC<NavProps> = (props) => {
   const itemStyle = 'nav-item hover-darken';
 
   const logo = showLogo ? (
-    <Link className={`${itemStyle} text-xl font-bold px-7 flex items-center`} to="/home">
+    <Link
+      className={`${itemStyle} text-xl font-bold px-7 flex items-center`}
+      to="/"
+    >
       <div>LINGUI</div>
       {milestoneBadge && (
         <img
@@ -114,7 +116,7 @@ const MobileMenu = ({
   const itemStyle = 'nav-item hover-darken py-3 flex-row text-gray-700 ';
 
   const [isOpen, setIsOpen] = useState(false);
-  const toggleMenu = () => setIsOpen((s) => !s);
+  const toggleMenu = () => setIsOpen(s => !s);
 
   const links = entries.map(({ text, to }, index) => (
     <button key={index} onClick={toggleMenu}>
@@ -131,7 +133,8 @@ const MobileMenu = ({
       </button>
       <div
         className={`
-          h-dvh bg-grey-1 fixed top-0 right-0 z-50 ${isOpen ? 'max-w-[60vw] ' : 'max-w-0'
+          h-dvh bg-grey-1 fixed top-0 right-0 z-50 ${
+            isOpen ? 'max-w-[60vw] ' : 'max-w-0'
           } transition-all duration-300 overflow-hidden`}
       >
         <div className={`${_containerStyling} flex-col w-[60vw] h-dvh`}>
@@ -151,8 +154,9 @@ const MobileMenu = ({
         </div>
       </div>
       <div
-        className={`bg-black ${isOpen ? 'bg-opacity-55 z-20' : 'bg-opacity-0 -z-10'
-          } h-screen w-screen fixed top-0 left-0 transition-all duration-300 ease-linear`}
+        className={`bg-black ${
+          isOpen ? 'bg-opacity-55 z-20' : 'bg-opacity-0 -z-10'
+        } h-screen w-screen fixed top-0 left-0 transition-all duration-300 ease-linear`}
         onClick={() => toggleMenu()}
       ></div>
     </>
@@ -161,20 +165,14 @@ const MobileMenu = ({
 
 const ProfileMenu: React.FC<{ user: AuthInfo['user'] }> = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const toggleMenu = () => setIsOpen((s) => !s);
+  const toggleMenu = () => setIsOpen(s => !s);
 
   const linkStyling = 'nav-item hover-darken py-3 flex-row text-gray-700 ';
 
   const menuContent = (
     <>
       {user && (
-
-        <Link className={linkStyling} to="../profilePage">
-          <div>View Profile</div>
-        </Link>
-      )}
-      {user && (
-        <Link className={linkStyling} to="sign-out">
+        <Link className={linkStyling} to="/sign-out">
           <div>Sign Out</div>
         </Link>
       )}
@@ -193,14 +191,16 @@ const ProfileMenu: React.FC<{ user: AuthInfo['user'] }> = ({ user }) => {
           <BsPersonCircle size="28" />
         </button>
         <div
-          className={`fixed right-10 top-10 w-48 bg-grey-3 shadow-2xl rounded-lg ${isOpen ? 'opacity-100 z-30' : 'opacity-0 -z-10'
-            } transition-all duration-300 flex flex-col`}
+          className={`fixed right-10 top-10 w-48 bg-grey-3 shadow-2xl rounded-lg ${
+            isOpen ? 'opacity-100 z-30' : 'opacity-0 -z-10'
+          } transition-all duration-300 flex flex-col`}
         >
           {menuContent}
         </div>
         <div
-          className={`bg-black ${isOpen ? 'bg-opacity-10 z-20' : 'bg-opacity-0 -z-10'
-            } h-screen w-screen fixed top-0 left-0 transition-all duration-300 ease-linear`}
+          className={`bg-black ${
+            isOpen ? 'bg-opacity-10 z-20' : 'bg-opacity-0 -z-10'
+          } h-screen w-screen fixed top-0 left-0 transition-all duration-300 ease-linear`}
           onClick={() => toggleMenu()}
         ></div>
       </span>

@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import AdminHeader from '../components/AdminHeader';
-import Navbar from '../components/Navbar';
 import '../components/AdminStyle/AdminHome.css';
 import { get } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
@@ -10,6 +8,7 @@ import { Scatter } from 'react-chartjs-2';
 import { PointElement } from 'chart.js';
 import ChartjsPluginTrendline from 'chartjs-plugin-trendline';
 import { Bar } from 'react-chartjs-2';
+import { Nav } from '../components/Nav';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -619,224 +618,233 @@ function AdminHome() {
       ],
     };
   };
+  const navLinks = [
+    { text: 'Dashboard', to: '/admin-home' },
+    { text: 'Upload Exam', to: '/AdminUploadExams' },
+  ];
 
   return (
     <div>
-      <AdminHeader />
-      <Navbar />
-      <main className="admin-home">
-       <h3 className='HelloAdmin'>Hello Admin,</h3>
+      <div>
+        {/* Navigation Bar */}
+        <Nav entries={navLinks} />
+        <main className="admin-home">
+          <h3 className="HelloAdmin">Hello Admin,</h3>
 
-        <div className="dashboard-cards">
-          <div className="dashboard-card">
-            <h3>Current students across Bahrain</h3>
-            {loading ? (
-              <p>Loading...</p>
-            ) : error ? (
-              <p>{error}</p>
-            ) : (
-              <p>{studentCount}</p>
-            )}
+          <div className="dashboard-cards">
+            <div className="dashboard-card">
+              <h3>Current students across Bahrain</h3>
+              {loading ? (
+                <p>Loading...</p>
+              ) : error ? (
+                <p>{error}</p>
+              ) : (
+                <p>{studentCount}</p>
+              )}
+            </div>
+
+            <div className="dashboard-card">
+              <h3>Overall Average of Students Across Bahrain</h3>
+              {loading ? (
+                <p>Loading...</p>
+              ) : error ? (
+                <p>{error}</p>
+              ) : (
+                <p>{avgOverallAvg}</p>
+              )}
+            </div>
+          </div>
+          <div>
+            <h1 className="page-title">Student Performance Across Bahrain</h1>
           </div>
 
-          <div className="dashboard-card">
-            <h3>Overall Average of Students Across Bahrain</h3>
-            {loading ? (
-              <p>Loading...</p>
-            ) : error ? (
-              <p>{error}</p>
-            ) : (
-              <p>{avgOverallAvg}</p>
-            )}
-          </div>
-        </div>
-        <div>
-          <h1 className="page-title">Student Performance Across Bahrain</h1>
-        </div>
-
-        <div className="graphs-container">
-          <div className="graph-left">
-            <h3>Performance Overview for Each IELTS Section</h3>
-            <ChartComponent data={chartData} options={chartOptions} />
-          </div>
-          <div className="graph-right">
-            <h3>Average School-by-School Performance</h3>
-            <ChartComponent data={secondChartData} />
-          </div>
-        </div>
-
-        <div className="graphs-container">
-          <div className="scatter-plot">
-            <h3>Correlation: Exams Solved vs. Average Score</h3>
-            {scatterData.length > 0 ? (
-              <Scatter data={avgChartData} options={avgChartOptions} />
-            ) : error ? (
-              <p>{error}</p>
-            ) : (
-              <p>Loading scatter plot data...</p>
-            )}
+          <div className="graphs-container">
+            <div className="graph-left">
+              <h3>Performance Overview for Each IELTS Section</h3>
+              <ChartComponent data={chartData} options={chartOptions} />
+            </div>
+            <div className="graph-right">
+              <h3>Average School-by-School Performance</h3>
+              <ChartComponent data={secondChartData} />
+            </div>
           </div>
 
-          <div className="graph-right">
-            <h3>Streak Counter vs Overall Average</h3>
-            {streakVsAvgData.length > 0 ? (
-              <Scatter data={scatterChartData} options={scatterChartOptions} />
-            ) : error ? (
-              <p>{error}</p>
-            ) : (
-              <p>Loading scatter plot data...</p>
-            )}
-          </div>
-        </div>
+          <div className="graphs-container">
+            <div className="scatter-plot">
+              <h3>Correlation: Exams Solved vs. Average Score</h3>
+              {scatterData.length > 0 ? (
+                <Scatter data={avgChartData} options={avgChartOptions} />
+              ) : error ? (
+                <p>{error}</p>
+              ) : (
+                <p>Loading scatter plot data...</p>
+              )}
+            </div>
 
-        <div className="graphs-container">
-          <div className="graph-left">
-            <h3>Top 3 Students by Highest Streak 🔥</h3>
-            <Bar
-              data={getBarChartData(topByHighestStreak, 'Highest Streak')}
-              options={{ responsive: true }}
-            />
+            <div className="graph-right">
+              <h3>Streak Counter vs Overall Average</h3>
+              {streakVsAvgData.length > 0 ? (
+                <Scatter
+                  data={scatterChartData}
+                  options={scatterChartOptions}
+                />
+              ) : error ? (
+                <p>{error}</p>
+              ) : (
+                <p>Loading scatter plot data...</p>
+              )}
+            </div>
           </div>
 
-          <div className="graph-right">
-            <h3>Top 3 Students by Overall Average</h3>
-            <Bar
-              data={getBarChartData(topByOverallAvg, 'Overall Average')}
-              options={{ responsive: true }}
-            />
-          </div>
-        </div>
-
-        <div className="graphs-container">
-          <div className="scatter-plot">
-            <h3>Correlation: Reading vs Writing</h3>
-            {readingVsWriting.length > 0 ? (
-              <Scatter
-                data={readingVsWritingData}
-                options={readingVsWritingOptions}
+          <div className="graphs-container">
+            <div className="graph-left">
+              <h3>Top 3 Students by Highest Streak 🔥</h3>
+              <Bar
+                data={getBarChartData(topByHighestStreak, 'Highest Streak')}
+                options={{ responsive: true }}
               />
-            ) : error ? (
-              <p>{error}</p>
-            ) : (
-              <p>Loading data...</p>
-            )}
-          </div>
-          <div className="scatter-plot">
-            <h3>Correlation: Reading vs Speaking</h3>
-            {readingVsSpeaking.length > 0 ? (
-              <Scatter
-                data={readingVsSpeakingData}
-                options={readingVsSpeakingOptions}
-              />
-            ) : error ? (
-              <p>{error}</p>
-            ) : (
-              <p>Loading data...</p>
-            )}
-          </div>
-        </div>
+            </div>
 
-        <div className="graphs-container">
-          <div className="scatter-plot">
-            <h3>Correlation: Listening vs Writing</h3>
-            {listeningVsWriting.length > 0 ? (
-              <Scatter
-                data={listeningVsWritingData}
-                options={listeningVsWritingOptions}
+            <div className="graph-right">
+              <h3>Top 3 Students by Overall Average</h3>
+              <Bar
+                data={getBarChartData(topByOverallAvg, 'Overall Average')}
+                options={{ responsive: true }}
               />
-            ) : error ? (
-              <p>{error}</p>
-            ) : (
-              <p>Loading data...</p>
-            )}
+            </div>
+          </div>
+          <div className="graphs-container">
+            <div className="graph-right">
+              <h3>Top 3 Students by Exams Solved 📄</h3>
+              <Bar
+                data={getBarChartData(topByExamsSolved, 'Exams Solved')}
+                options={{ responsive: true }}
+              />{' '}
+            </div>
+            <div className="graph-right">
+              <h3>Username vs Streak Counter</h3>
+              {userStreakData.length > 0 ? (
+                <ChartComponent data={barChartData} options={chartOptions} />
+              ) : error ? (
+                <p>{error}</p>
+              ) : (
+                <p>Loading data...</p>
+              )}
+            </div>
           </div>
 
-          <div className="scatter-plot">
-            <h3>Correlation: Listening vs Speaking</h3>
-            {listeningVsSpeaking.length > 0 ? (
-              <Scatter
-                data={listeningVsSpeakingData}
-                options={listeningVsSpeakingOptions}
-              />
-            ) : error ? (
-              <p>{error}</p>
-            ) : (
-              <p>Loading data...</p>
-            )}
+          <div className="graphs-container">
+            <div className="scatter-plot">
+              <h3>Correlation: Reading vs Writing</h3>
+              {readingVsWriting.length > 0 ? (
+                <Scatter
+                  data={readingVsWritingData}
+                  options={readingVsWritingOptions}
+                />
+              ) : error ? (
+                <p>{error}</p>
+              ) : (
+                <p>Loading data...</p>
+              )}
+            </div>
+            <div className="scatter-plot">
+              <h3>Correlation: Reading vs Speaking</h3>
+              {readingVsSpeaking.length > 0 ? (
+                <Scatter
+                  data={readingVsSpeakingData}
+                  options={readingVsSpeakingOptions}
+                />
+              ) : error ? (
+                <p>{error}</p>
+              ) : (
+                <p>Loading data...</p>
+              )}
+            </div>
           </div>
-        </div>
 
-        <div className="graphs-container">
-          <div className="graph-right">
-            <h3>Top 3 Students by Exams Solved 📄</h3>
-            <Bar
-              data={getBarChartData(topByExamsSolved, 'Exams Solved')}
-              options={{ responsive: true }}
-            />{' '}
-          </div>
-          <div className="graph-right">
-            <h3>Username vs Streak Counter</h3>
-            {userStreakData.length > 0 ? (
-              <ChartComponent data={barChartData} options={chartOptions} />
-            ) : error ? (
-              <p>{error}</p>
-            ) : (
-              <p>Loading data...</p>
-            )}
-          </div>
-        </div>
+          <div className="graphs-container">
+            <div className="scatter-plot">
+              <h3>Correlation: Listening vs Writing</h3>
+              {listeningVsWriting.length > 0 ? (
+                <Scatter
+                  data={listeningVsWritingData}
+                  options={listeningVsWritingOptions}
+                />
+              ) : error ? (
+                <p>{error}</p>
+              ) : (
+                <p>Loading data...</p>
+              )}
+            </div>
 
-        <div className="graphs-container">
-          <div className="scatter-plot">
-            <h3>Correlation: Reading vs Listening</h3>
-            {readingVsListening.length > 0 ? (
-              <Scatter
-                data={readingVsListeningData}
-                options={readingVsListeningOptions}
-              />
-            ) : error ? (
-              <p>{error}</p>
-            ) : (
-              <p>Loading data...</p>
-            )}
+            <div className="scatter-plot">
+              <h3>Correlation: Listening vs Speaking</h3>
+              {listeningVsSpeaking.length > 0 ? (
+                <Scatter
+                  data={listeningVsSpeakingData}
+                  options={listeningVsSpeakingOptions}
+                />
+              ) : error ? (
+                <p>{error}</p>
+              ) : (
+                <p>Loading data...</p>
+              )}
+            </div>
           </div>
-          <div className="scatter-plot">
-            <h3>Correlation: Writing vs Speaking</h3>
-            {writingVsSpeaking.length > 0 ? (
-              <Scatter
-                data={writingVsSpeakingData}
-                options={writingVsSpeakingOptions}
-              />
-            ) : error ? (
-              <p>{error}</p>
-            ) : (
-              <p>Loading data...</p>
-            )}
-          </div>
-        </div>
 
-        <div className="school-selector">
-          <h3>
-            Select a School to View Detailed Dashboard for Each Institution
-          </h3>
-          {error ? (
-            <p>{error}</p>
-          ) : (
-            <select onChange={handleSchoolChange}>
-              <option value="" disabled selected>
-                Select a school
-              </option>
-              {schools.map((school, index) => (
-                <option key={index} value={school}>
-                  {school}
+          <div className="graphs-container">
+            <div className="scatter-plot">
+              <h3>Correlation: Reading vs Listening</h3>
+              {readingVsListening.length > 0 ? (
+                <Scatter
+                  data={readingVsListeningData}
+                  options={readingVsListeningOptions}
+                />
+              ) : error ? (
+                <p>{error}</p>
+              ) : (
+                <p>Loading data...</p>
+              )}
+            </div>
+            <div className="scatter-plot">
+              <h3>Correlation: Writing vs Speaking</h3>
+              {writingVsSpeaking.length > 0 ? (
+                <Scatter
+                  data={writingVsSpeakingData}
+                  options={writingVsSpeakingOptions}
+                />
+              ) : error ? (
+                <p>{error}</p>
+              ) : (
+                <p>Loading data...</p>
+              )}
+            </div>
+          </div>
+
+          <div className="school-selector">
+            <h3>
+              Select a School to View Detailed Dashboard for Each Institution
+            </h3>
+            {error ? (
+              <p>{error}</p>
+            ) : (
+              <select onChange={handleSchoolChange}>
+                <option value="" disabled selected>
+                  Select a school
                 </option>
-              ))}
-            </select>
-          )}
-        </div>
-      </main>
+                {schools.map((school, index) => (
+                  <option key={index} value={school}>
+                    {school}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
 
 export default AdminHome;
+

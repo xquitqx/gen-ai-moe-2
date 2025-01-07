@@ -114,6 +114,22 @@
   text-align: center;
 }
 
+/* Style for navbar */
+.navbar {
+  position: fixed; /* Make the navbar fixed at the top */
+  top: 0; /* Align it to the top of the page */
+  left: 0;
+  width: 100%; /* Make the navbar span the full width */
+  background-color: #fff; /* Optional: Set a background color */
+  z-index: 10; /* Ensure the navbar is on top, but below content */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for better visibility */
+}
+
+/* Ensure the rest of the content does not get hidden behind the navbar */
+.admin-home {
+  padding-top: 80px; /* Add space at the top to account for the navbar height */
+}
+
 .graph-left h3,
 .graph-right h3,
 .scatter-plot h3,
