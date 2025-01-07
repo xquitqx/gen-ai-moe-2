@@ -35,6 +35,7 @@ const UploadWriting = ({ hideLayout }: UploadWritingProps) => {
     setUploadStatus(null);
 
     try {
+      const section = 'Writing';
       // Prepare the form data for the image file
       if (imageFile) {
         const imageFormData = new FormData();
@@ -43,7 +44,7 @@ const UploadWriting = ({ hideLayout }: UploadWritingProps) => {
         await toJSON(
           post({
             apiName: 'myAPI',
-            path: '/adminUploadImage',
+            path: `/adminUploadImage?section=${encodeURIComponent(section)}`,
             options: { body: imageFormData },
           }),
         );
@@ -57,7 +58,7 @@ const UploadWriting = ({ hideLayout }: UploadWritingProps) => {
         await toJSON(
           post({
             apiName: 'myAPI',
-            path: '/adminUpload',
+            path: `/adminUpload?section=${encodeURIComponent(section)}`,
             options: { body: questionFormData },
           }),
         );

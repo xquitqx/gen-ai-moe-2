@@ -68,7 +68,7 @@ import { Bucket } from 'sst/node/bucket';
 
 const s3 = new S3Client({});
 
-export const handler: APIGatewayProxyHandler = async event => {
+export const handler: APIGatewayProxyHandler = async (event) => {
   const bucketName = Bucket.Uploads.bucketName;
 
   if (!event.body || !event.headers['content-type']) {
@@ -77,70 +77,79 @@ export const handler: APIGatewayProxyHandler = async event => {
       body: JSON.stringify({ message: 'File data or Content-Type is missing.' }),
     };
   }
+  console.log(event.body)
 
   const contentType = event.headers['content-type'];
-  const boundaryMatch = contentType.match(/boundary=(.+)/);
-  const boundary = boundaryMatch ? boundaryMatch[1] : null;
-
-  if (!boundary) {
+  const boundaryMatch = contentType.match(/boundary=(?:"([^"]+)"|([^;]+))/); // Improved boundary matching
+  if (!boundaryMatch) {
     return {
       statusCode: 400,
       body: JSON.stringify({ message: 'Invalid Content-Type: boundary not found.' }),
     };
   }
 
-  // Decode the body
-  const bodyBuffer = Buffer.from(event.body, 'base64'); // AWS Lambda encodes body in base64
-  const bodyText = bodyBuffer.toString('binary'); // Convert to binary string
-  const parts = bodyText.split(`--${boundary}`).filter(part => part.trim() !== '' && part.trim() !== '--');
+  const boundary = boundaryMatch[1] || boundaryMatch[2];
+  const bodyBuffer = Buffer.from(event.body, 'base64');
+  const bodyText = bodyBuffer.toString('binary');
+
+  // Correct splitting: include the closing boundary and handle potential extra whitespace
+  const parts = bodyText.split(`--${boundary}`).filter(part => part.trim() !== '' && part.trim() !== '--' && !part.startsWith('--'));
 
   const uploadedFiles: string[] = [];
   let fileCounter = 1;
 
   for (const part of parts) {
-    const [headers, rawBody] = part.split('\r\n\r\n');
-    if (!headers || !rawBody) continue;
+    const headersEndIndex = part.indexOf('\r\n\r\n');
+    if (headersEndIndex === -1) continue;
 
-    // Extract Content-Type and check for file part
+    const headers = part.slice(0, headersEndIndex);
+    const rawBody = part.slice(headersEndIndex + 4); // No trim here, important for binary data
+
+    const dispositionMatch = headers.match(/Content-Disposition:.*filename="(.+?)"/);
+    if (!dispositionMatch) {
+      console.log('Skipped part without filename.');
+      continue;
+    }
+
+    const filename = dispositionMatch[1];
+
     const contentTypeMatch = headers.match(/Content-Type: (.+)/);
     const contentTypeHeader = contentTypeMatch ? contentTypeMatch[1] : null;
 
     if (!contentTypeHeader) {
-      console.log('Skipped non-file part.');
-      continue; // Skip if no Content-Type header (not a file part)
+      console.log('Skipped part without Content-Type.');
+      continue;
     }
 
-    // Extract the file data
-    const fileData = Buffer.from(rawBody.trim(), 'binary');
+    const fileData = Buffer.from(rawBody, 'binary');
 
     try {
-      const userID = event.requestContext.authorizer!.jwt.claims.sub;
+      const userID = event.requestContext.authorizer?.jwt.claims.sub || 'anonymous';
       const currentSection = event.queryStringParameters?.section || 'default';
-      const fileName = `${currentSection}/${userID}-FILENUM-${fileCounter}.${contentTypeHeader.split('/')[1] || 'bin'}`;
-      fileCounter++; // Increment for the next file
+      const fileName = `${currentSection}/${userID}-FILENUM-${fileCounter}-${filename}`;
+      fileCounter++;
 
       const command = new PutObjectCommand({
         Bucket: bucketName,
         Key: fileName,
         Body: fileData,
         ContentType: contentTypeHeader,
+        Metadata: { // Example of adding metadata
+            originalFilename: filename,
+        }
       });
 
       await s3.send(command);
       uploadedFiles.push(fileName);
     } catch (error) {
-      console.error('Error uploading to S3:', error);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ message: 'Failed to upload one or more files.' }),
-      };
+      console.error(`Error uploading file ${filename}:`, error);
     }
   }
 
   return {
     statusCode: 200,
     body: JSON.stringify({
-      message: 'Files uploaded successfully!',
+      message: uploadedFiles.length > 0 ? 'Files uploaded successfully!' : 'No valid files were uploaded.',
       files: uploadedFiles,
     }),
   };
