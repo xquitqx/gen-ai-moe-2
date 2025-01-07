@@ -39,6 +39,7 @@ export function DBStack(this: any, { stack }: StackContext) {
   });
 
   const uploads_bucket = new Bucket(stack, 'Uploads');
+  
   const Polly_bucket = new Bucket(stack, 'Polly');
   const audiobucket = new Bucket(stack, 'listeningAudios');
   const speakingPollyBucket = s3.Bucket.fromBucketAttributes(

@@ -15,15 +15,17 @@ const [audioUrls, setAudioUrls] = useState<string[] | null>(null);
 const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveSurfer instances for each audio file
 
   
+const sectionName = window.location.pathname?.split('/').pop()?.replace('showExtracted', '') || '';
 
   useEffect(() => {
     const fetchExtractedFile = async () => {
       try {
+        
         const response: any = await get({
           apiName: "myAPI",
-          path: "/getExtract",
+          path: `/getExtract`,
         });
-
+        
         // Resolve the nested Promise if it exists
         const resolvedResponse = await response.response;
         // Check if body is already an object
@@ -47,7 +49,7 @@ const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveS
       try {
               const audioResponse: any = await get({
                 apiName: "myAPI",
-                path: "/getAudioFiles", // Ensure this matches your API Gateway path
+                path: `/getAudioFiles?section=${sectionName}`, 
               });
       
               const actualAudioFiles = await audioResponse.response;
@@ -62,8 +64,7 @@ const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveS
               const parsedFiles = JSON.parse(txtFiles);
       
               const myAudioFiles = parsedFiles.mp3Files;
-              const choosed = myAudioFiles.slice(0, 7);
-              setAudioUrls(choosed);
+              setAudioUrls(myAudioFiles);
       
               console.log("Only the files here: ", myAudioFiles);
       
@@ -81,10 +82,8 @@ const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveS
   }, []);
   useEffect(() => {
     // Initialize WaveSurfer instances for each audio URL
-    let i = 0;
   if (audioUrls && audioUrls.length > 0) {
   for (let index = 0; index < audioUrls.length; index++) {
-    if (i === 7) break; // Stop after 3 elements
 
     const url = audioUrls[index];
     const waveSurferInstance = WaveSurfer.create({
@@ -99,7 +98,6 @@ const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveS
 
     wavesurferRefs.current[index] = waveSurferInstance; // Store instance for each URL
     waveSurferInstance.load(url);
-    i++;
   }
 }
 

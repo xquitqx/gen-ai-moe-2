@@ -7,6 +7,9 @@ const WritingExtractedFilePage: React.FC = () => {
   const [feedback, setFeedback] = useState<string>(""); 
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [audioUrls, setAudioUrls] = useState<string[] | null>(null);
+  
+  const sectionName = window.location.pathname?.split('/').pop()?.replace('showExtracted', '') || '';
 
   useEffect(() => {
     const fetchExtractedFile = async () => {
@@ -40,7 +43,17 @@ const WritingExtractedFilePage: React.FC = () => {
 
     fetchExtractedFile();
   }, []);
+  useEffect(() => {
+    // Initialize WaveSurfer instances for each audio URL
+  if (audioUrls && audioUrls.length > 0) {
+  for (let index = 0; index < audioUrls.length; index++) {
 
+    const url = audioUrls[index];
+    console.log("Show the image!" , url)
+  }
+}
+
+  }, [audioUrls]); // Add audioUrls as a dependency
 
   const approving = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,6 +88,36 @@ const WritingExtractedFilePage: React.FC = () => {
       if(buttonApprove)
         buttonApprove.disabled = false;
     }
+    try {
+            const audioResponse: any = await get({
+              apiName: "myAPI",
+              path: `/getAudioFiles?section=${sectionName}`, 
+            });
+    
+            const actualAudioFiles = await audioResponse.response;
+            const AudioFiles =
+              typeof actualAudioFiles.body === "string"
+                ? JSON.parse(actualAudioFiles.body)
+                : actualAudioFiles.body;
+    
+            const txtFiles = await AudioFiles.text();
+            console.log("We got it now right? ", txtFiles);
+    
+            const parsedFiles = JSON.parse(txtFiles);
+    
+            const myAudioFiles = parsedFiles.image;
+            setAudioUrls(myAudioFiles);
+    
+            console.log("Only the files here: ", myAudioFiles);
+    
+            if (myAudioFiles && myAudioFiles.length > 0) {
+              console.log("Fetched audio files:", myAudioFiles);
+            } else {
+              console.log("No MP3 files found in the S3 bucket.");
+            }
+          } catch (error) {
+            console.error("Error in fetching audio files:", error);
+          }
     
   };
   
