@@ -115,7 +115,9 @@
 }
 
 .graph-left h3,
-.graph-right h3 ,.scatter-plot h3 {
+.graph-right h3,
+.scatter-plot h3,
+.HelloAdmin {
   font-size: 1.5rem;
   margin-bottom: 15px;
   color: #4a6e77;
