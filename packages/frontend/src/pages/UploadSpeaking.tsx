@@ -5,6 +5,7 @@ import DropzoneListeningQfiles from '../components/DropzoneListeningQfiles';
 import '../components/AdminStyle/Upload.css';
 import { post } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
+import { Link } from 'react-router-dom'; // Import Link for navigation
 
 interface UploadSpeakingProps {
   hideLayout?: boolean; // Adding the hideLayout prop
@@ -21,6 +22,7 @@ const UploadSpeaking = ({ hideLayout }: UploadSpeakingProps) => {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [questionFile, setQuestionFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false); // Track if form is submitted
 
   // Callback to collect the audio file from DropzoneAudio
   const handleAudioFile = (file: File | null) => setAudioFile(file);
@@ -63,6 +65,7 @@ const UploadSpeaking = ({ hideLayout }: UploadSpeakingProps) => {
       }
 
       setUploadStatus('Upload successfully!');
+      setIsSubmitted(true); // Mark the form as submitted
     } catch (error) {
       setUploadStatus(`Upload failed: ${(error as Error).message}`);
     }
@@ -97,9 +100,19 @@ const UploadSpeaking = ({ hideLayout }: UploadSpeakingProps) => {
             onFileSelected={handleQuestionFile} // Pass callback
           />
 
-          <button className="submit-btn" onClick={handleSubmit}>
-            Submit
-          </button>
+          <div className="button-container">
+            <button className="submit-btn" onClick={handleSubmit}>
+              Submit
+            </button>
+            <Link to="/showExtractedSpeaking">
+              <button
+                className="extract-btn"
+                disabled={!isSubmitted} // Disable until submit is clicked
+              >
+                Extract
+              </button>
+            </Link>
+          </div>
 
           {uploadStatus && (
             <p

@@ -10,7 +10,7 @@
 .upload-page .container {
   max-width: 900px;
   margin: 40px auto;
-  background-color: #fff;
+  background-color: white;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -49,9 +49,9 @@
   z-index: 10; /* Set z-index to 10 */
 }
 
-.upload-page .dropzone-container:hover {
+/* .upload-page .dropzone-container:hover {
   background-color: #f0f0f0;
-}
+} */
 
 .upload-page .dropzone-container .upload-icon {
   width: 30px;
@@ -81,6 +81,13 @@
 
 /* Style for navbar */
 .navbar {
-  position: relative; /* Ensure navbar has relative positioning */
-  z-index: 5; /* Set a lower z-index to prevent overlap */
+  position: relative;
+  z-index: 5;
+}
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 1.5rem;
 }

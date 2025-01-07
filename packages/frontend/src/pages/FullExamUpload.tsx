@@ -5,6 +5,8 @@ import UploadWriting from './UploadWriting';
 import UploadReading from './UploadReading';
 import UploadSpeaking from './UploadSpeaking';
 import { Nav } from '../components/Nav'; // Correct import for Nav
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../components/AdminStyle/FullExamUpload.css';
 
 const FullExamUpload = () => {
@@ -20,12 +22,13 @@ const FullExamUpload = () => {
     setCurrentStep(prevStep => (prevStep > 1 ? prevStep - 1 : prevStep));
   };
 
-  // Handler for the Done button to redirect to admin-home
   const handleDone = () => {
-    navigate('/admin-home');
+    toast.success('Full Exam Uploaded Successfully');
+    setTimeout(() => {
+      navigate('/admin-home');
+    }, 3000);
   };
 
-  // Render content based on the current step
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
@@ -50,8 +53,7 @@ const FullExamUpload = () => {
 
   return (
     <div className="full-exam-upload-page">
-      {/* Replace Header and Navbar with Nav */}
-      <Nav entries={navLinks} /> {/* Use Nav component here */}
+      <Nav entries={navLinks} />
       <div className="wizard-container">
         <div className="wizard-steps">
           <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
@@ -91,6 +93,8 @@ const FullExamUpload = () => {
           )}
         </div>
       </div>
+
+      <ToastContainer />
     </div>
   );
 };
