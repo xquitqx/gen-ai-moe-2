@@ -89,6 +89,12 @@ export const Nav: React.FC<NavProps> = props => {
     </Link>
   ));
 
+  links.push(
+    <Link className={itemStyle} to="/achievements">
+      <div>Achievements</div>
+    </Link>
+  );
+
   return (
     <header className="z-10 w-full">
       <nav className="bg-blue-4 h-14">
@@ -126,6 +132,14 @@ const MobileMenu = ({
     </button>
   ));
 
+  links.push(
+    <button key="achievements" onClick={toggleMenu}>
+      <Link className={itemStyle} to="/achievements">
+        <div>Achievements</div>
+      </Link>
+    </button>
+  );
+
   return (
     <>
       <button className={className} onClick={toggleMenu}>
@@ -133,8 +147,7 @@ const MobileMenu = ({
       </button>
       <div
         className={`
-          h-dvh bg-grey-1 fixed top-0 right-0 z-50 ${
-            isOpen ? 'max-w-[60vw] ' : 'max-w-0'
+          h-dvh bg-grey-1 fixed top-0 right-0 z-50 ${isOpen ? 'max-w-[60vw] ' : 'max-w-0'
           } transition-all duration-300 overflow-hidden`}
       >
         <div className={`${_containerStyling} flex-col w-[60vw] h-dvh`}>
@@ -154,9 +167,8 @@ const MobileMenu = ({
         </div>
       </div>
       <div
-        className={`bg-black ${
-          isOpen ? 'bg-opacity-55 z-20' : 'bg-opacity-0 -z-10'
-        } h-screen w-screen fixed top-0 left-0 transition-all duration-300 ease-linear`}
+        className={`bg-black ${isOpen ? 'bg-opacity-55 z-20' : 'bg-opacity-0 -z-10'
+          } h-screen w-screen fixed top-0 left-0 transition-all duration-300 ease-linear`}
         onClick={() => toggleMenu()}
       ></div>
     </>
@@ -191,16 +203,14 @@ const ProfileMenu: React.FC<{ user: AuthInfo['user'] }> = ({ user }) => {
           <BsPersonCircle size="28" />
         </button>
         <div
-          className={`fixed right-10 top-10 w-48 bg-grey-3 shadow-2xl rounded-lg ${
-            isOpen ? 'opacity-100 z-30' : 'opacity-0 -z-10'
-          } transition-all duration-300 flex flex-col`}
+          className={`fixed right-10 top-10 w-48 bg-grey-3 shadow-2xl rounded-lg ${isOpen ? 'opacity-100 z-30' : 'opacity-0 -z-10'
+            } transition-all duration-300 flex flex-col`}
         >
           {menuContent}
         </div>
         <div
-          className={`bg-black ${
-            isOpen ? 'bg-opacity-10 z-20' : 'bg-opacity-0 -z-10'
-          } h-screen w-screen fixed top-0 left-0 transition-all duration-300 ease-linear`}
+          className={`bg-black ${isOpen ? 'bg-opacity-10 z-20' : 'bg-opacity-0 -z-10'
+            } h-screen w-screen fixed top-0 left-0 transition-all duration-300 ease-linear`}
           onClick={() => toggleMenu()}
         ></div>
       </span>
