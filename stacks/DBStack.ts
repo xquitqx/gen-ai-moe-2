@@ -43,6 +43,7 @@ graphlambdafunction.addEnvironment('RECORDS_TABLE', table.tableName);
 graphlambdafunction.addEnvironment('USERDATA_TABLE', userdataTable.tableName);
 
   const uploads_bucket = new Bucket(stack, 'Uploads');
+  
   const Polly_bucket = new Bucket(stack, 'Polly');
   const audiobucket = new Bucket(stack, 'listeningAudios');
   const speakingPollyBucket = s3.Bucket.fromBucketAttributes(

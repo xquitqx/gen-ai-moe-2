@@ -3,7 +3,6 @@ import { get } from "aws-amplify/api";
 //import { /*ToastContainer*/ toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { post } from 'aws-amplify/api';
-import { toJSON } from '../utilities';
 import WaveSurfer from "wavesurfer.js";
 
 
@@ -15,15 +14,17 @@ const [audioUrls, setAudioUrls] = useState<string[] | null>(null);
 const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveSurfer instances for each audio file
 
   
+const sectionName = window.location.pathname?.split('/').pop()?.replace('showExtracted', '') || '';
 
   useEffect(() => {
     const fetchExtractedFile = async () => {
       try {
+        
         const response: any = await get({
           apiName: "myAPI",
-          path: "/getExtract",
+          path: `/getExtract`,
         });
-
+        
         // Resolve the nested Promise if it exists
         const resolvedResponse = await response.response;
         // Check if body is already an object
@@ -47,7 +48,7 @@ const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveS
       try {
               const audioResponse: any = await get({
                 apiName: "myAPI",
-                path: "/getAudioFiles", // Ensure this matches your API Gateway path
+                path: `/getAudioFiles?section=${sectionName}`, 
               });
       
               const actualAudioFiles = await audioResponse.response;
@@ -62,8 +63,7 @@ const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveS
               const parsedFiles = JSON.parse(txtFiles);
       
               const myAudioFiles = parsedFiles.mp3Files;
-              const choosed = myAudioFiles.slice(0, 7);
-              setAudioUrls(choosed);
+              setAudioUrls(myAudioFiles);
       
               console.log("Only the files here: ", myAudioFiles);
       
@@ -81,10 +81,8 @@ const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveS
   }, []);
   useEffect(() => {
     // Initialize WaveSurfer instances for each audio URL
-    let i = 0;
   if (audioUrls && audioUrls.length > 0) {
   for (let index = 0; index < audioUrls.length; index++) {
-    if (i === 7) break; // Stop after 3 elements
 
     const url = audioUrls[index];
     const waveSurferInstance = WaveSurfer.create({
@@ -99,7 +97,6 @@ const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveS
 
     wavesurferRefs.current[index] = waveSurferInstance; // Store instance for each URL
     waveSurferInstance.load(url);
-    i++;
   }
 }
 
@@ -123,16 +120,54 @@ const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveS
   //};
   
   const approving = async (e: React.FormEvent) => {
+    let validInput = true;
     try{
       e.preventDefault();
-      (await toJSON(
-        post({
-          apiName: 'myAPI',
-          path: '/approveListening',
-          //options: { body: JSON.stringify(document.getElementById("container")) },
-        }),
-      ))
-      window.location.href = '/adminLandingPage';
+      const buttonApprove = document.getElementById("btnApprove") as HTMLButtonElement | null;
+      if(buttonApprove)
+        buttonApprove.disabled = true;
+
+      const sections = Array.from(document.getElementsByClassName("question-section")).map((section) => {
+        const question = (section.querySelector("input.question-input") as HTMLInputElement)?.value || "";
+          
+          // Gather choices
+          const choices = Array.from(section.querySelectorAll("input[type='text'].editable-choice")).map(
+            (input) => (input as HTMLInputElement).value
+          );
+    
+          // Gather selected answers
+          const selectedAnswer = (section.querySelector("input[type='radio']:checked") as HTMLInputElement)?.value || null;
+          if(question && !selectedAnswer){
+            alert(`Please selected the correct answer for \"${question}\"`)
+            validInput = false;
+          }
+    
+          return {
+            question,
+            choices,
+            selectedAnswer,
+            
+          };
+        });
+        if (validInput){
+          const validSections = sections.filter((section) => section.question.trim() !== "")
+          console.log(validSections)
+          // Send the gathered data to your Lambda function
+          const response = await post({
+            apiName: "myAPI",
+            path: "/approveListening",
+            options: { body: JSON.stringify(validSections) },
+          });
+      
+          console.log("Approve response:", response);
+    
+          alert("Questions Saved Successfully!")
+          // Redirect to admin landing page
+          window.location.href = "/adminLandingPage";
+        }else{
+        if(buttonApprove)
+          buttonApprove.disabled = false;
+        }
         
       //setUploadStatus(null);
   
@@ -207,6 +242,7 @@ const wavesurferRefs = useRef<(WaveSurfer | null)[]>([]);  // Ref to store WaveS
 
     // Add question as a heading
     const questionHeading = document.createElement("input");
+    questionHeading.classList.add(`question-input`);
     questionHeading.value = question;
     questionHeading.style.width = "100%";
     questionHeading.style.border = "1px solid grey";

@@ -7,6 +7,9 @@ const WritingExtractedFilePage: React.FC = () => {
   const [feedback, setFeedback] = useState<string>(""); 
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [audioUrls, setAudioUrls] = useState<string | null>(null);
+  
+  const sectionName = window.location.pathname?.split('/').pop()?.replace('showExtracted', '') || '';
 
   useEffect(() => {
     const fetchExtractedFile = async () => {
@@ -36,11 +39,48 @@ const WritingExtractedFilePage: React.FC = () => {
         console.error("Error fetching file:", err);
         setError("An error occurred while fetching the file.");
       }
+      try {
+        const audioResponse: any = await get({
+          apiName: "myAPI",
+          path: `/getAudioFiles?section=${sectionName}`, 
+        });
+
+        const actualAudioFiles = await audioResponse.response;
+        const AudioFiles =
+          typeof actualAudioFiles.body === "string"
+            ? JSON.parse(actualAudioFiles.body)
+            : actualAudioFiles.body;
+
+        const txtFiles = await AudioFiles.text();
+        console.log("We got it now right? ", txtFiles);
+
+        const parsedFiles = JSON.parse(txtFiles);
+
+        const myAudioFiles = parsedFiles.image;
+        setAudioUrls(myAudioFiles);
+
+        console.log("Only the files here: ", myAudioFiles);
+
+        if (myAudioFiles && myAudioFiles.length > 0) {
+          console.log("Fetched audio files:", myAudioFiles);
+        } else {
+          console.log("No MP3 files found in the S3 bucket.");
+        }
+      } catch (error) {
+        console.error("Error in fetching audio files:", error);
+      }
     };
 
     fetchExtractedFile();
   }, []);
+  useEffect(() => {
+    // Initialize WaveSurfer instances for each audio URL
 
+  if (audioUrls && audioUrls.length > 0) {
+  console.log(audioUrls)
+}
+
+  }, [audioUrls]); // Add audioUrls as a dependency
 
   const approving = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,47 +116,51 @@ const WritingExtractedFilePage: React.FC = () => {
         buttonApprove.disabled = false;
     }
     
+    
   };
   
   console.log("our feedback:", feedback); // for testing
 
   const container = document.getElementById("container") ? document.getElementById("container") : null;
+   useEffect(() => {
+    if (container) {
+      const statusElement = document.getElementById("status");
+      const buttonTry = document.getElementById("btnTry");
+      const buttonApprove = document.getElementById("btnApprove");
 
-  // Split text by "Question"
-  const sections = feedback.split("Question").filter(section => section.trim() !== "");
-  const form = document.createElement("form");
-  form.action = "/ApproveQuestions";
-  form.method = "POST";
+      if (statusElement && buttonTry && buttonApprove) { 
+        statusElement.style.visibility = "hidden";
+        buttonTry.style.visibility = "visible";
+        buttonApprove.style.visibility = "visible";
+      }
+    }
 
-
-  // Generate divs dynamically
-  sections.forEach(section => {
-    // Create a new div for each "BREAK" section
-    const div = document.createElement("div");
-    div.classList.add("question-section");
-    // Add question as a heading
-    const questionHeading = document.createElement("textarea");
-    questionHeading.value = section;
-    questionHeading.style.width = "100%";
-    questionHeading.style.border = "1px solid grey";
-    questionHeading.rows = 10
-    div.appendChild(document.createElement("br"));
-    div.appendChild(questionHeading);
-    div.appendChild(document.createElement("br"));
-    form.appendChild(div);
-  });
-  container?.appendChild(form);
-  const statusElement = document.getElementById("status");
-  const buttonTry = document.getElementById("btnTry");
-  const buttonApprove = document.getElementById("btnApprove");
+    // Split text by "Question"
+    const sections = feedback.split("Question").filter(section => section.trim() !== "");
+    const form = document.createElement("form");
+    form.action = "/ApproveQuestions";
+    form.method = "POST";
 
 
-  if (statusElement && buttonTry && buttonApprove)
-  { 
-    statusElement.style.visibility = "hidden";
-    buttonTry.style.visibility = "visible";
-    buttonApprove.style.visibility = "visible";
-  }
+    // Generate divs dynamically
+    sections.forEach(section => {
+      // Create a new div for each "BREAK" section
+      const div = document.createElement("div");
+      div.classList.add("question-section");
+      // Add question as a heading
+      const questionHeading = document.createElement("textarea");
+      questionHeading.value = section;
+      questionHeading.style.width = "100%";
+      questionHeading.style.border = "1px solid grey";
+      questionHeading.rows = 10
+      div.appendChild(document.createElement("br"));
+      div.appendChild(questionHeading);
+      div.appendChild(document.createElement("br"));
+      form.appendChild(div);
+    });
+    container?.appendChild(form);
+  }, [feedback]);
+  
   return (
     <div
       style={{
@@ -190,6 +234,20 @@ const WritingExtractedFilePage: React.FC = () => {
           </div>
           
         )}
+      </div>
+      <div>
+      <img
+  src={audioUrls ? audioUrls: undefined}
+  alt="Extracted file"
+  style={{
+    maxWidth: "100%",
+    height: "200px",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    marginTop: "20px",
+  }}
+/>
+
       </div>
     </div>
   );
