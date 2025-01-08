@@ -12,10 +12,8 @@ interface UploadWritingProps {
 
 const UploadWriting = ({ hideLayout }: UploadWritingProps) => {
   const navLinks = [
-    { text: 'Home', to: '/' },
     { text: 'Dashboard', to: '/admin-home' },
     { text: 'Upload Exam', to: '/AdminUploadExams' },
-    { text: 'Top achievers', to: '/studentperformance' },
   ];
 
   const [imageFile, setImageFile] = useState<File | null>(null);

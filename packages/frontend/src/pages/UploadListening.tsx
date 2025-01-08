@@ -12,10 +12,8 @@ interface UploadListeningProps {
 
 const UploadListening = ({ hideLayout }: UploadListeningProps) => {
   const navLinks = [
-    { text: 'Home', to: '/' },
     { text: 'Dashboard', to: '/admin-home' },
     { text: 'Upload Exam', to: '/AdminUploadExams' },
-    { text: 'Top achievers', to: '/studentperformance' },
   ];
 
   const [audioFile, setAudioFile] = useState<File | null>(null);
