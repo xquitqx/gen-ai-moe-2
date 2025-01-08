@@ -54,7 +54,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   else{
     for (const obj of response.Contents|| []) {
       if (obj.Key && obj.Key.includes(userID)) {
-        image = obj.Key;
+        image = `${BUCKET_URL}${obj.Key}`;
         break;
       }
     };
