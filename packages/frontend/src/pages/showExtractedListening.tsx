@@ -3,7 +3,6 @@ import { get } from "aws-amplify/api";
 //import { /*ToastContainer*/ toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { post } from 'aws-amplify/api';
-import { toJSON } from '../utilities';
 import WaveSurfer from "wavesurfer.js";
 
 
@@ -121,16 +120,54 @@ const sectionName = window.location.pathname?.split('/').pop()?.replace('showExt
   //};
   
   const approving = async (e: React.FormEvent) => {
+    let validInput = true;
     try{
       e.preventDefault();
-      (await toJSON(
-        post({
-          apiName: 'myAPI',
-          path: '/approveListening',
-          //options: { body: JSON.stringify(document.getElementById("container")) },
-        }),
-      ))
-      window.location.href = '/adminLandingPage';
+      const buttonApprove = document.getElementById("btnApprove") as HTMLButtonElement | null;
+      if(buttonApprove)
+        buttonApprove.disabled = true;
+
+      const sections = Array.from(document.getElementsByClassName("question-section")).map((section) => {
+        const question = (section.querySelector("input.question-input") as HTMLInputElement)?.value || "";
+          
+          // Gather choices
+          const choices = Array.from(section.querySelectorAll("input[type='text'].editable-choice")).map(
+            (input) => (input as HTMLInputElement).value
+          );
+    
+          // Gather selected answers
+          const selectedAnswer = (section.querySelector("input[type='radio']:checked") as HTMLInputElement)?.value || null;
+          if(question && !selectedAnswer){
+            alert(`Please selected the correct answer for \"${question}\"`)
+            validInput = false;
+          }
+    
+          return {
+            question,
+            choices,
+            selectedAnswer,
+            
+          };
+        });
+        if (validInput){
+          const validSections = sections.filter((section) => section.question.trim() !== "")
+          console.log(validSections)
+          // Send the gathered data to your Lambda function
+          const response = await post({
+            apiName: "myAPI",
+            path: "/approveListening",
+            options: { body: JSON.stringify(validSections) },
+          });
+      
+          console.log("Approve response:", response);
+    
+          alert("Questions Saved Successfully!")
+          // Redirect to admin landing page
+          window.location.href = "/adminLandingPage";
+        }else{
+        if(buttonApprove)
+          buttonApprove.disabled = false;
+        }
         
       //setUploadStatus(null);
   
@@ -205,6 +242,7 @@ const sectionName = window.location.pathname?.split('/').pop()?.replace('showExt
 
     // Add question as a heading
     const questionHeading = document.createElement("input");
+    questionHeading.classList.add(`question-input`);
     questionHeading.value = question;
     questionHeading.style.width = "100%";
     questionHeading.style.border = "1px solid grey";
