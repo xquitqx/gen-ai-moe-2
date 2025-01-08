@@ -1,16 +1,17 @@
 import boto3
 import json
 from decimal import Decimal
+import os
 
 # Initialize DynamoDB resource
 dynamodb = boto3.resource('dynamodb')
 
-# Table names
-USERDATA_TABLE = 'prod-codecatalyst-sst-app-UserData'
-RECORDS_TABLE = 'prod-codecatalyst-sst-app-Records'
+# Fetch table names from environment variables
+USERDATA_TABLE = os.environ['USERDATA_TABLE']
+RECORDS_TABLE = os.environ['RECORDS_TABLE']
 
 def main(event, context):
-    # Access the DynamoDB tables
+   # Access the DynamoDB tables dynamically
     userdata_table = dynamodb.Table(USERDATA_TABLE)
     records_table = dynamodb.Table(RECORDS_TABLE)
 
@@ -38,6 +39,36 @@ def main(event, context):
                     reading_bandscore = float(record['dynamodb']['NewImage']['readingAnswer']['M']['feedback']['M']['BandScore']['N'])
                     listening_bandscore = float(record['dynamodb']['NewImage']['listeningAnswer']['M']['feedback']['M']['BandScore']['N'])
 
+                    # Process speaking scores
+                    speaking = record['dynamodb']['NewImage']['speakingAnswer']['M']['feedback']['L']
+                    if isinstance(speaking, list) and len(speaking) >= 3:
+                        try:
+                            score1 = float(speaking[0]["M"]["score"]["N"])
+                            score2 = float(speaking[1]["M"]["score"]["N"])
+                            score3 = float(speaking[2]["M"]["score"]["N"])
+                            finalspeaking_bandscore = (score1 + score2 + score3) / 3
+                        except (KeyError, ValueError, TypeError) as e:
+                            print(f"Error processing speaking scores: {e}")
+                            finalspeaking_bandscore = 0
+                    else:
+                        print(f"Unexpected speaking data structure: {speaking}")
+                        finalspeaking_bandscore = 0
+
+                    # Process writing scores
+                    feedback_list = record['dynamodb']['NewImage']["writingAnswer"]["M"]["feedback"]["L"]
+                    if isinstance(feedback_list, list) and len(feedback_list) >= 2:
+                        try:
+                            writing_score1 = float(feedback_list[0]["M"]["score"]["N"])
+                            writing_score2 = float(feedback_list[1]["M"]["score"]["N"])
+                            finalwriting_bandscore = (writing_score1 + writing_score2) / 2
+                        except (KeyError, ValueError, TypeError) as e:
+                            print(f"Error processing writing scores: {e}")
+                            finalwriting_bandscore = 0
+                    else:
+                        print(f"Unexpected writing data structure: {feedback_list}")
+                        finalwriting_bandscore = 0
+
+                    # Update reading score
                     current_reading_score = float(response['Item'].get('readingbandscore', 0))
                     new_reading_score = (current_reading_score + reading_bandscore) / 2 if current_reading_score != 0 else reading_bandscore
 
@@ -47,6 +78,7 @@ def main(event, context):
                         ExpressionAttributeValues={':val': Decimal(str(new_reading_score))}
                     )
 
+                    # Update listening score
                     current_listening_score = float(response['Item'].get('Listeningbandscore', 0))
                     new_listening_score = (current_listening_score + listening_bandscore) / 2 if current_listening_score != 0 else listening_bandscore
 
@@ -56,14 +88,33 @@ def main(event, context):
                         ExpressionAttributeValues={':val': Decimal(str(new_listening_score))}
                     )
 
-                    overallaverage = (new_reading_score + new_listening_score) / 2
+                    # Update writing score
+                    current_writing_score = float(response['Item'].get('writingbandscore', 0))
+                    new_writing_score = (current_writing_score + finalwriting_bandscore) / 2 if current_writing_score != 0 else finalwriting_bandscore
+                    userdata_table.update_item(
+                        Key={'PK': primarykey, 'SK': sortkey},
+                        UpdateExpression='SET writingbandscore = :val',
+                        ExpressionAttributeValues={':val': Decimal(str(new_writing_score))}
+                    )
 
+                    # Update speaking score
+                    current_speaking_score = float(response['Item'].get('speakingbandscore', 0))
+                    new_speaking_score = (current_speaking_score + finalspeaking_bandscore) / 2 if current_speaking_score != 0 else finalspeaking_bandscore
+                    userdata_table.update_item(
+                        Key={'PK': primarykey, 'SK': sortkey},
+                        UpdateExpression='SET speakingbandscore = :val',
+                        ExpressionAttributeValues={':val': Decimal(str(new_speaking_score))}
+                    )
+
+                    # Update overall average score
+                    overallaverage = (new_reading_score + new_listening_score + new_writing_score + new_speaking_score) / 4
                     userdata_table.update_item(
                         Key={'PK': primarykey, 'SK': sortkey},
                         UpdateExpression='SET overallavg = :val',
                         ExpressionAttributeValues={':val': Decimal(str(overallaverage))}
                     )
 
+                    # Increment the number of exams solved
                     userdata_table.update_item(
                         Key={'PK': primarykey, 'SK': sortkey},
                         UpdateExpression='ADD numberOfExamsSolved :increment',
@@ -73,7 +124,7 @@ def main(event, context):
                 except Exception as e:
                     print(f"Error processing record for PK {primarykey} and SK {sortkey}: {e}")
 
-        # Calculate aggregates for all students
+       # Calculate aggregates for all students
         try:
             response = userdata_table.scan()
             items = response.get('Items', [])
@@ -189,3 +240,4 @@ def main(event, context):
         'statusCode': 200,
         'body': json.dumps('Processing complete with updated aggregates for all and by school!')
     }
+

@@ -24,6 +24,8 @@ export function DBStack(this: any, { stack }: StackContext) {
     primaryIndex: { partitionKey: 'PK', sortKey: 'SK' },
     stream: true,
   });
+  // Add the table name as an environment variable to the Lambda function
+graphlambdafunction.addEnvironment('RECORDS_TABLE', table.tableName);
 
   table.addConsumers(stack, {
     consumer1: graphlambdafunction,
@@ -37,6 +39,8 @@ export function DBStack(this: any, { stack }: StackContext) {
     },
     primaryIndex: { partitionKey: 'PK', sortKey: 'SK' },
   });
+  // Add the table name as an environment variable to the Lambda function
+graphlambdafunction.addEnvironment('USERDATA_TABLE', userdataTable.tableName);
 
   const uploads_bucket = new Bucket(stack, 'Uploads');
   const Polly_bucket = new Bucket(stack, 'Polly');
