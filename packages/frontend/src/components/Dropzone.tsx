@@ -1,10 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useDropzone, FileRejection } from 'react-dropzone';
-// import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
-import { post } from 'aws-amplify/api';
-import { toJSON } from '../utilities';
 import '../components/AdminStyle/Dropzone.css';
-//import { sections } from '../pages/Questions';
 
 interface FileWithPreview extends File {
   preview: string;
@@ -13,152 +9,103 @@ interface FileWithPreview extends File {
 interface DropzoneProps {
   className?: string;
   acceptedFileTypes?: { [key: string]: string[] }; // Specify accepted file types
+  onFileSelected?: (file: File | null) => void; // Notify parent component when a file is selected
 }
 
-const Dropzone = ({ className, acceptedFileTypes }: DropzoneProps) => {
+const Dropzone = ({
+  className,
+  acceptedFileTypes,
+  onFileSelected,
+}: DropzoneProps) => {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [rejected, setRejected] = useState<FileRejection[]>([]);
-  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
-  //console.log(window.location.pathname.replace('/upload', ''));
-  //console.log("helloooo?");
+
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
-      if (files.length > 0) {
-        setUploadStatus('You can upload only one file at a time.');
-        return;
-      }
-
       if (acceptedFiles?.length) {
-        const file = acceptedFiles[0];
-        const fileWithPreview = Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        }) as FileWithPreview;
-        setFiles([fileWithPreview]);
-        setUploadStatus(null);
+        const newFiles = acceptedFiles.map(file => {
+          const fileWithPreview = Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          }) as FileWithPreview;
+          return fileWithPreview;
+        });
+
+        // Update state with only the first file
+        setFiles(prevFiles => {
+          const allFiles = [...prevFiles, ...newFiles];
+          return allFiles.slice(0, 1); // Keep only the first file
+        });
+
+        // Notify the parent with the first file in the batch
+        onFileSelected?.(newFiles[0]);
       }
 
       if (rejectedFiles?.length) {
         setRejected(rejectedFiles);
       }
     },
-    [files],
+    [onFileSelected],
   );
-  const sectionName = window.location.pathname.replace('/upload', '');
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: acceptedFileTypes,
     maxSize: Infinity,
+    maxFiles: 1, // Limit to 1 file
     onDrop,
   });
 
   const removeAll = () => {
     setFiles([]);
     setRejected([]);
-  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setUploadStatus(null);
-
-    const formData = new FormData();
-
-    files.forEach(file => {
-      formData.append(`file-${file.name}`, file);
-    });
-
-    try {
-      const response = await toJSON(
-        post({
-          apiName: 'myAPI',
-          path: `/adminUpload?section=${sectionName}`,
-          options: {
-            body: formData,
-          },
-        }),
-      );
-      setUploadStatus(response.message);
-    } catch (error) {
-      setUploadStatus(`Upload failed: ${(error as Error).message}`);
+    if (onFileSelected) {
+      onFileSelected(null);
     }
-  };
-  const goExtract = () => {
-    window.location.href = `/showExtracted${sectionName}`;
   };
 
   return (
-    <div className="container">
-      <form onSubmit={handleSubmit}>
-        <div
-          {...getRootProps({
-            className: `dropzone ${className}`,
-          })}
-        >
-          <input {...getInputProps()} />
-          <div className="upload-icon-container">
-            {/* <ArrowUpTrayIcon className="upload-icon" /> */}
-            <p className="upload-text">
-              Drag & drop files here, or click to select files
-            </p>
-          </div>
+    <div className="upload-section">
+      <div
+        {...getRootProps({
+          className: `dropzone ${className}`, // Add dropzone styles
+        })}
+      >
+        <input {...getInputProps()} />
+        <div className="upload-icon-container">
+          <p className="upload-text">
+            Drag & drop files here, or click to select files
+          </p>
         </div>
-        <section className="mt-10">
-          <div className="flex justify-between items-center">
-            <h2 className="title">Your Uploads</h2>
-            <button
-              type="button"
-              onClick={removeAll}
-              className="remove-all-btn"
-            >
-              Remove file
-            </button>
-            <button
-              type="button"
-              onClick={goExtract}
-              className="showExtract-btn"
-            >
-              Extract
-            </button>
-          </div>
-
-          <ul className="file-list">
-            {files.map(file => (
-              <li key={file.name} className="file-preview">
-                <img
-                  src={file.preview}
-                  alt={file.name}
-                  className="file-image"
-                  onLoad={() => URL.revokeObjectURL(file.preview)}
-                />
-                <p className="file-name">{file.name}</p>
-              </li>
-            ))}
-          </ul>
-          {rejected.length > 0 && (
-            <div className="rejected-message">
-              <p className="error-message-text">
-                Some files were rejected because they are not of the accepted
-                formats. Please upload only PDF files.
-              </p>
-            </div>
-          )}
-          {files.length > 0 && (
-            <button type="submit" className="submit-btn">
-              Submit
-            </button>
-          )}
-          {uploadStatus && (
-            <p
-              className={`upload-status ${
-                uploadStatus.startsWith('Upload successful')
-                  ? 'success'
-                  : 'error'
-              }`}
-            >
-              {uploadStatus}
+      </div>
+      <section className="mt-10">
+        <div className="flex justify-between items-center">
+          <h2 className="title">Your Uploads</h2>
+          <button type="button" onClick={removeAll} className="remove-all-btn">
+            Remove file
+          </button>
+        </div>
+        <ul className="file-list">
+          {files.map(file => (
+            <li key={file.name} className="file-preview">
+              <img
+                src={file.preview}
+                alt={file.name}
+                className="file-image"
+                onLoad={() => URL.revokeObjectURL(file.preview)}
+              />
+              <p className="file-name">{file.name}</p>
+            </li>
+          ))}
+        </ul>
+        {rejected.length > 0 && (
+          <div className="rejected-message">
+            <p className="error-message-text">
+              Some files were rejected because they are not of the accepted
+              formats. Please upload files of the correct type.
             </p>
-          )}
-        </section>
-      </form>
+          </div>
+        )}
+      </section>
     </div>
   );
 };
