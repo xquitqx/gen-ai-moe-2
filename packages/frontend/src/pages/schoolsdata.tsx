@@ -305,7 +305,7 @@ function Schooldatafetch() {
           </div>
         </div>
 
-        <div className="graph-right">
+        <div className="graph5">
           <h3>Top 3 Students by Exams Solved 📄</h3>
           <Bar
             data={getBarChartData(topByExamsSolved, 'Exams Solved')}

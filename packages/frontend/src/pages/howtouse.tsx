@@ -12,7 +12,7 @@ const VerticalSteps = () => {
   return (
     <div className="steps-page">
       {/* Navigation Bar */}
-      <Nav showLogo={true} entries={navLinks} />
+      <Nav entries={navLinks} />
 
       {/* Page Content */}
       <h1 className="page-title">Your Learning Journey</h1>

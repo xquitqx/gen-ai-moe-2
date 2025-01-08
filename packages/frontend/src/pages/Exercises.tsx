@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
-import { Plan, CefrLevel } from '../utilities/planTypes';
+{
+  /*import { Plan, CefrLevel } from '../utilities/planTypes';*/
+}
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -11,6 +13,9 @@ import { toJSON } from '../utilities';
 import { get } from 'aws-amplify/api';
 import { Link } from 'react-router-dom';
 
+{
+  /*
+
 const buttonLabels = [
   'Listening',
   'Speaking',
@@ -19,6 +24,7 @@ const buttonLabels = [
   'Writing',
 ] as const;
 type ButtonLabel = (typeof buttonLabels)[number];
+
 
 const plans: { [key in ButtonLabel]: Plan } = {
   Listening: {
@@ -52,7 +58,8 @@ const plans: { [key in ButtonLabel]: Plan } = {
     level: 'A1' as CefrLevel,
   },
 };
-
+*/
+}
 const buttonsTheme = createTheme({
   palette: {
     primary: {
@@ -62,6 +69,8 @@ const buttonsTheme = createTheme({
   },
 });
 
+{
+  /*
 const sectionDescriptions: {
   [key in ButtonLabel]: { [key in CefrLevel]: string };
 } = {
@@ -113,6 +122,8 @@ const levelCardLabels = [
   'Reading',
   'Writing',
 ] as const;
+  */
+}
 const levelDetails = [
   {
     title: 'Elementary',
@@ -241,64 +252,70 @@ const Exercises: React.FC = () => {
         />
       )}
 
-      <div className="flex flex-col items-center w-full space-y-6">
-        {/* Question Section */}
-        <div className="w-full md:w-3/4 text-center">
-          <h1 className="text-4xl font-bold underline underline-offset-[14px] decoration-4 decoration-blue-4">
-            What is {level}?
-          </h1>
-        </div>
-
-        {/*display level desc Section */}
-
-        <div className="flex flex-wrap w-full md:w-3/4 justify-center gap-16 max-md:flex-col">
-          {levelDetails.map(levelDetail => {
-            if (level === levelDetail.level) {
-              return (
-                <div
-                  key={levelDetail.level}
-                  className="flex flex-col items-center md:flex-row md:items-start border-2 border-gray-200 p-4 rounded-lg bg-white shadow-md w-full md:w-1/3 mb-4 md:mb-0"
-                >
-                  <div className="text-2xl md:text-4xl font-bold text-gray-800 text-center md:text-left mb-2 md:mb-0">
-                    {levelDetail.title}
-                  </div>
-                  <div className="text-sm md:text-base text-gray-500 mt-1 text-center md:text-left max-w-full">
-                    {levelDetail.description}
-                  </div>
-                </div>
-              );
-            }
-            return null; // If no match, return nothing
-          })}
-        </div>
-
-        {/* Click Here Section */}
-        <div className="flex justify-center items-center w-full">
-          <Link to="/about" className="w-full md:w-1/3">
-            <h1 className="w-3/4 border-2 rounded-lg min-h-28 flex flex-col items-center justify-center gap-y-5 md:w-1/2">
-              Click here To know more about other levels Click here
+      {levelDetails.some(levelDetail => level === levelDetail.level) && (
+        <div className="flex flex-col items-center w-full space-y-8">
+          {/* Title Section */}
+          <div className="w-full md:w-3/4 text-center">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+              What is {level}?
             </h1>
-          </Link>
-        </div>
-      </div>
+          </div>
 
-      <div className="flex flex-wrap w-full md:w-3/4 justify-center gap-16 max-md:flex-col">
-        {levelCardLabels.map(button => {
-          const plan = plans[button];
-          const level = plan.challenges.length > 0 ? plan.level : '--';
-          const description =
-            plan.challenges.length > 0
-              ? sectionDescriptions[button][plan.level]
-              : '';
-          return LevelCard(button, level, description);
-        })}
-      </div>
+          {/* Display Level Description Section */}
+          <div className="flex flex-wrap w-full md:w-3/4 justify-center gap-8 max-md:flex-col">
+            {levelDetails.map(levelDetail => {
+              if (level === levelDetail.level) {
+                return (
+                  <div
+                    key={levelDetail.level}
+                    className="flex flex-col items-center border-2 border-gray-200 p-6 rounded-lg bg-white shadow-md w-full md:w-1/3"
+                  >
+                    <div className="text-xl md:text-2xl font-semibold text-gray-800 text-center">
+                      {levelDetail.title}
+                    </div>
+                    <div className="text-sm md:text-base text-gray-600 mt-2 text-center">
+                      {levelDetail.description}
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            })}
+          </div>
+
+          {/* Click Here Section */}
+          <div className="flex justify-center items-center w-full">
+            <Link to="/about" className="w-full md:w-1/3">
+              <div className="border-2 border-[#4a6e77] rounded-lg py-4 px-6 bg-transparent hover:bg-transparent transition-all flex flex-col items-center">
+                <h1 className="text-base md:text-lg font-medium text-[#4a6e77]">
+                  Click here to know more about other levels
+                </h1>
+              </div>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* 
+  <div className="flex flex-wrap w-full md:w-3/4 justify-center gap-16 max-md:flex-col">
+    {levelCardLabels.map(button => {
+      const plan = plans[button];
+      const level = plan.challenges.length > 0 ? plan.level : '--';
+      const description =
+        plan.challenges.length > 0
+          ? sectionDescriptions[button][plan.level]
+          : '';
+      return LevelCard(button, level, description);
+    })}
+  </div>
+  */}
     </main>
   );
 };
 
 export default Exercises;
 
+/*
 const LevelCard = (icon: string, level: string, description: string) => (
   <>
     {level && (
@@ -324,3 +341,4 @@ const LevelCard = (icon: string, level: string, description: string) => (
     )}
   </>
 );
+*/

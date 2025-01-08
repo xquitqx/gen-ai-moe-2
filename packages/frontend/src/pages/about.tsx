@@ -12,7 +12,7 @@ const About = () => {
   return (
     <div className="steps-page">
       {/* Navigation Bar */}
-      <Nav showLogo={true} entries={navLinks} />
+      <Nav entries={navLinks} />
 
       {/* Page Content */}
       <div className="containerabout">
