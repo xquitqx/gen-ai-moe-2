@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { get } from "aws-amplify/api";
+import { post } from 'aws-amplify/api';
 import WaveSurfer from "wavesurfer.js";
 
 const SpeakingExtractedFilePage: React.FC = () => {
@@ -118,11 +119,28 @@ const SpeakingExtractedFilePage: React.FC = () => {
       const form = document.createElement("form");
       form.action = "/ApproveQuestions";
       form.method = "POST";
+      form.classList.add("question-section");
       const paragraphs = document.createElement("textarea");
+      paragraphs.classList.add("textarea");
       paragraphs.rows = 10;
       paragraphs.style.width = "95%";
       paragraphs.value = feedback;
       form.appendChild(paragraphs);
+
+      
+      for(let i=0 ; i<7 ; i++){
+      const div = document.createElement("div");
+      div.classList.add("audio-section");
+      const audioDesc = document.createElement("textarea");
+      audioDesc.classList.add("textarea");
+      audioDesc.rows = 10;
+      audioDesc.style.width = "95%";
+      audioDesc.value = `Enter Audio ${i} Description`;
+      div.appendChild(audioDesc);
+      div.appendChild(document.createElement("br"));
+      form.appendChild(div);
+      }
+      
       container.appendChild(form);
 
       const statusElement = document.getElementById("status");
@@ -136,6 +154,48 @@ const SpeakingExtractedFilePage: React.FC = () => {
       }
     }
   }, [feedback]);
+
+  const approving = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    try {
+      const buttonApprove = document.getElementById("btnApprove") as HTMLButtonElement | null;
+      if(buttonApprove)
+        buttonApprove.disabled = true;
+
+
+      const sections = Array.from(document.getElementsByClassName("question-section")).map((section) => {
+        const textarea = section.querySelector("textarea");
+        return textarea ? textarea.value : null;
+      });
+
+      const audiosDesc = Array.from(document.getElementsByClassName("audio-section")).map((section) => {
+        const textarea = section.querySelector("textarea");
+        return textarea ? textarea.value : null;
+      });
+      
+    
+      const validSections = [ sections.filter((content) => content !== null && content.trim() !== ""), audiosDesc.filter((content) => content !== null && content.trim() !== ""), audioUrls ]
+      console.log(validSections)
+      // Send the gathered data to your Lambda function
+      const response = await post({
+        apiName: "myAPI",
+        path: "/approveSpeaking",
+        options: { body: JSON.stringify(validSections) },
+      });
+  
+      console.log("Approve response:", response);
+
+      alert("Questions Saved Successfully!")
+      // Redirect to admin landing page
+      window.location.href = "/adminLandingPage";
+    } catch (error) {
+      console.error(`Approve failed: ${(error as Error).message}`);
+      const buttonApprove = document.getElementById("btnApprove") as HTMLButtonElement | null;
+      if(buttonApprove)
+        buttonApprove.disabled = false;
+    }
+  };
 
   return (
     <div
@@ -197,7 +257,7 @@ const SpeakingExtractedFilePage: React.FC = () => {
             <p style={{ display: "inline-block" }} id="status">
               Loading...
             </p>
-            <button
+            <button onClick = {approving}
               id="btnApprove"
               style={{
                 backgroundColor: "#4c929f",
@@ -243,7 +303,7 @@ const SpeakingExtractedFilePage: React.FC = () => {
                 textAlign: "center",
                 width: "200px",
               }}
-            >
+            > Audio {index}
               <div
                 id={`wavesurfer-container-${index}`}
                 style={{

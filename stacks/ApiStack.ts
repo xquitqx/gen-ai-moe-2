@@ -356,6 +356,13 @@ export function ApiStack({ stack }: StackContext) {
           timeout: '60 seconds',
         },
       },
+      'POST /approveSpeaking': {
+        function: {
+          handler: 'packages/functions/src/approveSpeaking.handler',
+          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject'],
+          timeout: '60 seconds',
+        },
+      },
       'GET /getAudioFiles': {
         function: {
           handler:'packages/functions/src/getAudioFiles.handler',
