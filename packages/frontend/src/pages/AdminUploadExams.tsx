@@ -23,10 +23,8 @@ const AdminUploadExams: React.FC = () => {
   };
 
   const navLinks = [
-    { text: 'Home', to: '/' },
     { text: 'Dashboard', to: '/admin-home' },
     { text: 'Upload Exam', to: '/AdminUploadExams' },
-    { text: 'Top achievers', to: '/studentperformance' },
   ];
 
   return (

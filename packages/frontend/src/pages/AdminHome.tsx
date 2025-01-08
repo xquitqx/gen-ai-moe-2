@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import AdminHeader from '../components/AdminHeader';
-import Navbar from '../components/Navbar';
 import '../components/AdminStyle/AdminHome.css';
 import { get } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
@@ -9,6 +7,8 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
 import { PointElement } from 'chart.js';
 import ChartjsPluginTrendline from 'chartjs-plugin-trendline';
+import { Bar } from 'react-chartjs-2';
+import { Nav } from '../components/Nav';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -69,6 +69,15 @@ function AdminHome() {
   const [scatterData, setScatterData] = useState<{ x: number; y: number }[]>(
     [],
   );
+  const [userStreakData, setUserStreakData] = useState<
+    { username: string; streakCounter: number }[]
+  >([]);
+  const [streakVsAvgData, setStreakVsAvgData] = useState<
+    { x: number; y: number }[]
+  >([]);
+  const [topByOverallAvg, setTopByOverallAvg] = useState<any[]>([]);
+  const [topByExamsSolved, setTopByExamsSolved] = useState<any[]>([]);
+  const [topByHighestStreak, setTopByHighestStreak] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -178,6 +187,63 @@ function AdminHome() {
     fetchCorrelationData();
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await toJSON(
+          get({
+            apiName: 'myAPI',
+            path: '/streaksgraphoverall',
+          }),
+        );
+
+        // Map the response to the data needed
+        const userStreak = response.results.map((item: any) => ({
+          username: item.Username,
+          streakCounter: item.StreakCounter,
+        }));
+        setUserStreakData(userStreak);
+
+        const streakVsAvg = response.results.map((item: any) => ({
+          x: item.StreakCounter,
+          y: item.OverallAvg,
+        }));
+        setStreakVsAvgData(streakVsAvg);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setError('Failed to fetch data. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+  // Fetch top students data
+  useEffect(() => {
+    const fetchTopStudents = async () => {
+      try {
+        const response = await toJSON(
+          get({
+            apiName: 'myAPI',
+            path: '/studentperformance',
+          }),
+        );
+        if (response) {
+          setTopByOverallAvg(response.topByOverallAvg || []);
+          setTopByExamsSolved(response.topByExamsSolved || []);
+          setTopByHighestStreak(response.topByHighestStreak || []);
+        }
+      } catch (error) {
+        console.error('Error fetching top students:', error);
+        setError('Failed to fetch top students data.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopStudents();
+  }, []);
   // Handle school change
   const handleSchoolChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedSchool = event.target.value;
@@ -238,6 +304,33 @@ function AdminHome() {
       },
     },
   };
+  // Bar chart data (Username vs StreakCounter)
+  const barChartData: ChartData<'bar'> = {
+    labels: userStreakData.map(item => item.username), // Usernames as labels
+    datasets: [
+      {
+        label: 'Streak Counter',
+        data: userStreakData.map(item => item.streakCounter),
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  // Scatter plot data (StreakCounter vs OverallAvg)
+  const scatterChartData: ChartData<'scatter'> = {
+    datasets: [
+      {
+        label: 'Streak Counter vs Overall Avg',
+        data: streakVsAvgData,
+        backgroundColor: 'rgba(153, 102, 255, 0.6)',
+        borderColor: 'rgba(153, 102, 255, 1)',
+        pointRadius: 5,
+      },
+    ],
+  };
+
   const avgChartData: ChartData<'scatter'> = {
     datasets: [
       {
@@ -354,11 +447,189 @@ function AdminHome() {
     ],
   };
 
+  const scatterChartOptions: ChartOptions<'scatter'> = {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Streak Counter', // Set the x-axis label
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Overall Avg', // Set the y-axis label
+        },
+      },
+    },
+  };
+
+  const avgChartOptions: ChartOptions<'scatter'> = {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Exams Solved', // Set the x-axis label
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Average Score', // Set the y-axis label
+        },
+      },
+    },
+  };
+
+  const readingVsListeningOptions: ChartOptions<'scatter'> = {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Reading Score', // Set the x-axis label
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Listening Score', // Set the y-axis label
+        },
+      },
+    },
+  };
+
+  const readingVsWritingOptions: ChartOptions<'scatter'> = {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Reading Score', // Set the x-axis label
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Writing Score', // Set the y-axis label
+        },
+      },
+    },
+  };
+
+  const readingVsSpeakingOptions: ChartOptions<'scatter'> = {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Reading Score', // Set the x-axis label
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Speaking Score', // Set the y-axis label
+        },
+      },
+    },
+  };
+
+  const listeningVsWritingOptions: ChartOptions<'scatter'> = {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Listening Score', // Set the x-axis label
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Writing Score', // Set the y-axis label
+        },
+      },
+    },
+  };
+
+  const listeningVsSpeakingOptions: ChartOptions<'scatter'> = {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Listening Score', // Set the x-axis label
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Speaking Score', // Set the y-axis label
+        },
+      },
+    },
+  };
+
+  const writingVsSpeakingOptions: ChartOptions<'scatter'> = {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Writing Score', // Set the x-axis label
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Speaking Score', // Set the y-axis label
+        },
+      },
+    },
+  };
+
+  // Bar chart data for each metric
+  const getBarChartData = (students: any[], label: string) => {
+    console.log(`Bar chart data for ${label}:`, students); // Debugging log
+    return {
+      labels: students.map(student => student.username),
+      datasets: [
+        {
+          label: label,
+          data: students.map(student => {
+            switch (label) {
+              case 'Highest Streak':
+                return student.streakCounter; // Use streakCounter for highest streak
+              case 'Overall Average':
+                return student.overallAvg; // Use overallAvg for overall average
+              case 'Exams Solved':
+                return student.numberOfExamsSolved; // Use numberOfExamsSolved for exams solved
+              default:
+                return 0;
+            }
+          }),
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+        },
+      ],
+    };
+  };
+  const navLinks = [
+    { text: 'Dashboard', to: '/admin-home' },
+    { text: 'Upload Exam', to: '/AdminUploadExams' },
+  ];
+
   return (
     <div>
-      <AdminHeader />
-      <Navbar />
+      {/* Navigation Bar */}
+      <Nav entries={navLinks} />
       <main className="admin-home">
+        <h3 className="HelloAdmin">Hello Admin,</h3>
+
         <div className="dashboard-cards">
           <div className="dashboard-card">
             <h3>Current students across Bahrain</h3>
@@ -401,7 +672,7 @@ function AdminHome() {
           <div className="scatter-plot">
             <h3>Correlation: Exams Solved vs. Average Score</h3>
             {scatterData.length > 0 ? (
-              <Scatter data={avgChartData} />
+              <Scatter data={avgChartData} options={avgChartOptions} />
             ) : error ? (
               <p>{error}</p>
             ) : (
@@ -409,10 +680,47 @@ function AdminHome() {
             )}
           </div>
 
-          <div className="scatter-plot">
-            <h3>Correlation: Reading vs Listening</h3>
-            {readingVsListening.length > 0 ? (
-              <Scatter data={readingVsListeningData} />
+          <div className="graph-right">
+            <h3>Streak Counter vs Overall Average</h3>
+            {streakVsAvgData.length > 0 ? (
+              <Scatter data={scatterChartData} options={scatterChartOptions} />
+            ) : error ? (
+              <p>{error}</p>
+            ) : (
+              <p>Loading scatter plot data...</p>
+            )}
+          </div>
+        </div>
+
+        <div className="graphs-container">
+          <div className="graph-left">
+            <h3>Top 3 Students by Highest Streak 🔥</h3>
+            <Bar
+              data={getBarChartData(topByHighestStreak, 'Highest Streak')}
+              options={{ responsive: true }}
+            />
+          </div>
+
+          <div className="graph-right">
+            <h3>Top 3 Students by Overall Average</h3>
+            <Bar
+              data={getBarChartData(topByOverallAvg, 'Overall Average')}
+              options={{ responsive: true }}
+            />
+          </div>
+        </div>
+        <div className="graphs-container">
+          <div className="graph-right">
+            <h3>Top 3 Students by Exams Solved 📄</h3>
+            <Bar
+              data={getBarChartData(topByExamsSolved, 'Exams Solved')}
+              options={{ responsive: true }}
+            />{' '}
+          </div>
+          <div className="graph-right">
+            <h3>Username vs Streak Counter</h3>
+            {userStreakData.length > 0 ? (
+              <ChartComponent data={barChartData} options={chartOptions} />
             ) : error ? (
               <p>{error}</p>
             ) : (
@@ -425,7 +733,10 @@ function AdminHome() {
           <div className="scatter-plot">
             <h3>Correlation: Reading vs Writing</h3>
             {readingVsWriting.length > 0 ? (
-              <Scatter data={readingVsWritingData} />
+              <Scatter
+                data={readingVsWritingData}
+                options={readingVsWritingOptions}
+              />
             ) : error ? (
               <p>{error}</p>
             ) : (
@@ -435,7 +746,10 @@ function AdminHome() {
           <div className="scatter-plot">
             <h3>Correlation: Reading vs Speaking</h3>
             {readingVsSpeaking.length > 0 ? (
-              <Scatter data={readingVsSpeakingData} />
+              <Scatter
+                data={readingVsSpeakingData}
+                options={readingVsSpeakingOptions}
+              />
             ) : error ? (
               <p>{error}</p>
             ) : (
@@ -448,7 +762,10 @@ function AdminHome() {
           <div className="scatter-plot">
             <h3>Correlation: Listening vs Writing</h3>
             {listeningVsWriting.length > 0 ? (
-              <Scatter data={listeningVsWritingData} />
+              <Scatter
+                data={listeningVsWritingData}
+                options={listeningVsWritingOptions}
+              />
             ) : error ? (
               <p>{error}</p>
             ) : (
@@ -459,7 +776,10 @@ function AdminHome() {
           <div className="scatter-plot">
             <h3>Correlation: Listening vs Speaking</h3>
             {listeningVsSpeaking.length > 0 ? (
-              <Scatter data={listeningVsSpeakingData} />
+              <Scatter
+                data={listeningVsSpeakingData}
+                options={listeningVsSpeakingOptions}
+              />
             ) : error ? (
               <p>{error}</p>
             ) : (
@@ -470,9 +790,25 @@ function AdminHome() {
 
         <div className="graphs-container">
           <div className="scatter-plot">
+            <h3>Correlation: Reading vs Listening</h3>
+            {readingVsListening.length > 0 ? (
+              <Scatter
+                data={readingVsListeningData}
+                options={readingVsListeningOptions}
+              />
+            ) : error ? (
+              <p>{error}</p>
+            ) : (
+              <p>Loading data...</p>
+            )}
+          </div>
+          <div className="scatter-plot">
             <h3>Correlation: Writing vs Speaking</h3>
             {writingVsSpeaking.length > 0 ? (
-              <Scatter data={writingVsSpeakingData} />
+              <Scatter
+                data={writingVsSpeakingData}
+                options={writingVsSpeakingOptions}
+              />
             ) : error ? (
               <p>{error}</p>
             ) : (

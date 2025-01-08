@@ -148,6 +148,18 @@ export function ApiStack({ stack }: StackContext) {
           },
         },
       },
+      'GET /streaksgraphoverall': {
+        function: {
+          handler: 'packages/functions/src/streaksgraphoverall.handler',
+          permissions: ['dynamodb:*'],
+          timeout: '60 seconds',
+          environment: {
+            tableName: table.tableName,
+            tableName2: userdataTable.tableName,
+
+          },
+        },
+      },
       'GET /correlation': {
         function: {
           handler: 'packages/functions/src/correlation.handler',
