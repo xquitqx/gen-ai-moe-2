@@ -38,6 +38,8 @@
     "aws-jwt-verify": "^4.0.1",
     "chart": "^0.1.2",
     "chart.js": "^4.4.7",
+    "chartjs-plugin-annotation": "^3.1.0",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "chartjs-plugin-trendline": "^2.1.6",
     "dropzone": "^6.0.0-beta.2",
     "formik": "^2.4.6",

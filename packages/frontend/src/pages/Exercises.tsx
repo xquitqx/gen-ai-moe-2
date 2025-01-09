@@ -284,12 +284,12 @@ const Exercises: React.FC = () => {
           </div>
 
           {/* Click Here Section */}
-          <div className="flex justify-center items-center w-full">
+          <div className="flex flex-wrap w-full md:w-3/4 justify-center gap-8 max-md:flex-col">
             <Link to="/about" className="w-full md:w-1/3">
-              <div className="border-2 border-[#4a6e77] rounded-lg py-4 px-6 bg-transparent hover:bg-transparent transition-all flex flex-col items-center">
-                <h1 className="text-base md:text-lg font-medium text-[#4a6e77]">
+              <div className="flex flex-col items-center border-2 border-gray-200 p-6 rounded-lg bg-white shadow-md">
+                <div className="text-xl md:text-2xl font-semibold text-gray-800 text-center">
                   Click here to know more about other levels
-                </h1>
+                </div>
               </div>
             </Link>
           </div>
