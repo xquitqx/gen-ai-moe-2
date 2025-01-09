@@ -9,6 +9,8 @@ import { PointElement } from 'chart.js';
 import ChartjsPluginTrendline from 'chartjs-plugin-trendline';
 import { Bar } from 'react-chartjs-2';
 import { Nav } from '../components/Nav';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import 'chartjs-plugin-annotation';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -29,6 +31,7 @@ ChartJS.register(
   Tooltip,
   Legend,
   ChartjsPluginTrendline,
+  ChartDataLabels,
 );
 
 function AdminHome() {
@@ -254,10 +257,9 @@ function AdminHome() {
 
   // Define chart data for the first chart (IELTS scores)
   const chartData: ChartData<'bar'> = {
-    labels: ['Reading', 'Writing', 'Listening', 'Speaking'],
+    labels: ['Reading', 'Writing', 'Listening', 'Speaking'], // Place 'Regional Average' first
     datasets: [
       {
-        label: 'Average IELTS Sections Score',
         data: [
           avgReadingScore,
           avgWritingScore,
@@ -265,23 +267,22 @@ function AdminHome() {
           avgSpeakingScore,
         ],
         backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
+          'rgba(75, 192, 192, 0.2)', // Reading
+          'rgba(75, 192, 192, 0.2)', // Writing
+          'rgba(75, 192, 192, 0.2)', // Listening
+          'rgba(75, 192, 192, 0.2)', // Speaking
         ],
         borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
+          'rgba(75, 192, 192, 1)', // Reading
+          'rgba(75, 192, 192, 1)', // Writing
+          'rgba(75, 192, 192, 1)', // Listening
+          'rgba(75, 192, 192, 1)', // Speaking
         ],
         borderWidth: 1,
       },
     ],
   };
 
-  // Define chart data for the second chart (school scores)
   const secondChartData: ChartData<'bar'> = {
     labels: schoolScores.map(item => item.schoolName), // School names as labels
     datasets: [
@@ -292,19 +293,267 @@ function AdminHome() {
         borderColor: 'rgba(75, 192, 192, 1)', // Darker blue for the border
         borderWidth: 1,
       },
+      {
+        label: 'Regional Average', // Fixed label for regional average
+        data: schoolScores.map(() => 6.5), // Set the regional average value for each school
+        backgroundColor: 'rgba(255, 99, 132, 0.2)', // Light red color for regional average
+        borderColor: 'rgba(255, 99, 132, 1)', // Darker red for the border
+        borderWidth: 1,
+        barThickness: 15, // Increase the bar thickness for the red bars
+      },
     ],
   };
 
-  // Chart options (optional)
   const chartOptions: ChartOptions<'bar'> = {
     responsive: true,
     scales: {
+      x: {
+        beginAtZero: true, // Ensure the x-axis starts from 0
+        title: {
+          display: true,
+          text: 'IELTS section', // Label for the x-axis
+        },
+      },
       y: {
-        beginAtZero: true,
+        beginAtZero: true, // Ensure the y-axis starts from 0
+        title: {
+          display: true,
+          text: 'Average band score', // Label for the y-axis
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false, // Hides the legend
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        color: 'black',
+        font: {
+          weight: 'bold',
+        },
+        formatter: value => {
+          if (value == null) {
+            return '-'; // Handle null or undefined values
+          }
+          return value;
+        },
       },
     },
   };
-  // Bar chart data (Username vs StreakCounter)
+  const chartOptions1: ChartOptions<'bar'> = {
+    responsive: true,
+    scales: {
+      x: {
+        beginAtZero: true, // Ensure the x-axis starts from 0
+        title: {
+          display: true,
+          text: 'IELTS Section', // Label for the x-axis
+        },
+      },
+      y: {
+        beginAtZero: true, // Ensure the y-axis starts from 0
+        title: {
+          display: true,
+          text: 'Average Band Score', // Label for the y-axis
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: true, // Show the legend now
+        labels: {
+          generateLabels: () => {
+            // No need to use 'chart' here
+            return [
+              {
+                text: 'Regional Average (6.5)',
+                fillStyle: 'rgba(255, 99, 132, 0.2)', // Red color for Regional Average
+                strokeStyle: 'rgba(255, 99, 132, 1)', // Red border for Regional Average
+              },
+              {
+                text: 'Bahrain Schools Average',
+                fillStyle: 'rgba(75, 192, 192, 0.2)', // Green color for Bahrain Schools Average
+                strokeStyle: 'rgba(75, 192, 192, 1)', // Green border for Bahrain Schools Average
+              },
+            ];
+          },
+        },
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        color: 'black',
+        font: {
+          weight: 'bold',
+        },
+        formatter: value => {
+          if (value == null) {
+            return '-'; // Handle null or undefined values
+          }
+          return value;
+        },
+      },
+    },
+  };
+
+  const chartOptionsusernamestreak: ChartOptions<'bar'> = {
+    responsive: true,
+    scales: {
+      x: {
+        beginAtZero: true, // Ensure the x-axis starts from 0
+        title: {
+          display: true,
+          text: 'Student username', // Label for the x-axis
+        },
+      },
+      y: {
+        beginAtZero: true, // Ensure the y-axis starts from 0
+        title: {
+          display: true,
+          text: 'Number of days (Streaks)', // Label for the y-axis
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false, // Hides the legend
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        color: 'black',
+        font: {
+          weight: 'bold',
+        },
+        formatter: value => {
+          if (value == null) {
+            return '-'; // Handle null or undefined values
+          }
+          return value;
+        },
+      },
+    },
+  };
+
+  const chartOptionsforaverage: ChartOptions<'bar'> = {
+    responsive: true,
+    scales: {
+      x: {
+        beginAtZero: true, // Ensure the x-axis starts from 0
+        title: {
+          display: true,
+          text: 'Student username', // Label for the x-axis
+        },
+      },
+      y: {
+        beginAtZero: true, // Ensure the y-axis starts from 0
+        title: {
+          display: true,
+          text: 'Average score', // Label for the y-axis
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false, // Hides the legend
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        color: 'black',
+        font: {
+          weight: 'bold',
+        },
+        formatter: value => {
+          if (value == null) {
+            return '-'; // Handle null or undefined values
+          }
+          return value;
+        },
+      },
+    },
+  };
+
+  const chartOptionsforexams: ChartOptions<'bar'> = {
+    responsive: true,
+    scales: {
+      x: {
+        beginAtZero: true, // Ensure the x-axis starts from 0
+        title: {
+          display: true,
+          text: 'Student username', // Label for the x-axis
+        },
+      },
+      y: {
+        beginAtZero: true, // Ensure the y-axis starts from 0
+        title: {
+          display: true,
+          text: 'Number of exams taken', // Label for the y-axis
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false, // Hides the legend
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        color: 'black',
+        font: {
+          weight: 'bold',
+        },
+        formatter: value => {
+          if (value == null) {
+            return '-'; // Handle null or undefined values
+          }
+          return value;
+        },
+      },
+    },
+  };
+
+  const chartOptionsforstreak: ChartOptions<'bar'> = {
+    responsive: true,
+    scales: {
+      x: {
+        beginAtZero: true, // Ensure the x-axis starts from 0
+        title: {
+          display: true,
+          text: 'Student username', // Label for the x-axis
+        },
+      },
+      y: {
+        beginAtZero: true, // Ensure the y-axis starts from 0
+        title: {
+          display: true,
+          text: 'Number of days (Streaks)', // Label for the y-axis
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false, // Hides the legend
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        color: 'black',
+        font: {
+          weight: 'bold',
+        },
+        formatter: value => {
+          if (value == null) {
+            return '-'; // Handle null or undefined values
+          }
+          return value;
+        },
+      },
+    },
+  };
+
   const barChartData: ChartData<'bar'> = {
     labels: userStreakData.map(item => item.username), // Usernames as labels
     datasets: [
@@ -327,7 +576,12 @@ function AdminHome() {
         backgroundColor: 'rgba(153, 102, 255, 0.6)',
         borderColor: 'rgba(153, 102, 255, 1)',
         pointRadius: 5,
-      },
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+        },
+      } as any, // Cast the dataset to `any`
     ],
   };
 
@@ -437,7 +691,6 @@ function AdminHome() {
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-
         trendlineLinear: {
           style: 'solid', // Line style
           lineWidth: 2, // Line width
@@ -451,16 +704,23 @@ function AdminHome() {
     responsive: true,
     scales: {
       x: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Streak Counter', // Set the x-axis label
+          text: 'Streak Counter',
         },
       },
       y: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Overall Avg', // Set the y-axis label
+          text: 'Overall Avg',
         },
+      },
+    },
+    plugins: {
+      datalabels: {
+        display: false, // Disable datalabels
       },
     },
   };
@@ -469,16 +729,23 @@ function AdminHome() {
     responsive: true,
     scales: {
       x: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Exams Solved', // Set the x-axis label
+          text: 'Exams Solved',
         },
       },
       y: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Average Score', // Set the y-axis label
+          text: 'Average Score',
         },
+      },
+    },
+    plugins: {
+      datalabels: {
+        display: false, // Disable datalabels
       },
     },
   };
@@ -487,16 +754,23 @@ function AdminHome() {
     responsive: true,
     scales: {
       x: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Reading Score', // Set the x-axis label
+          text: 'Reading Score',
         },
       },
       y: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Listening Score', // Set the y-axis label
+          text: 'Listening Score',
         },
+      },
+    },
+    plugins: {
+      datalabels: {
+        display: false, // Disable datalabels
       },
     },
   };
@@ -505,16 +779,23 @@ function AdminHome() {
     responsive: true,
     scales: {
       x: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Reading Score', // Set the x-axis label
+          text: 'Reading Score',
         },
       },
       y: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Writing Score', // Set the y-axis label
+          text: 'Writing Score',
         },
+      },
+    },
+    plugins: {
+      datalabels: {
+        display: false, // Disable datalabels
       },
     },
   };
@@ -523,16 +804,23 @@ function AdminHome() {
     responsive: true,
     scales: {
       x: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Reading Score', // Set the x-axis label
+          text: 'Reading Score',
         },
       },
       y: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Speaking Score', // Set the y-axis label
+          text: 'Speaking Score',
         },
+      },
+    },
+    plugins: {
+      datalabels: {
+        display: false, // Disable datalabels
       },
     },
   };
@@ -541,16 +829,23 @@ function AdminHome() {
     responsive: true,
     scales: {
       x: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Listening Score', // Set the x-axis label
+          text: 'Listening Score',
         },
       },
       y: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Writing Score', // Set the y-axis label
+          text: 'Writing Score',
         },
+      },
+    },
+    plugins: {
+      datalabels: {
+        display: false, // Disable datalabels
       },
     },
   };
@@ -559,16 +854,23 @@ function AdminHome() {
     responsive: true,
     scales: {
       x: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Listening Score', // Set the x-axis label
+          text: 'Listening Score',
         },
       },
       y: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Speaking Score', // Set the y-axis label
+          text: 'Speaking Score',
         },
+      },
+    },
+    plugins: {
+      datalabels: {
+        display: false, // Disable datalabels
       },
     },
   };
@@ -577,16 +879,23 @@ function AdminHome() {
     responsive: true,
     scales: {
       x: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Writing Score', // Set the x-axis label
+          text: 'Writing Score',
         },
       },
       y: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: 'Speaking Score', // Set the y-axis label
+          text: 'Speaking Score',
         },
+      },
+    },
+    plugins: {
+      datalabels: {
+        display: false, // Disable datalabels
       },
     },
   };
@@ -598,7 +907,6 @@ function AdminHome() {
       labels: students.map(student => student.username),
       datasets: [
         {
-          label: label,
           data: students.map(student => {
             switch (label) {
               case 'Highest Streak':
@@ -654,21 +962,49 @@ function AdminHome() {
           </div>
         </div>
         <div>
-          <h1 className="page-title">Student Performance Across Bahrain</h1>
+          <h1 className="page-title">
+            English Proficiency Levels Across Bahrain
+          </h1>
         </div>
 
         <div className="graphs-container">
           <div className="graph-left">
-            <h3>Performance Overview for Each IELTS Section</h3>
+            <h3>Average score for Each IELTS Section</h3>
             <ChartComponent data={chartData} options={chartOptions} />
           </div>
           <div className="graph-right">
-            <h3>Average School-by-School Performance</h3>
-            <ChartComponent data={secondChartData} />
+            <h3>Average score of each school in Bahrain </h3>
+            <ChartComponent data={secondChartData} options={chartOptions1} />
           </div>
         </div>
 
         <div className="graphs-container">
+          <div className="graph-left">
+            <h3>Top 3 Students by Highest Streak 🔥</h3>
+            <Bar
+              data={getBarChartData(topByHighestStreak, 'Highest Streak')}
+              options={chartOptionsforstreak}
+            />
+          </div>
+
+          <div className="graph-right">
+            <h3>Top 3 Students by Overall Average</h3>
+            <Bar
+              data={getBarChartData(topByOverallAvg, 'Overall Average')}
+              options={chartOptionsforaverage}
+            />
+          </div>
+        </div>
+
+        <div className="graphs-container">
+          <div className="graph-left">
+            <h3>Top 3 Students by Exams Solved 📄</h3>
+            <Bar
+              data={getBarChartData(topByExamsSolved, 'Exams Solved')}
+              options={chartOptionsforexams}
+            />{' '}
+          </div>
+
           <div className="scatter-plot">
             <h3>Correlation: Exams Solved vs. Average Score</h3>
             {scatterData.length > 0 ? (
@@ -679,7 +1015,9 @@ function AdminHome() {
               <p>Loading scatter plot data...</p>
             )}
           </div>
+        </div>
 
+        <div className="graphs-container">
           <div className="graph-right">
             <h3>Streak Counter vs Overall Average</h3>
             {streakVsAvgData.length > 0 ? (
@@ -690,37 +1028,13 @@ function AdminHome() {
               <p>Loading scatter plot data...</p>
             )}
           </div>
-        </div>
-
-        <div className="graphs-container">
-          <div className="graph-left">
-            <h3>Top 3 Students by Highest Streak 🔥</h3>
-            <Bar
-              data={getBarChartData(topByHighestStreak, 'Highest Streak')}
-              options={{ responsive: true }}
-            />
-          </div>
-
-          <div className="graph-right">
-            <h3>Top 3 Students by Overall Average</h3>
-            <Bar
-              data={getBarChartData(topByOverallAvg, 'Overall Average')}
-              options={{ responsive: true }}
-            />
-          </div>
-        </div>
-        <div className="graphs-container">
-          <div className="graph-right">
-            <h3>Top 3 Students by Exams Solved 📄</h3>
-            <Bar
-              data={getBarChartData(topByExamsSolved, 'Exams Solved')}
-              options={{ responsive: true }}
-            />{' '}
-          </div>
           <div className="graph-right">
             <h3>Username vs Streak Counter</h3>
             {userStreakData.length > 0 ? (
-              <ChartComponent data={barChartData} options={chartOptions} />
+              <ChartComponent
+                data={barChartData}
+                options={chartOptionsusernamestreak}
+              />
             ) : error ? (
               <p>{error}</p>
             ) : (

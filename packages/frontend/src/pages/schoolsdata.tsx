@@ -163,10 +163,9 @@ function Schooldatafetch() {
 
   // Define chart data for the sections (reading, writing, etc.)
   const sectionChartData: ChartData<'bar'> = {
-    labels: ['Reading', 'Writing', 'Listening', 'Speaking'],
+    labels: ['Reading', 'Writing', 'Listening', 'Speaking'], // Place 'Regional Average' first
     datasets: [
       {
-        label: 'Average IELTS sections score',
         data: [
           avgReadingScore,
           avgWritingScore,
@@ -174,16 +173,16 @@ function Schooldatafetch() {
           avgSpeakingScore,
         ],
         backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
+          'rgba(75, 192, 192, 0.2)', // Reading
+          'rgba(75, 192, 192, 0.2)', // Writing
+          'rgba(75, 192, 192, 0.2)', // Listening
+          'rgba(75, 192, 192, 0.2)', // Speaking
         ],
         borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
+          'rgba(75, 192, 192, 1)', // Reading
+          'rgba(75, 192, 192, 1)', // Writing
+          'rgba(75, 192, 192, 1)', // Listening
+          'rgba(75, 192, 192, 1)', // Speaking
         ],
         borderWidth: 1,
       },
@@ -203,13 +202,196 @@ function Schooldatafetch() {
       },
     ],
   };
-
-  // Chart options (optional)
   const chartOptions: ChartOptions<'bar'> = {
     responsive: true,
     scales: {
+      x: {
+        beginAtZero: true, // Ensure the x-axis starts from 0
+        title: {
+          display: true,
+          text: 'IELTS section', // Label for the x-axis
+        },
+      },
       y: {
-        beginAtZero: true,
+        beginAtZero: true, // Ensure the y-axis starts from 0
+        title: {
+          display: true,
+          text: 'Average band score', // Label for the y-axis
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false, // Hides the legend
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        color: 'black',
+        font: {
+          weight: 'bold',
+        },
+        formatter: value => {
+          if (value == null) {
+            return '-'; // Handle null or undefined values
+          }
+          return value;
+        },
+      },
+    },
+  };
+
+  const chartOptionsforaverage: ChartOptions<'bar'> = {
+    responsive: true,
+    scales: {
+      x: {
+        beginAtZero: true, // Ensure the x-axis starts from 0
+        title: {
+          display: true,
+          text: 'Student username', // Label for the x-axis
+        },
+      },
+      y: {
+        beginAtZero: true, // Ensure the y-axis starts from 0
+        title: {
+          display: true,
+          text: 'Average score', // Label for the y-axis
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false, // Hides the legend
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        color: 'black',
+        font: {
+          weight: 'bold',
+        },
+        formatter: value => {
+          if (value == null) {
+            return '-'; // Handle null or undefined values
+          }
+          return value;
+        },
+      },
+    },
+  };
+  const chartOptionsforexams: ChartOptions<'bar'> = {
+    responsive: true,
+    scales: {
+      x: {
+        beginAtZero: true, // Ensure the x-axis starts from 0
+        title: {
+          display: true,
+          text: 'Student username', // Label for the x-axis
+        },
+      },
+      y: {
+        beginAtZero: true, // Ensure the y-axis starts from 0
+        title: {
+          display: true,
+          text: 'Number of exams taken', // Label for the y-axis
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false, // Hides the legend
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        color: 'black',
+        font: {
+          weight: 'bold',
+        },
+        formatter: value => {
+          if (value == null) {
+            return '-'; // Handle null or undefined values
+          }
+          return value;
+        },
+      },
+    },
+  };
+
+  const chartOptionsforstreak: ChartOptions<'bar'> = {
+    responsive: true,
+    scales: {
+      x: {
+        beginAtZero: true, // Ensure the x-axis starts from 0
+        title: {
+          display: true,
+          text: 'Student username', // Label for the x-axis
+        },
+      },
+      y: {
+        beginAtZero: true, // Ensure the y-axis starts from 0
+        title: {
+          display: true,
+          text: 'Number of days (Streaks)', // Label for the y-axis
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false, // Hides the legend
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        color: 'black',
+        font: {
+          weight: 'bold',
+        },
+        formatter: value => {
+          if (value == null) {
+            return '-'; // Handle null or undefined values
+          }
+          return value;
+        },
+      },
+    },
+  };
+
+  const chartOptionsnumberofexamsolved: ChartOptions<'bar'> = {
+    responsive: true,
+    scales: {
+      x: {
+        beginAtZero: true, // Ensure the x-axis starts from 0
+        title: {
+          display: true,
+          text: 'Student username', // Label for the x-axis
+        },
+      },
+      y: {
+        beginAtZero: true, // Ensure the y-axis starts from 0
+        title: {
+          display: true,
+          text: 'Number of Exams Solved', // Label for the y-axis
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false, // Hides the legend
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        color: 'black',
+        font: {
+          weight: 'bold',
+        },
+        formatter: value => {
+          if (value == null) {
+            return '-'; // Handle null or undefined values
+          }
+          return value;
+        },
       },
     },
   };
@@ -242,13 +424,13 @@ function Schooldatafetch() {
     };
   };
   return (
-        <div >
+    <div>
       {/* Navigation Bar */}
       <Nav entries={navLinks} />
       <main className="admin-home">
         <div className="dashboard-cards">
           <div className="dashboard-card">
-            <h3>Current students across {schoolName}</h3>
+            <h3>Current students in {schoolName}</h3>
             {loading ? (
               <p>Loading...</p>
             ) : error ? (
@@ -259,7 +441,7 @@ function Schooldatafetch() {
           </div>
 
           <div className="dashboard-card">
-            <h3>Overall Average of Students Across {schoolName}</h3>
+            <h3>Overall Average of Students in {schoolName}</h3>
             {loading ? (
               <p>Loading...</p>
             ) : error ? (
@@ -270,20 +452,21 @@ function Schooldatafetch() {
           </div>
         </div>
         <div>
-          <h1 className="page-title">
-            Student Performance Across {schoolName}
-          </h1>
+          <h1 className="page-title">Student performance in {schoolName}</h1>
         </div>
 
         <div className="graphs-container">
           <div className="graph-left">
-            <h3>Performance Overview</h3>
+            <h3>Average score for Each IELTS Section</h3>
             <ChartComponent data={sectionChartData} options={chartOptions} />
           </div>
 
           <div className="graph-right">
-            <h3>Number of Exams Solved</h3>
-            <ChartComponent data={userChartData} options={chartOptions} />
+            <h3>Number of Exams Solved by each student</h3>
+            <ChartComponent
+              data={userChartData}
+              options={chartOptionsnumberofexamsolved}
+            />
           </div>
         </div>
 
@@ -292,7 +475,7 @@ function Schooldatafetch() {
             <h3>Top 3 Students by Highest Streak 🔥</h3>
             <Bar
               data={getBarChartData(topByHighestStreak, 'Highest Streak')}
-              options={{ responsive: true }}
+              options={chartOptionsforstreak}
             />
           </div>
 
@@ -300,7 +483,7 @@ function Schooldatafetch() {
             <h3>Top 3 Students by Overall Average</h3>
             <Bar
               data={getBarChartData(topByOverallAvg, 'Overall Average')}
-              options={{ responsive: true }}
+              options={chartOptionsforaverage}
             />
           </div>
         </div>
@@ -309,7 +492,7 @@ function Schooldatafetch() {
           <h3>Top 3 Students by Exams Solved 📄</h3>
           <Bar
             data={getBarChartData(topByExamsSolved, 'Exams Solved')}
-            options={{ responsive: true }}
+            options={chartOptionsforexams}
           />{' '}
         </div>
 

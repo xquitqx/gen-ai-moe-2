@@ -10,8 +10,13 @@ dynamodb = boto3.resource('dynamodb')
 USERDATA_TABLE = os.environ['USERDATA_TABLE']
 RECORDS_TABLE = os.environ['RECORDS_TABLE']
 
+def round_to_nearest_half(value):
+    if value is None:
+        return None
+    return round(value * 2) / 2
+
 def main(event, context):
-   # Access the DynamoDB tables dynamically
+    # Access the DynamoDB tables dynamically
     userdata_table = dynamodb.Table(USERDATA_TABLE)
     records_table = dynamodb.Table(RECORDS_TABLE)
 
@@ -71,47 +76,55 @@ def main(event, context):
                     # Update reading score
                     current_reading_score = float(response['Item'].get('readingbandscore', 0))
                     new_reading_score = (current_reading_score + reading_bandscore) / 2 if current_reading_score != 0 else reading_bandscore
+                    rounded_reading_score = round_to_nearest_half(new_reading_score)
 
                     userdata_table.update_item(
                         Key={'PK': primarykey, 'SK': sortkey},
                         UpdateExpression='SET readingbandscore = :val',
-                        ExpressionAttributeValues={':val': Decimal(str(new_reading_score))}
+                        ExpressionAttributeValues={':val': Decimal(str(rounded_reading_score))}
                     )
 
                     # Update listening score
                     current_listening_score = float(response['Item'].get('Listeningbandscore', 0))
                     new_listening_score = (current_listening_score + listening_bandscore) / 2 if current_listening_score != 0 else listening_bandscore
+                    rounded_listening_score = round_to_nearest_half(new_listening_score)
 
                     userdata_table.update_item(
                         Key={'PK': primarykey, 'SK': sortkey},
                         UpdateExpression='SET Listeningbandscore = :val',
-                        ExpressionAttributeValues={':val': Decimal(str(new_listening_score))}
+                        ExpressionAttributeValues={':val': Decimal(str(rounded_listening_score))}
                     )
 
                     # Update writing score
                     current_writing_score = float(response['Item'].get('writingbandscore', 0))
                     new_writing_score = (current_writing_score + finalwriting_bandscore) / 2 if current_writing_score != 0 else finalwriting_bandscore
+                    rounded_writing_score = round_to_nearest_half(new_writing_score)
+
                     userdata_table.update_item(
                         Key={'PK': primarykey, 'SK': sortkey},
                         UpdateExpression='SET writingbandscore = :val',
-                        ExpressionAttributeValues={':val': Decimal(str(new_writing_score))}
+                        ExpressionAttributeValues={':val': Decimal(str(rounded_writing_score))}
                     )
 
                     # Update speaking score
                     current_speaking_score = float(response['Item'].get('speakingbandscore', 0))
                     new_speaking_score = (current_speaking_score + finalspeaking_bandscore) / 2 if current_speaking_score != 0 else finalspeaking_bandscore
+                    rounded_speaking_score = round_to_nearest_half(new_speaking_score)
+
                     userdata_table.update_item(
                         Key={'PK': primarykey, 'SK': sortkey},
                         UpdateExpression='SET speakingbandscore = :val',
-                        ExpressionAttributeValues={':val': Decimal(str(new_speaking_score))}
+                        ExpressionAttributeValues={':val': Decimal(str(rounded_speaking_score))}
                     )
 
                     # Update overall average score
-                    overallaverage = (new_reading_score + new_listening_score + new_writing_score + new_speaking_score) / 4
+                    overallaverage = (rounded_reading_score + rounded_listening_score + rounded_writing_score + rounded_speaking_score) / 4
+                    rounded_overallaverage = round_to_nearest_half(overallaverage)
+
                     userdata_table.update_item(
                         Key={'PK': primarykey, 'SK': sortkey},
                         UpdateExpression='SET overallavg = :val',
-                        ExpressionAttributeValues={':val': Decimal(str(overallaverage))}
+                        ExpressionAttributeValues={':val': Decimal(str(rounded_overallaverage))}
                     )
 
                     # Increment the number of exams solved
@@ -124,7 +137,7 @@ def main(event, context):
                 except Exception as e:
                     print(f"Error processing record for PK {primarykey} and SK {sortkey}: {e}")
 
-       # Calculate aggregates for all students
+        # Calculate aggregates for all students
         try:
             response = userdata_table.scan()
             items = response.get('Items', [])
@@ -155,11 +168,11 @@ def main(event, context):
                 total_speaking_score += speaking_score
                 total_writing_score += writing_score
 
-            avg_reading_score = total_reading_score / valid_record_count if valid_record_count > 0 else Decimal(0)
-            avg_listening_score = total_listening_score / valid_record_count if valid_record_count > 0 else Decimal(0)
-            Avg_overall_avg = total_overall_avg / valid_record_count if valid_record_count > 0 else Decimal(0)
-            avg_speaking_score = total_speaking_score / valid_record_count if valid_record_count > 0 else Decimal(0)
-            avg_writing_score = total_writing_score / valid_record_count if valid_record_count > 0 else Decimal(0)
+            avg_reading_score = round_to_nearest_half(total_reading_score / valid_record_count if valid_record_count > 0 else Decimal(0))
+            avg_listening_score = round_to_nearest_half(total_listening_score / valid_record_count if valid_record_count > 0 else Decimal(0))
+            Avg_overall_avg = round_to_nearest_half(total_overall_avg / valid_record_count if valid_record_count > 0 else Decimal(0))
+            avg_speaking_score = round_to_nearest_half(total_speaking_score / valid_record_count if valid_record_count > 0 else Decimal(0))
+            avg_writing_score = round_to_nearest_half(total_writing_score / valid_record_count if valid_record_count > 0 else Decimal(0))
 
             records_table.update_item(
                 Key={'PK': 'AGGREGATES', 'SK': 'TOTALS'},
@@ -201,43 +214,44 @@ def main(event, context):
                 speaking_score = Decimal(str(item.get('speakingbandscore', 0)))
                 writing_score = Decimal(str(item.get('writingbandscore', 0)))
 
-                if reading_score > 0 or listening_score > 0 or overall_avg > 0 or speaking_score > 0 or writing_score > 0:
-                    school_data[school]['valid_record_count'] += 1
-                    school_data[school]['total_reading_score'] += reading_score
-                    school_data[school]['total_listening_score'] += listening_score
-                    school_data[school]['total_overall_avg'] += overall_avg
-                    school_data[school]['total_speaking_score'] += speaking_score
-                    school_data[school]['total_writing_score'] += writing_score
+                if reading_score == 0 and listening_score == 0 and overall_avg == 0 and speaking_score == 0 and writing_score == 0:
+                    continue
+
+                school_data[school]['valid_record_count'] += 1
+                school_data[school]['total_reading_score'] += reading_score
+                school_data[school]['total_listening_score'] += listening_score
+                school_data[school]['total_overall_avg'] += overall_avg
+                school_data[school]['total_speaking_score'] += speaking_score
+                school_data[school]['total_writing_score'] += writing_score
 
             for school, data in school_data.items():
-                valid_count = data['valid_record_count']
-                avg_reading_score = data['total_reading_score'] / valid_count if valid_count > 0 else Decimal(0)
-                avg_listening_score = data['total_listening_score'] / valid_count if valid_count > 0 else Decimal(0)
-                Avg_overall_avg = data['total_overall_avg'] / valid_count if valid_count > 0 else Decimal(0)
-                avg_speaking_score = data['total_speaking_score'] / valid_count if valid_count > 0 else Decimal(0)
-                avg_writing_score = data['total_writing_score'] / valid_count if valid_count > 0 else Decimal(0)
+                if data['valid_record_count'] > 0:
+                    avg_reading_score = round_to_nearest_half(data['total_reading_score'] / data['valid_record_count'])
+                    avg_listening_score = round_to_nearest_half(data['total_listening_score'] / data['valid_record_count'])
+                    avg_overall_avg = round_to_nearest_half(data['total_overall_avg'] / data['valid_record_count'])
+                    avg_speaking_score = round_to_nearest_half(data['total_speaking_score'] / data['valid_record_count'])
+                    avg_writing_score = round_to_nearest_half(data['total_writing_score'] / data['valid_record_count'])
 
-                records_table.update_item(
-                    Key={'PK': 'AGGREGATES', 'SK': school},
-                    UpdateExpression='SET avg_reading_score = :r, avg_listening_score = :l, Avg_overall_avg = :o, avg_speaking_score = :s, avg_writing_score = :w, student_count = :c',
-                    ExpressionAttributeValues={
-                        ':r': avg_reading_score,
-                        ':l': avg_listening_score,
-                        ':o': Avg_overall_avg,
-                        ':s': avg_speaking_score,
-                        ':w': avg_writing_score,
-                        ':c': Decimal(data['student_count'])
-                    }
-                )
+                    records_table.update_item(
+                        Key={'PK': 'AGGREGATES', 'SK': school},
+                        UpdateExpression='SET avg_reading_score = :r, avg_listening_score = :l, Avg_overall_avg = :o, avg_speaking_score = :s, avg_writing_score = :w, student_count = :c',
+                        ExpressionAttributeValues={
+                            ':r': avg_reading_score,
+                            ':l': avg_listening_score,
+                            ':o': Avg_overall_avg,
+                            ':s': avg_speaking_score,
+                            ':w': avg_writing_score,
+                            ':c': Decimal(data['student_count'])
+                        }
+                    )
 
         except Exception as e:
-            print(f"Error processing school-level aggregates: {e}")
+            print(f"Error processing school aggregates: {e}")
 
     except Exception as e:
         print(f"Error processing records: {e}")
-
+ 
     return {
         'statusCode': 200,
         'body': json.dumps('Processing complete with updated aggregates for all and by school!')
     }
-
