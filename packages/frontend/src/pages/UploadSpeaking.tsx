@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Nav } from '../components/Nav'; // Correct import for Nav
+import { Nav } from '../components/Nav';
 import DropzoneAudio from '../components/DropzoneAudio';
 import DropzoneListeningQfiles from '../components/DropzoneListeningQfiles';
 import '../components/AdminStyle/Upload.css';
@@ -17,13 +17,13 @@ const UploadSpeaking = ({ hideLayout }: UploadSpeakingProps) => {
     { text: 'Upload Exam', to: '/AdminUploadExams' },
   ];
 
-  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [audioFiles, setAudioFiles] = useState<File[]>([]); // Multiple audio files
   const [questionFile, setQuestionFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false); // Track if form is submitted
 
-  // Callback to collect the audio file from DropzoneAudio
-  const handleAudioFile = (file: File | null) => setAudioFile(file);
+  // Callback to collect the multiple audio files from DropzoneAudio
+  const handleAudioFiles = (files: File[]) => setAudioFiles(files);
 
   // Callback to collect the question file from Dropzone
   const handleQuestionFile = (file: File | null) => setQuestionFile(file);
@@ -33,37 +33,52 @@ const UploadSpeaking = ({ hideLayout }: UploadSpeakingProps) => {
     setUploadStatus(null);
 
     try {
-      const section = 'Speaking'
-      // Prepare the form data for audio file
-      if (audioFile) {
-        const audioFormData = new FormData();
-        audioFormData.append('file', audioFile);
+      const section = 'Speaking';
+      const allUploadsSuccessful: boolean[] = []; // Track success for each file
 
-        await toJSON(
+      // Prepare the form data for multiple audio files
+      if (audioFiles.length > 0) {
+        const audioFormData = new FormData();
+        audioFiles.forEach((file, index) => {
+          // Append each audio file with a unique field name (e.g., 'audioFile1', 'audioFile2', etc.)
+          audioFormData.append(`audioFile${index + 1}`, file);
+        });
+
+        // API call to upload multiple audio files
+        const audioResponse = await toJSON(
           post({
             apiName: 'myAPI',
             path: `/adminUploadAudio?section=${encodeURIComponent(section)}`,
             options: { body: audioFormData },
           }),
         );
+        allUploadsSuccessful.push(!!audioResponse);
       }
 
-      // Prepare the form data for question file
+      // Handle the question file upload
       if (questionFile) {
         const questionFormData = new FormData();
         questionFormData.append('file', questionFile);
 
-        await toJSON(
+        // API call to upload the question file
+        const questionResponse = await toJSON(
           post({
             apiName: 'myAPI',
             path: `/adminUpload?section=${encodeURIComponent(section)}`,
             options: { body: questionFormData },
           }),
         );
+        allUploadsSuccessful.push(!!questionResponse);
       }
 
-      setUploadStatus('Upload successfully!');
-      setIsSubmitted(true); // Mark the form as submitted
+      // Check if all uploads were successful
+      const allSuccessful = allUploadsSuccessful.every(success => success);
+      setUploadStatus(
+        allSuccessful
+          ? 'files uploaded successfully!'
+          : 'Some files failed to upload.',
+      );
+      setIsSubmitted(true); // Mark form as submitted
     } catch (error) {
       setUploadStatus(`Upload failed: ${(error as Error).message}`);
     }
@@ -72,8 +87,7 @@ const UploadSpeaking = ({ hideLayout }: UploadSpeakingProps) => {
   return (
     <div className="upload-page">
       {/* Conditionally render Nav component based on hideLayout */}
-      {!hideLayout && <Nav entries={navLinks} />}{' '}
-      {/* Conditionally render Nav */}
+      {!hideLayout && <Nav entries={navLinks} />}
       <div className="container">
         <div className="upload-section">
           <h1 className="page-title">Upload Your Speaking Files</h1>
@@ -85,7 +99,7 @@ const UploadSpeaking = ({ hideLayout }: UploadSpeakingProps) => {
           <h2 className="subtitle">Audio Files</h2>
           <DropzoneAudio
             className="dropzone-container"
-            onFileSelected={handleAudioFile} // Pass callback
+            onFileSelected={handleAudioFiles} // Pass callback for multiple files
           />
 
           {/* Dropzone for Question Files */}
@@ -95,7 +109,7 @@ const UploadSpeaking = ({ hideLayout }: UploadSpeakingProps) => {
             acceptedFileTypes={{
               'application/pdf': [], // .pdf files
             }}
-            onFileSelected={handleQuestionFile} // Pass callback
+            onFileSelected={handleQuestionFile} // Pass callback for single file
           />
 
           <div className="button-container">
@@ -115,7 +129,7 @@ const UploadSpeaking = ({ hideLayout }: UploadSpeakingProps) => {
           {uploadStatus && (
             <p
               className={`upload-status ${
-                uploadStatus.startsWith('Upload successfully')
+                uploadStatus.startsWith('All files uploaded successfully')
                   ? 'success'
                   : 'error'
               }`}
