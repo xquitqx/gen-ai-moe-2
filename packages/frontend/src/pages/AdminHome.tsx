@@ -6,7 +6,6 @@ import ChartComponent from '../components/AdminStyle/ChartComponent'; // Correct
 import { ChartData, ChartOptions } from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
 import { PointElement } from 'chart.js';
-import ChartjsPluginTrendline from 'chartjs-plugin-trendline';
 import { Bar } from 'react-chartjs-2';
 import { Nav } from '../components/Nav';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -30,7 +29,6 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ChartjsPluginTrendline,
   ChartDataLabels,
 );
 
