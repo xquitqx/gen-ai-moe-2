@@ -12,8 +12,10 @@ RECORDS_TABLE = os.environ['RECORDS_TABLE']
 
 def round_to_nearest_half(value):
     if value is None:
-        return None
-    return round(value * 2) / 2
+        return Decimal(0)
+    value = Decimal(value)
+    return (value * 2).quantize(Decimal('1')) / 2
+
 
 def main(event, context):
     # Access the DynamoDB tables dynamically
