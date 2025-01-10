@@ -257,7 +257,7 @@ function AdminHome() {
 
   // Define chart data for the first chart (IELTS scores)
   const chartData: ChartData<'bar'> = {
-    labels: ['Reading', 'Writing', 'Listening', 'Speaking'], // Place 'Regional Average' first
+    labels: ['Reading', 'Writing', 'Listening', 'Speaking'],
     datasets: [
       {
         data: [
@@ -299,7 +299,6 @@ function AdminHome() {
         backgroundColor: 'rgba(255, 99, 132, 0.2)', // Light red color for regional average
         borderColor: 'rgba(255, 99, 132, 1)', // Darker red for the border
         borderWidth: 1,
-        barThickness: 15, // Increase the bar thickness for the red bars
       },
     ],
   };
@@ -362,10 +361,10 @@ function AdminHome() {
     },
     plugins: {
       legend: {
-        display: true, // Show the legend now
+        display: true, // Show the legend
         labels: {
           generateLabels: () => {
-            // No need to use 'chart' here
+            // Custom labels for the legend
             return [
               {
                 text: 'Regional Average (6.5)',
@@ -381,6 +380,7 @@ function AdminHome() {
           },
         },
       },
+
       datalabels: {
         anchor: 'end',
         align: 'top',
@@ -576,12 +576,7 @@ function AdminHome() {
         backgroundColor: 'rgba(153, 102, 255, 0.6)',
         borderColor: 'rgba(153, 102, 255, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
 
@@ -593,12 +588,7 @@ function AdminHome() {
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
 
@@ -610,14 +600,10 @@ function AdminHome() {
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
+
   const readingVsWritingData: ChartData<'scatter'> = {
     datasets: [
       {
@@ -626,77 +612,55 @@ function AdminHome() {
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
 
   const readingVsSpeakingData: ChartData<'scatter'> = {
     datasets: [
       {
-        label: 'Reading Score vs speaking Score',
+        label: 'Reading Score vs Speaking Score',
         data: readingVsSpeaking,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
+
   const listeningVsWritingData: ChartData<'scatter'> = {
     datasets: [
       {
-        label: 'listening Score vs writing Score',
+        label: 'Listening Score vs Writing Score',
         data: listeningVsWriting,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
+
   const listeningVsSpeakingData: ChartData<'scatter'> = {
     datasets: [
       {
-        label: 'listening Score vs speaking Score',
+        label: 'Listening Score vs Speaking Score',
         data: listeningVsSpeaking,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
+
   const writingVsSpeakingData: ChartData<'scatter'> = {
     datasets: [
       {
-        label: 'Writing Score vs speaking Score',
+        label: 'Writing Score vs Speaking Score',
         data: writingVsSpeaking,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
 
