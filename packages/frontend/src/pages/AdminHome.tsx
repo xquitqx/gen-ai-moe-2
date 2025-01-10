@@ -252,6 +252,17 @@ function AdminHome() {
       selectedSchool,
     )}`;
   };
+  const validateData = (data: { x: number; y: number }[]) =>
+    data.filter(point => isFinite(point.x) && isFinite(point.y));
+
+  const validatedStreakVsAvgData = validateData(streakVsAvgData);
+  const validatedScatterData = validateData(scatterData);
+  const validatedReadingVsListening = validateData(readingVsListening);
+  const validatedReadingVsWriting = validateData(readingVsWriting);
+  const validatedReadingVsSpeaking = validateData(readingVsSpeaking);
+  const validatedListeningVsWriting = validateData(listeningVsWriting);
+  const validatedListeningVsSpeaking = validateData(listeningVsSpeaking);
+  const validatedWritingVsSpeaking = validateData(writingVsSpeaking);
 
   // Define chart data for the first chart (IELTS scores)
   const chartData: ChartData<'bar'> = {
@@ -565,12 +576,11 @@ function AdminHome() {
     ],
   };
 
-  // Scatter plot data (StreakCounter vs OverallAvg)
   const scatterChartData: ChartData<'scatter'> = {
     datasets: [
       {
         label: 'Streak Counter vs Overall Avg',
-        data: streakVsAvgData,
+        data: validatedStreakVsAvgData, // Use the validated data here
         backgroundColor: 'rgba(153, 102, 255, 0.6)',
         borderColor: 'rgba(153, 102, 255, 1)',
         pointRadius: 5,
@@ -582,7 +592,7 @@ function AdminHome() {
     datasets: [
       {
         label: 'Exams Solved vs. Average Score',
-        data: scatterData,
+        data: validatedScatterData,
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         pointRadius: 5,
@@ -594,7 +604,7 @@ function AdminHome() {
     datasets: [
       {
         label: 'Reading Score vs Listening Score',
-        data: readingVsListening,
+        data: validatedReadingVsListening,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
@@ -606,7 +616,7 @@ function AdminHome() {
     datasets: [
       {
         label: 'Reading vs. Writing Score',
-        data: readingVsWriting,
+        data: validatedReadingVsWriting,
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         pointRadius: 5,
@@ -618,7 +628,7 @@ function AdminHome() {
     datasets: [
       {
         label: 'Reading Score vs Speaking Score',
-        data: readingVsSpeaking,
+        data: validatedReadingVsSpeaking,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
@@ -630,7 +640,7 @@ function AdminHome() {
     datasets: [
       {
         label: 'Listening Score vs Writing Score',
-        data: listeningVsWriting,
+        data: validatedListeningVsWriting,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
@@ -642,7 +652,7 @@ function AdminHome() {
     datasets: [
       {
         label: 'Listening Score vs Speaking Score',
-        data: listeningVsSpeaking,
+        data: validatedListeningVsSpeaking,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
@@ -654,7 +664,7 @@ function AdminHome() {
     datasets: [
       {
         label: 'Writing Score vs Speaking Score',
-        data: writingVsSpeaking,
+        data: validatedWritingVsSpeaking,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
