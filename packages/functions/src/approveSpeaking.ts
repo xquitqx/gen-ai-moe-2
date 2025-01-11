@@ -190,50 +190,48 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       const command = new TransactWriteItemsCommand(transactParams);
       const response = await dynamodb.transactWriteItems(transactParams).promise();
       
-    // const transactParams = { TransactItems: transactItems };
-    // const command = new TransactWriteItemsCommand(transactParams);
-    // const response = await dynamodb.transactWriteItems(transactParams).promise();
-    // const userID = event.requestContext.authorizer!.jwt.claims.sub; // Target user ID
-    // const bucketName = "mohdj-codecatalyst-sst-ap-extractedtxtbucket87b8ca-ijzohbu9cf75"; // Name of the S3 bucket
-    // const pdfBucket = Bucket.BucketTextract.bucketName;
+    
+    const userID = event.requestContext.authorizer!.jwt.claims.sub; // Target user ID
+    const bucketName = Bucket.ExtractedTXT.bucketName; // Name of the Extracted txt S3 bucket
+    const pdfBucket = Bucket.BucketTextract.bucketName;
 
-    // // List all objects in the S3 bucket
-    // const objects = await s3.listObjectsV2({ Bucket: bucketName }).promise();
-    // const objectsPDF = await s3.listObjectsV2({ Bucket: pdfBucket }).promise();
+    // List all objects in the S3 bucket
+    const objects = await s3.listObjectsV2({ Bucket: bucketName }).promise();
+    const objectsPDF = await s3.listObjectsV2({ Bucket: pdfBucket }).promise();
 
 
-    // let targetObjectKey: string | null = null;
-    // let targetObjectKeyPDF: string | null = null;
+    let targetObjectKey: string | null = null;
+    let targetObjectKeyPDF: string | null = null;
 
 
-    // // Find the object whose name contains the userID
-    // for (const obj of objects.Contents || []) {
-    //   if (obj.Key && obj.Key.includes(userID) && obj.Key.includes("Speaking")) {
-    //     targetObjectKey = obj.Key;
-    //     break;
-    //   }
-    // }
-    // for (const obj of objectsPDF.Contents || []) {
-    //     if (obj.Key && obj.Key.includes(userID) /*&&  obj.Key.includes("Listening")*/) {
-    //       targetObjectKeyPDF = obj.Key;
-    //       break;
-    //     }
-    //   }
+    // Find the object whose name contains the userID
+    for (const obj of objects.Contents || []) {
+      if (obj.Key && obj.Key.includes(userID) && obj.Key.includes("Speaking")) {
+        targetObjectKey = obj.Key;
+        break;
+      }
+    }
+    for (const obj of objectsPDF.Contents || []) {
+        if (obj.Key && obj.Key.includes(userID)) {
+          targetObjectKeyPDF = obj.Key;
+          break;
+        }
+      }
 
-    // if (!targetObjectKey || !targetObjectKeyPDF) {
-    //   return {
-    //     statusCode: 404,
-    //     body: JSON.stringify({ message: `No object found for userID: ${userID}` }),
-    //   };
-    // }
+    if (!targetObjectKey || !targetObjectKeyPDF) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ message: `No object found for userID: ${userID}` }),
+      };
+    }
 
-    // // Retrieve the content of the target object
-    // const targetObject = await s3
-    //   .deleteObject({ Bucket: bucketName, Key: targetObjectKey })
-    //   .promise();
-    // const targetObjectpdf = await s3
-    //   .deleteObject({ Bucket: pdfBucket, Key: targetObjectKeyPDF })
-    //   .promise();
+    // Retrieve the content of the target object
+    const targetObject = await s3
+      .deleteObject({ Bucket: bucketName, Key: targetObjectKey })
+      .promise();
+    const targetObjectpdf = await s3
+      .deleteObject({ Bucket: pdfBucket, Key: targetObjectKeyPDF })
+      .promise();
 
     
     
