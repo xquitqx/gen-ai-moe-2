@@ -1,3 +1,5 @@
+//without trendline
+
 import { useState, useEffect } from 'react';
 import '../components/AdminStyle/AdminHome.css';
 import { get } from 'aws-amplify/api';
@@ -6,7 +8,6 @@ import ChartComponent from '../components/AdminStyle/ChartComponent'; // Correct
 import { ChartData, ChartOptions } from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
 import { PointElement } from 'chart.js';
-import ChartjsPluginTrendline from 'chartjs-plugin-trendline';
 import { Bar } from 'react-chartjs-2';
 import { Nav } from '../components/Nav';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -30,7 +31,6 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ChartjsPluginTrendline,
   ChartDataLabels,
 );
 
@@ -566,65 +566,17 @@ function AdminHome() {
       },
     ],
   };
-  function validateDataAndCalculateBounds(data: { x: number; y: number }[]) {
-    const validatedData = data.filter(
-      point => isFinite(point.x) && isFinite(point.y),
-    );
-
-    const xScaleMin = Math.min(...validatedData.map(d => d.x));
-    const xScaleMax = Math.max(...validatedData.map(d => d.x));
-    const yScaleMin = Math.min(...validatedData.map(d => d.y));
-    const yScaleMax = Math.max(...validatedData.map(d => d.y));
-
-    return {
-      validatedData,
-      bounds: {
-        startX: isFinite(xScaleMin) ? xScaleMin : 0,
-        endX: isFinite(xScaleMax) ? xScaleMax : 100,
-        startY: isFinite(yScaleMin) ? yScaleMin : 0,
-        endY: isFinite(yScaleMax) ? yScaleMax : 100,
-      },
-    };
-  }
-  // Validate data and calculate bounds for each dataset
-  const streakVsAvgResult = validateDataAndCalculateBounds(streakVsAvgData);
-  const scatterResult = validateDataAndCalculateBounds(scatterData);
-  const readingVsListeningResult =
-    validateDataAndCalculateBounds(readingVsListening);
-  const readingVsWritingResult =
-    validateDataAndCalculateBounds(readingVsWriting);
-  const readingVsSpeakingResult =
-    validateDataAndCalculateBounds(readingVsSpeaking);
-  const listeningVsWritingResult =
-    validateDataAndCalculateBounds(listeningVsWriting);
-  const listeningVsSpeakingResult =
-    validateDataAndCalculateBounds(listeningVsSpeaking);
-  const writingVsSpeakingResult =
-    validateDataAndCalculateBounds(writingVsSpeaking);
 
   // Scatter plot data (StreakCounter vs OverallAvg)
   const scatterChartData: ChartData<'scatter'> = {
     datasets: [
       {
         label: 'Streak Counter vs Overall Avg',
-        data: streakVsAvgResult.validatedData,
+        data: streakVsAvgData,
         backgroundColor: 'rgba(153, 102, 255, 0.6)',
         borderColor: 'rgba(153, 102, 255, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: {
-            x: streakVsAvgResult.bounds.startX,
-            y: streakVsAvgResult.bounds.startY,
-          },
-          end: {
-            x: streakVsAvgResult.bounds.endX,
-            y: streakVsAvgResult.bounds.endY,
-          },
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
 
@@ -632,21 +584,11 @@ function AdminHome() {
     datasets: [
       {
         label: 'Exams Solved vs. Average Score',
-        data: scatterResult.validatedData,
+        data: scatterData,
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: {
-            x: scatterResult.bounds.startX,
-            y: scatterResult.bounds.startY,
-          },
-          end: { x: scatterResult.bounds.endX, y: scatterResult.bounds.endY },
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
 
@@ -654,145 +596,71 @@ function AdminHome() {
     datasets: [
       {
         label: 'Reading Score vs Listening Score',
-        data: readingVsListeningResult.validatedData,
+        data: readingVsListening,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: {
-            x: readingVsListeningResult.bounds.startX,
-            y: readingVsListeningResult.bounds.startY,
-          },
-          end: {
-            x: readingVsListeningResult.bounds.endX,
-            y: readingVsListeningResult.bounds.endY,
-          },
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
+
   const readingVsWritingData: ChartData<'scatter'> = {
     datasets: [
       {
         label: 'Reading vs. Writing Score',
-        data: readingVsWritingResult.validatedData,
+        data: readingVsWriting,
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: {
-            x: readingVsWritingResult.bounds.startX,
-            y: readingVsWritingResult.bounds.startY,
-          },
-          end: {
-            x: readingVsWritingResult.bounds.endX,
-            y: readingVsWritingResult.bounds.endY,
-          },
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
 
   const readingVsSpeakingData: ChartData<'scatter'> = {
     datasets: [
       {
-        label: 'Reading Score vs speaking Score',
-        data: readingVsSpeakingResult.validatedData,
+        label: 'Reading Score vs Speaking Score',
+        data: readingVsSpeaking,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: {
-            x: readingVsSpeakingResult.bounds.startX,
-            y: readingVsWritingResult.bounds.startY,
-          },
-          end: {
-            x: readingVsWritingResult.bounds.endX,
-            y: readingVsWritingResult.bounds.endY,
-          },
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
+
   const listeningVsWritingData: ChartData<'scatter'> = {
     datasets: [
       {
-        label: 'listening Score vs writing Score',
-        data: listeningVsWritingResult.validatedData,
+        label: 'Listening Score vs Writing Score',
+        data: listeningVsWriting,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: {
-            x: listeningVsWritingResult.bounds.startX,
-            y: listeningVsWritingResult.bounds.startY,
-          },
-          end: {
-            x: listeningVsWritingResult.bounds.endX,
-            y: listeningVsWritingResult.bounds.endY,
-          },
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
+
   const listeningVsSpeakingData: ChartData<'scatter'> = {
     datasets: [
       {
-        label: 'listening Score vs speaking Score',
-        data: listeningVsSpeakingResult.validatedData,
+        label: 'Listening Score vs Speaking Score',
+        data: listeningVsSpeaking,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: {
-            x: listeningVsSpeakingResult.bounds.startX,
-            y: listeningVsSpeakingResult.bounds.startY,
-          },
-          end: {
-            x: listeningVsSpeakingResult.bounds.endX,
-            y: listeningVsSpeakingResult.bounds.endY,
-          },
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
+
   const writingVsSpeakingData: ChartData<'scatter'> = {
     datasets: [
       {
-        label: 'Writing Score vs speaking Score',
-        data: writingVsSpeakingResult.validatedData,
+        label: 'Writing Score vs Speaking Score',
+        data: writingVsSpeaking,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-        trendlineLinear: {
-          style: 'solid', // Line style
-          lineWidth: 2, // Line width
-          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: {
-            x: writingVsSpeakingResult.bounds.startX,
-            y: writingVsSpeakingResult.bounds.startY,
-          },
-          end: {
-            x: writingVsSpeakingResult.bounds.endX,
-            y: writingVsSpeakingResult.bounds.endY,
-          },
-        },
-      } as any, // Cast the dataset to `any`
+      },
     ],
   };
 
