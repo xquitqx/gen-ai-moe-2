@@ -153,10 +153,14 @@ const sectionName = window.location.pathname?.split('/').pop()?.replace('showExt
           const validSections = sections.filter((section) => section.question.trim() !== "")
           console.log(validSections)
           // Send the gathered data to your Lambda function
+          const requestData = {
+            validSections,
+            audioUrls,
+          };
           const response = await post({
             apiName: "myAPI",
             path: "/approveListening",
-            options: { body: JSON.stringify(validSections) },
+            options: { body: JSON.stringify(requestData) },
           });
       
           console.log("Approve response:", response);

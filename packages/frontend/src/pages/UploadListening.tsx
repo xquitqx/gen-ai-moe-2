@@ -1,19 +1,29 @@
-import Header from '../components/AdminHeader';
-import Navbar from '../components/Navbar';
+import React, { useState } from 'react';
+import { Nav } from '../components/Nav'; // Correct import for Nav
 import DropzoneAudio from '../components/DropzoneAudio';
 import DropzoneListeningQfiles from '../components/DropzoneListeningQfiles';
 import '../components/AdminStyle/Upload.css';
-import { useState } from 'react';
 import { post } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
+import { Link } from 'react-router-dom'; // Import Link for navigation
 
-const UploadListening = ({ hideLayout = false }) => {
-  const [audioFile, setAudioFile] = useState<File | null>(null);
+interface UploadListeningProps {
+  hideLayout?: boolean; // Adding the hideLayout prop
+}
+
+const UploadListening = ({ hideLayout }: UploadListeningProps) => {
+  const navLinks = [
+    { text: 'Dashboard', to: '/admin-home' },
+    { text: 'Upload Exam', to: '/AdminUploadExams' },
+  ];
+
+  const [audioFiles, setAudioFiles] = useState<File[]>([]); // Store multiple audio files
   const [questionFile, setQuestionFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false); // Track if form is submitted
 
-  // Callback to collect the audio file from DropzoneAudio
-  const handleAudioFile = (file: File | null) => setAudioFile(file);
+  // Callback to collect multiple audio files from DropzoneAudio
+  const handleAudioFiles = (files: File[]) => setAudioFiles(files); // Handle an array of files
 
   // Callback to collect the question file from Dropzone
   const handleQuestionFile = (file: File | null) => setQuestionFile(file);
@@ -23,11 +33,14 @@ const UploadListening = ({ hideLayout = false }) => {
     setUploadStatus(null);
 
     try {
-        const section = 'Listening'
-      // Prepare the form data for audio file
-      if (audioFile) {
+      const section = 'Listening';
+
+      // Prepare the form data for multiple audio files
+      if (audioFiles.length > 0) {
         const audioFormData = new FormData();
-        audioFormData.append('file', audioFile);
+        audioFiles.forEach((file, index) => {
+          audioFormData.append(`audioFile${index + 1}`, file);
+        });
 
         await toJSON(
           post({
@@ -37,7 +50,6 @@ const UploadListening = ({ hideLayout = false }) => {
           }),
         );
       }
-      
 
       // Prepare the form data for question file
       if (questionFile) {
@@ -54,6 +66,7 @@ const UploadListening = ({ hideLayout = false }) => {
       }
 
       setUploadStatus('Upload successfully!');
+      setIsSubmitted(true); // Mark the form as submitted
     } catch (error) {
       setUploadStatus(`Upload failed: ${(error as Error).message}`);
     }
@@ -61,8 +74,9 @@ const UploadListening = ({ hideLayout = false }) => {
 
   return (
     <div className="upload-page">
-      {!hideLayout && <Header />}
-      {!hideLayout && <Navbar />}
+      {/* Use Nav component here */}
+      {!hideLayout && <Nav entries={navLinks} />}
+      {/* Conditionally render Nav based on hideLayout */}
       <div className="container">
         <div className="upload-section">
           <h1 className="page-title">Upload Your Listening Files</h1>
@@ -74,7 +88,7 @@ const UploadListening = ({ hideLayout = false }) => {
           <h2 className="subtitle">Audio Files</h2>
           <DropzoneAudio
             className="dropzone-container"
-            onFileSelected={handleAudioFile} // Pass callback
+            onFileSelected={handleAudioFiles} // Handle multiple files
           />
 
           {/* Dropzone for Question Files */}
@@ -84,17 +98,27 @@ const UploadListening = ({ hideLayout = false }) => {
             acceptedFileTypes={{
               'application/pdf': [], // .pdf files
             }}
-            onFileSelected={handleQuestionFile} // Pass callback
+            onFileSelected={handleQuestionFile} // Handle single file
           />
 
-          <button className="submit-btn" onClick={handleSubmit}>
-            Submit
-          </button>
+          <div className="button-container">
+            <button className="submit-btn" onClick={handleSubmit}>
+              Submit
+            </button>
+            <Link to="/showExtractedListening">
+              <button
+                className="extract-btn"
+                disabled={!isSubmitted} // Disable until submit is clicked
+              >
+                Extract
+              </button>
+            </Link>
+          </div>
 
           {uploadStatus && (
             <p
               className={`upload-status ${
-                uploadStatus.startsWith('Upload successful')
+                uploadStatus.startsWith('Upload successfully')
                   ? 'success'
                   : 'error'
               }`}

@@ -22,7 +22,6 @@ const milestoneImages: Record<number, string> = {
   30: badge30,
 };
 
-
 type NavProps = {
   showLogo?: boolean;
   entries?: Entry[];
@@ -33,7 +32,7 @@ type Entry = { text: string; to: To };
 
 const _containerStyling = 'flex flex-1 font-montserrat text-md text-white ';
 
-export const Nav: React.FC<NavProps> = (props) => {
+export const Nav: React.FC<NavProps> = props => {
   const { showLogo = true, entries = [], isLanding = false } = props;
 
   const authInfo = useContext(AuthContext);
@@ -46,10 +45,10 @@ export const Nav: React.FC<NavProps> = (props) => {
         path: '/getUserLevel',
       }),
     )
-      .then((response) => {
+      .then(response => {
         setStreakCounter(response.StreakCounter || 0);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error fetching streak:', error);
       });
   }, []);
@@ -62,7 +61,10 @@ export const Nav: React.FC<NavProps> = (props) => {
   const itemStyle = 'nav-item hover-darken';
 
   const logo = showLogo ? (
-    <Link className={`${itemStyle} text-xl font-bold px-7 flex items-center`} to="/home">
+    <Link
+      className={`${itemStyle} text-xl font-bold px-7 flex items-center`}
+      to="/"
+    >
       <div>LINGUI</div>
       {milestoneBadge && (
         <img
@@ -86,6 +88,12 @@ export const Nav: React.FC<NavProps> = (props) => {
       <div>{text}</div>
     </Link>
   ));
+
+  links.push(
+    <Link className={itemStyle} to="/achievements">
+      <div>Achievements</div>
+    </Link>
+  );
 
   return (
     <header className="z-10 w-full">
@@ -114,7 +122,7 @@ const MobileMenu = ({
   const itemStyle = 'nav-item hover-darken py-3 flex-row text-gray-700 ';
 
   const [isOpen, setIsOpen] = useState(false);
-  const toggleMenu = () => setIsOpen((s) => !s);
+  const toggleMenu = () => setIsOpen(s => !s);
 
   const links = entries.map(({ text, to }, index) => (
     <button key={index} onClick={toggleMenu}>
@@ -123,6 +131,14 @@ const MobileMenu = ({
       </Link>
     </button>
   ));
+
+  links.push(
+    <button key="achievements" onClick={toggleMenu}>
+      <Link className={itemStyle} to="/achievements">
+        <div>Achievements</div>
+      </Link>
+    </button>
+  );
 
   return (
     <>
@@ -161,20 +177,14 @@ const MobileMenu = ({
 
 const ProfileMenu: React.FC<{ user: AuthInfo['user'] }> = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const toggleMenu = () => setIsOpen((s) => !s);
+  const toggleMenu = () => setIsOpen(s => !s);
 
   const linkStyling = 'nav-item hover-darken py-3 flex-row text-gray-700 ';
 
   const menuContent = (
     <>
       {user && (
-
-        <Link className={linkStyling} to="../profilePage">
-          <div>View Profile</div>
-        </Link>
-      )}
-      {user && (
-        <Link className={linkStyling} to="sign-out">
+        <Link className={linkStyling} to="/sign-out">
           <div>Sign Out</div>
         </Link>
       )}

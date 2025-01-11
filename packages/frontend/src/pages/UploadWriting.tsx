@@ -1,16 +1,26 @@
-import Header from '../components/AdminHeader';
-import Navbar from '../components/Navbar';
+import React, { useState } from 'react';
+import { Nav } from '../components/Nav';
 import DropzoneListeningQfiles from '../components/DropzoneListeningQfiles';
 import '../components/AdminStyle/Upload.css';
-import { useState } from 'react';
 import { post } from 'aws-amplify/api';
 import { toJSON } from '../utilities';
 import DropzoneImageFiles from '../components/DropzoneImagefiles';
+import { Link } from 'react-router-dom';
 
-const UploadWriting = ({ hideLayout = false }) => {
+interface UploadWritingProps {
+  hideLayout?: boolean;
+}
+
+const UploadWriting = ({ hideLayout }: UploadWritingProps) => {
+  const navLinks = [
+    { text: 'Dashboard', to: '/admin-home' },
+    { text: 'Upload Exam', to: '/AdminUploadExams' },
+  ];
+
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [questionFile, setQuestionFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
   // Callback to collect the image file from DropzoneImage
   const handleImageFile = (file: File | null) => setImageFile(file);
@@ -23,8 +33,8 @@ const UploadWriting = ({ hideLayout = false }) => {
     setUploadStatus(null);
 
     try {
-      const section = 'Writing'
-      // Prepare the form data for image file
+      const section = 'Writing';
+      // Prepare the form data for the image file
       if (imageFile) {
         const imageFormData = new FormData();
         imageFormData.append('file', imageFile);
@@ -38,11 +48,10 @@ const UploadWriting = ({ hideLayout = false }) => {
         );
       }
 
-      // Prepare the form data for question file
+      // Prepare the form data for the question file
       if (questionFile) {
         const questionFormData = new FormData();
         questionFormData.append('file', questionFile);
-        
 
         await toJSON(
           post({
@@ -54,6 +63,7 @@ const UploadWriting = ({ hideLayout = false }) => {
       }
 
       setUploadStatus('Upload successfully!');
+      setIsSubmitted(true);
     } catch (error) {
       setUploadStatus(`Upload failed: ${(error as Error).message}`);
     }
@@ -61,8 +71,9 @@ const UploadWriting = ({ hideLayout = false }) => {
 
   return (
     <div className="upload-page">
-      {!hideLayout && <Header />}
-      {!hideLayout && <Navbar />}
+      {/* Conditionally render Nav component based on hideLayout */}
+      {!hideLayout && <Nav entries={navLinks} />}
+      {/* Conditionally render Nav */}
       <div className="container">
         <div className="upload-section">
           <h1 className="page-title">Upload Your Writing Files</h1>
@@ -87,14 +98,24 @@ const UploadWriting = ({ hideLayout = false }) => {
             onFileSelected={handleQuestionFile} // Pass callback
           />
 
-          <button className="submit-btn" onClick={handleSubmit}>
-            Submit
-          </button>
+          <div className="button-container">
+            <button className="submit-btn" onClick={handleSubmit}>
+              Submit
+            </button>
+            <Link to="/showExtractedWriting">
+              <button
+                className="extract-btn"
+                disabled={!isSubmitted} // Disable until submit is clicked
+              >
+                Extract
+              </button>
+            </Link>
+          </div>
 
           {uploadStatus && (
             <p
               className={`upload-status ${
-                uploadStatus.startsWith('Upload successful')
+                uploadStatus.startsWith('Upload successfully')
                   ? 'success'
                   : 'error'
               }`}

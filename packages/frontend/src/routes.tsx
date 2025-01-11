@@ -61,6 +61,7 @@ import about from './pages/about.tsx';
 import AdminLandingPage from './pages/adminlayout.tsx';
 import SchoolsList from './pages/chooseschool.tsx';
 import SchoolsList2 from './pages/chooseschool2.tsx';
+import AchievementsPage from './pages/AchievementsPage.tsx';
 
 // These routes will have the landing nav bar
 
@@ -157,6 +158,10 @@ const notLandingRoutes: RouteObject[] = [
   {
     path: '/showExtractedSpeaking',
     Component: SpeakingExtractedFilePage,
+  },
+  {
+    path: '/achievements',
+    Component: AchievementsPage,
   },
 ];
 

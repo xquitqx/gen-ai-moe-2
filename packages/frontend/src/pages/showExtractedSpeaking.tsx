@@ -3,6 +3,7 @@ import { get } from "aws-amplify/api";
 import { post } from 'aws-amplify/api';
 import WaveSurfer from "wavesurfer.js";
 
+
 const SpeakingExtractedFilePage: React.FC = () => {
   const [feedback, setFeedback] = useState<string>(""); 
   const [fileContent, setFileContent] = useState<string | null>(null);
@@ -204,7 +205,7 @@ const SpeakingExtractedFilePage: React.FC = () => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        height: "750px",
+        height: "1750px",
         backgroundColor: "#f8f9fa",
       }}
     >
@@ -220,7 +221,7 @@ const SpeakingExtractedFilePage: React.FC = () => {
           borderRadius: "8px",
           backgroundColor: "rgba(255, 255, 255, 0.9)",
           width: "80%",
-          height: "500px",
+          height: "1500px",
           maxHeight: "auto",
           overflowY: "auto",
           wordWrap: "break-word",
