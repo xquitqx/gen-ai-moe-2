@@ -6,6 +6,7 @@ import ChartComponent from '../components/AdminStyle/ChartComponent'; // Correct
 import { ChartData, ChartOptions } from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
 import { PointElement } from 'chart.js';
+import ChartjsPluginTrendline from 'chartjs-plugin-trendline';
 import { Bar } from 'react-chartjs-2';
 import { Nav } from '../components/Nav';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -29,6 +30,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
+  ChartjsPluginTrendline,
   ChartDataLabels,
 );
 
@@ -574,7 +576,14 @@ function AdminHome() {
         backgroundColor: 'rgba(153, 102, 255, 0.6)',
         borderColor: 'rgba(153, 102, 255, 1)',
         pointRadius: 5,
-      },
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
+          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+        },
+      } as any, // Cast the dataset to `any`
     ],
   };
 
@@ -586,7 +595,14 @@ function AdminHome() {
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         pointRadius: 5,
-      },
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
+          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+        },
+      } as any, // Cast the dataset to `any`
     ],
   };
 
@@ -598,10 +614,16 @@ function AdminHome() {
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-      },
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
+          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+        },
+      } as any, // Cast the dataset to `any`
     ],
   };
-
   const readingVsWritingData: ChartData<'scatter'> = {
     datasets: [
       {
@@ -610,55 +632,87 @@ function AdminHome() {
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         pointRadius: 5,
-      },
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
+          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+        },
+      } as any, // Cast the dataset to `any`
     ],
   };
 
   const readingVsSpeakingData: ChartData<'scatter'> = {
     datasets: [
       {
-        label: 'Reading Score vs Speaking Score',
+        label: 'Reading Score vs speaking Score',
         data: readingVsSpeaking,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-      },
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
+          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+        },
+      } as any, // Cast the dataset to `any`
     ],
   };
-
   const listeningVsWritingData: ChartData<'scatter'> = {
     datasets: [
       {
-        label: 'Listening Score vs Writing Score',
+        label: 'listening Score vs writing Score',
         data: listeningVsWriting,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-      },
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
+          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+        },
+      } as any, // Cast the dataset to `any`
     ],
   };
-
   const listeningVsSpeakingData: ChartData<'scatter'> = {
     datasets: [
       {
-        label: 'Listening Score vs Speaking Score',
+        label: 'listening Score vs speaking Score',
         data: listeningVsSpeaking,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-      },
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
+          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+        },
+      } as any, // Cast the dataset to `any`
     ],
   };
-
   const writingVsSpeakingData: ChartData<'scatter'> = {
     datasets: [
       {
-        label: 'Writing Score vs Speaking Score',
+        label: 'Writing Score vs speaking Score',
         data: writingVsSpeaking,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
-      },
+        trendlineLinear: {
+          style: 'solid', // Line style
+          lineWidth: 2, // Line width
+          strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
+          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
+          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+        },
+      } as any, // Cast the dataset to `any`
     ],
   };
 
