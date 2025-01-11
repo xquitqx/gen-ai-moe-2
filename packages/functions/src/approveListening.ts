@@ -10,10 +10,8 @@ const s3 = new S3();
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   try {
-    let questionID = "";
-    let questionID2 = "";
     const userID = event.requestContext.authorizer!.jwt.claims.sub; // Target user ID
-    const bucketName = "mohdj-codecatalyst-sst-ap-extractedtxtbucket87b8ca-ijzohbu9cf75"; // Name of the S3 bucket
+    const bucketName = Bucket.ExtractedTXT.bucketName; // Name of the S3 bucket
     const pdfBucket = Bucket.BucketTextract.bucketName;
      const dynamodb = new AWS.DynamoDB();
           const tableName = Table.Records.tableName;
@@ -59,7 +57,6 @@ export const handler: APIGatewayProxyHandler = async (event) => {
               checker = false;
             }
            }
-           id = "worked"
            transactItems.push({
             Put: {
               TableName: tableName,
@@ -342,7 +339,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                         },
                       ],
                     },
-                    ScriptKey: { S: `${parsedBody.audioUrls[0]}` },
+                    ScriptKey: { S: `${parsedBody.audioUrls[3]}` },
                   },
                 },
               },
