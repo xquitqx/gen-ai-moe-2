@@ -76,11 +76,18 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { Bucket } from 'sst/node/bucket';
+import { use } from 'sst/constructs';
+import { DBStack } from '../../../stacks/DBStack';
 
 const s3 = new S3Client({});
 
 export const handler: APIGatewayProxyHandler = async event => {
-  const bucketName = Bucket.Uploads.bucketName;
+  //const bucketName = Bucket.Polly.bucketName;
+  // const {
+  //   speakingPollyBucket
+  // } = use(DBStack);
+  
+  const bucketName = 'speaking-questions-polly'
 
   if (!event.body || !event.headers['content-type']) {
     return {
@@ -134,7 +141,7 @@ export const handler: APIGatewayProxyHandler = async event => {
   try {
     const userID = event.requestContext.authorizer!.jwt.claims.sub;
     const currentSection = event.queryStringParameters?.section || 'default';
-    const fileName = `${currentSection}/${userID}.${contentTypeHeader.split('/')[1] || 'bin'}`;
+    const fileName = `unApproved/${currentSection}/${userID}.${contentTypeHeader.split('/')[1] || 'bin'}`;
     const command = new PutObjectCommand({
       Bucket: bucketName,
       Key: fileName,

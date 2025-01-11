@@ -1,6 +1,8 @@
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { APIGatewayProxyHandler } from "aws-lambda";
 import { Bucket } from 'sst/node/bucket';
+import { use } from 'sst/constructs';
+import { DBStack } from '../../../stacks/DBStack';
 
 
 export const handler: APIGatewayProxyHandler = async (event) => {
@@ -9,7 +11,11 @@ export const handler: APIGatewayProxyHandler = async (event) => {
 
   // S3 Client Configuration
   const s3 = new S3Client();
-  const BUCKET_NAME = Bucket.Uploads.bucketName
+  // const {
+  //   speakingPollyBucket
+  // } = use(DBStack);
+  
+  const BUCKET_NAME = 'speaking-questions-polly'
   const REGION = "us-east-1"; // The region of your bucket
   const BUCKET_URL = `https://${BUCKET_NAME}.s3.${REGION}.amazonaws.com/`;
 
@@ -35,7 +41,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     // Fetch all objects from the S3 bucket under the specified folder
     const command = new ListObjectsV2Command({
       Bucket: BUCKET_NAME,
-      Prefix: `${folderName}/`, // Ensure only files in the specific folder are fetched
+      Prefix: `unApproved/${folderName}/`, // Ensure only files in the specific folder are fetched
     });
     const response = await s3.send(command);
 
