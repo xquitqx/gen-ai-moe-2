@@ -566,13 +566,48 @@ function AdminHome() {
       },
     ],
   };
+  function validateDataAndCalculateBounds(data: { x: number; y: number }[]) {
+    const validatedData = data.filter(
+      point => isFinite(point.x) && isFinite(point.y),
+    );
+
+    const xScaleMin = Math.min(...validatedData.map(d => d.x));
+    const xScaleMax = Math.max(...validatedData.map(d => d.x));
+    const yScaleMin = Math.min(...validatedData.map(d => d.y));
+    const yScaleMax = Math.max(...validatedData.map(d => d.y));
+
+    return {
+      validatedData,
+      bounds: {
+        startX: isFinite(xScaleMin) ? xScaleMin : 0,
+        endX: isFinite(xScaleMax) ? xScaleMax : 100,
+        startY: isFinite(yScaleMin) ? yScaleMin : 0,
+        endY: isFinite(yScaleMax) ? yScaleMax : 100,
+      },
+    };
+  }
+  // Validate data and calculate bounds for each dataset
+  const streakVsAvgResult = validateDataAndCalculateBounds(streakVsAvgData);
+  const scatterResult = validateDataAndCalculateBounds(scatterData);
+  const readingVsListeningResult =
+    validateDataAndCalculateBounds(readingVsListening);
+  const readingVsWritingResult =
+    validateDataAndCalculateBounds(readingVsWriting);
+  const readingVsSpeakingResult =
+    validateDataAndCalculateBounds(readingVsSpeaking);
+  const listeningVsWritingResult =
+    validateDataAndCalculateBounds(listeningVsWriting);
+  const listeningVsSpeakingResult =
+    validateDataAndCalculateBounds(listeningVsSpeaking);
+  const writingVsSpeakingResult =
+    validateDataAndCalculateBounds(writingVsSpeaking);
 
   // Scatter plot data (StreakCounter vs OverallAvg)
   const scatterChartData: ChartData<'scatter'> = {
     datasets: [
       {
         label: 'Streak Counter vs Overall Avg',
-        data: streakVsAvgData,
+        data: streakVsAvgResult.validatedData,
         backgroundColor: 'rgba(153, 102, 255, 0.6)',
         borderColor: 'rgba(153, 102, 255, 1)',
         pointRadius: 5,
@@ -580,8 +615,14 @@ function AdminHome() {
           style: 'solid', // Line style
           lineWidth: 2, // Line width
           strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
-          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+          start: {
+            x: streakVsAvgResult.bounds.startX,
+            y: streakVsAvgResult.bounds.startY,
+          },
+          end: {
+            x: streakVsAvgResult.bounds.endX,
+            y: streakVsAvgResult.bounds.endY,
+          },
         },
       } as any, // Cast the dataset to `any`
     ],
@@ -591,7 +632,7 @@ function AdminHome() {
     datasets: [
       {
         label: 'Exams Solved vs. Average Score',
-        data: scatterData,
+        data: scatterResult.validatedData,
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         pointRadius: 5,
@@ -599,8 +640,11 @@ function AdminHome() {
           style: 'solid', // Line style
           lineWidth: 2, // Line width
           strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
-          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+          start: {
+            x: scatterResult.bounds.startX,
+            y: scatterResult.bounds.startY,
+          },
+          end: { x: scatterResult.bounds.endX, y: scatterResult.bounds.endY },
         },
       } as any, // Cast the dataset to `any`
     ],
@@ -610,7 +654,7 @@ function AdminHome() {
     datasets: [
       {
         label: 'Reading Score vs Listening Score',
-        data: readingVsListening,
+        data: readingVsListeningResult.validatedData,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
@@ -618,8 +662,14 @@ function AdminHome() {
           style: 'solid', // Line style
           lineWidth: 2, // Line width
           strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
-          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+          start: {
+            x: readingVsListeningResult.bounds.startX,
+            y: readingVsListeningResult.bounds.startY,
+          },
+          end: {
+            x: readingVsListeningResult.bounds.endX,
+            y: readingVsListeningResult.bounds.endY,
+          },
         },
       } as any, // Cast the dataset to `any`
     ],
@@ -628,7 +678,7 @@ function AdminHome() {
     datasets: [
       {
         label: 'Reading vs. Writing Score',
-        data: readingVsWriting,
+        data: readingVsWritingResult.validatedData,
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         pointRadius: 5,
@@ -636,8 +686,14 @@ function AdminHome() {
           style: 'solid', // Line style
           lineWidth: 2, // Line width
           strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
-          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+          start: {
+            x: readingVsWritingResult.bounds.startX,
+            y: readingVsWritingResult.bounds.startY,
+          },
+          end: {
+            x: readingVsWritingResult.bounds.endX,
+            y: readingVsWritingResult.bounds.endY,
+          },
         },
       } as any, // Cast the dataset to `any`
     ],
@@ -647,7 +703,7 @@ function AdminHome() {
     datasets: [
       {
         label: 'Reading Score vs speaking Score',
-        data: readingVsSpeaking,
+        data: readingVsSpeakingResult.validatedData,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
@@ -655,8 +711,14 @@ function AdminHome() {
           style: 'solid', // Line style
           lineWidth: 2, // Line width
           strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
-          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+          start: {
+            x: readingVsSpeakingResult.bounds.startX,
+            y: readingVsWritingResult.bounds.startY,
+          },
+          end: {
+            x: readingVsWritingResult.bounds.endX,
+            y: readingVsWritingResult.bounds.endY,
+          },
         },
       } as any, // Cast the dataset to `any`
     ],
@@ -665,7 +727,7 @@ function AdminHome() {
     datasets: [
       {
         label: 'listening Score vs writing Score',
-        data: listeningVsWriting,
+        data: listeningVsWritingResult.validatedData,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
@@ -673,8 +735,14 @@ function AdminHome() {
           style: 'solid', // Line style
           lineWidth: 2, // Line width
           strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
-          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+          start: {
+            x: listeningVsWritingResult.bounds.startX,
+            y: listeningVsWritingResult.bounds.startY,
+          },
+          end: {
+            x: listeningVsWritingResult.bounds.endX,
+            y: listeningVsWritingResult.bounds.endY,
+          },
         },
       } as any, // Cast the dataset to `any`
     ],
@@ -683,7 +751,7 @@ function AdminHome() {
     datasets: [
       {
         label: 'listening Score vs speaking Score',
-        data: listeningVsSpeaking,
+        data: listeningVsSpeakingResult.validatedData,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
@@ -691,8 +759,14 @@ function AdminHome() {
           style: 'solid', // Line style
           lineWidth: 2, // Line width
           strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
-          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+          start: {
+            x: listeningVsSpeakingResult.bounds.startX,
+            y: listeningVsSpeakingResult.bounds.startY,
+          },
+          end: {
+            x: listeningVsSpeakingResult.bounds.endX,
+            y: listeningVsSpeakingResult.bounds.endY,
+          },
         },
       } as any, // Cast the dataset to `any`
     ],
@@ -701,7 +775,7 @@ function AdminHome() {
     datasets: [
       {
         label: 'Writing Score vs speaking Score',
-        data: writingVsSpeaking,
+        data: writingVsSpeakingResult.validatedData,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 5,
@@ -709,8 +783,14 @@ function AdminHome() {
           style: 'solid', // Line style
           lineWidth: 2, // Line width
           strokeStyle: 'rgba(255, 99, 132, 1)', // Trendline color
-          start: { x: 0, y: 0 }, // Start point of the trendline (adjust as needed)
-          end: { x: 100, y: 100 }, // End point of the trendline (adjust as needed)
+          start: {
+            x: writingVsSpeakingResult.bounds.startX,
+            y: writingVsSpeakingResult.bounds.startY,
+          },
+          end: {
+            x: writingVsSpeakingResult.bounds.endX,
+            y: writingVsSpeakingResult.bounds.endY,
+          },
         },
       } as any, // Cast the dataset to `any`
     ],
