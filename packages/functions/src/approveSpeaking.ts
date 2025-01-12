@@ -23,14 +23,12 @@ export const handler: APIGatewayProxyHandler = async (event) => {
           const parsedBody = JSON.parse(JSON.parse(event.body))
           console.log("DOUBLE PARSE:", parsedBody)
 
-          const objectNames = parsedBody[2].map((url: string) => {
-            const parts = url.split('/');
-            return `${parts[parts.length - 2]}/${parts[parts.length - 1]}`; // Combine "Speaking" and file name
-        });
+          parsedBody[2] = parsedBody[2].map((url: string) => url.split('/').pop()!);
+          const objectNames = parsedBody[2]
 
-        const firstFiveSentences = parsedBody[0][0]
-         .split('.\n') 
-         .slice(0, 5); 
+          const firstFiveSentences = parsedBody[0][0]
+          .split('.\n') 
+          .slice(0, 5); 
         
     
           const transactItems: any[] = [];

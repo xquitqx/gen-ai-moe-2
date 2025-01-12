@@ -5,6 +5,7 @@ import { use } from 'sst/constructs';
 import { DBStack } from '../../../stacks/DBStack';
 
 
+
 export const handler: APIGatewayProxyHandler = async (event) => {
   const userID = event.requestContext.authorizer!.jwt.claims.sub;
   console.log("I am:", userID)

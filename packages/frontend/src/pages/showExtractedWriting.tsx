@@ -97,12 +97,16 @@ const WritingExtractedFilePage: React.FC = () => {
   
       // Filter out null or empty values
       const validSections = sections.filter((content) => content !== null && content.trim() !== "");
+      const payload = {
+        validSections,
+        audioUrls, // Ensure `audioUrls` is defined in your component or state
+      };
   
       // Send the gathered content to your Lambda function
       const response = await post({
         apiName: "myAPI",
         path: "/approveWriting",
-        options: { body:  validSections  },
+        options: { body:  payload  },
       });
   
       console.log("Approve response:", response);

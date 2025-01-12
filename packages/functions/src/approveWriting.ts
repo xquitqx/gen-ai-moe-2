@@ -28,8 +28,14 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       let p2Question;
       console.log("events:" , event.body);
       const parsedBody = JSON.parse(event.body)
-      p1Question = parsedBody[0]
-      p2Question = parsedBody[1]
+      // Extract only the key from the audioUrls URL
+      if (parsedBody.audioUrls) {
+        parsedBody.audioUrls = parsedBody.audioUrls.split('/').pop()!;
+      }
+      console.log("The image key is:",  parsedBody.audioUrls)
+
+      p1Question = parsedBody.validSections[0]
+      p2Question = parsedBody.validSections[1]
       console.log(p1Question)
       console.log(p2Question)
 
@@ -69,7 +75,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                 P1: {
                     M: {
                         GraphDescription: { S: "This is a description" },
-                        GraphKey: { S: "graph123" },
+                        GraphKey: { S: parsedBody.audioUrls },
                         Question: { S: p1Question },
                     },
                 },
@@ -132,6 +138,56 @@ const response = await dynamodb.transactWriteItems(transactParams).promise();
       body: JSON.stringify({ message: `No object found for userID: ${userID}` }),
     };
   }
+  const sourceBucket = "speaking-questions-polly";
+  const destinationBucket = "speaking-questions-polly";
+  const objectKey = `unApproved/Writing/${parsedBody.audioUrls}`; // The original object key
+  const newObjectKey = `123456789?????Please`; // New destination object key
+    try {
+      console.log("Inside the try block!");
+  
+      // Step 1: Get the object from the source bucket
+      const objectData = await s3
+        .getObject({
+          Bucket: "speaking-questions-polly",
+          Key: "unApproved/Writing/2428c498-7051-70d4-fd74-485e880d889d.png",
+        })
+        .promise();
+      console.log("Object retrieved successfully:", objectData);
+  
+      // Step 2: Put the object in the destination bucket with the new key
+      await s3
+        .putObject({
+          Bucket:  "speaking-questions-polly",
+          Key: "123?NOW",
+          Body: objectData.Body, // Use the retrieved object data
+          ContentType: objectData.ContentType, // Optional: retain original content type
+        })
+        .promise();
+      console.log(`Object uploaded successfully to `);
+  
+      // Step 3: Delete the object from the source bucket
+      await s3
+        .deleteObject({
+          Bucket:  "speaking-questions-polly",
+          Key: "unApproved/Writing/2428c498-7051-70d4-fd74-485e880d889d.png",
+        })
+        .promise();
+      console.log(`Object deleted successfully from ${sourceBucket}/${objectKey}`);
+    } catch (error) {
+      console.log("Inside the catch block!");
+      console.error("Error moving object:", error);
+    }
+  
+  
+  // Example usage:
+  
+  
+  
+  
+  
+  
+  
+  
 
   // Retrieve the content of the target object
   const targetObject = await s3

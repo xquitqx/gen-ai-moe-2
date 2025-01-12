@@ -27,7 +27,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
           console.log("Questions?:", p1Question)
           console.log("Can we get the choices?:", parsedBody.validSections[0].choices )
     
-          
+          parsedBody.audioUrls = parsedBody.audioUrls.map((url:string) => url.split('/').pop());
+
           for (const fullQuestion of parsedBody.validSections) {
             const { question, choices, selectedAnswer } = fullQuestion;
             console.log('Question:', question)

@@ -369,10 +369,7 @@ export function ApiStack({ stack }: StackContext) {
       'POST /approveWriting': {
         function: {
           handler: 'packages/functions/src/approveWriting.handler',
-          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject'],
-          environment: {
-            speakingPollyBucket: speakingPollyBucket.bucketName,
-          },
+          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject', 's3:CopyObject','s3:PutObject'],
           timeout: '60 seconds',
         },
       },
