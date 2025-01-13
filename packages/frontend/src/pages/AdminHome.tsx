@@ -348,14 +348,14 @@ function AdminHome() {
         beginAtZero: true, // Ensure the x-axis starts from 0
         title: {
           display: true,
-          text: 'IELTS Section', // Label for the x-axis
+          text: 'School name', // Label for the x-axis
         },
       },
       y: {
         beginAtZero: true, // Ensure the y-axis starts from 0
         title: {
           display: true,
-          text: 'Average Band Score', // Label for the y-axis
+          text: 'School name', // Label for the y-axis
         },
       },
     },
@@ -995,7 +995,7 @@ function AdminHome() {
           <div className="graph-right">
             <h3>Username vs Streak Counter</h3>
             {userStreakData.length > 0 ? (
-              <ChartComponent
+              <Bar
                 data={barChartData}
                 options={chartOptionsusernamestreak}
               />
