@@ -112,7 +112,7 @@ const WritingExtractedFilePage: React.FC = () => {
       console.log("Approve response:", response);
       alert("Questions Saved Successfully!")
       // Redirect to admin landing page
-    window.location.href = "/adminLandingPage";
+      window.location.href = "/admin-home";
     } catch (error) {
       console.error("Approve failed:", (error as Error).message);
       const buttonApprove = document.getElementById("btnApprove") as HTMLButtonElement | null;

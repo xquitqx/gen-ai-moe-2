@@ -26,6 +26,30 @@ export const handler: APIGatewayProxyHandler = async (event) => {
           p1Question = parsedBody.validSections[0]
           console.log("Questions?:", p1Question)
           console.log("Can we get the choices?:", parsedBody.validSections[0].choices )
+          const sourceBucket = "speaking-questions-polly";
+            const destinationBucket = "speaking-questions-polly";
+            let listIDs = []
+            for (let i = 0; i<4; i++){
+                     let currentID = uuidv4()
+                     try{
+                       const objectData = await s3
+                                 .getObject({
+                                 Bucket: sourceBucket,
+                                 Key: currentID
+                                 })
+                                 .promise();
+                             console.log("Object retrieved successfully:", objectData);
+                     
+                         i--
+                     }
+                     catch{
+                       listIDs.push(currentID)
+                     }
+                     
+                     
+                     
+                 
+                   }
     
           parsedBody.audioUrls = parsedBody.audioUrls.map((url:string) => url.split('/').pop());
 
@@ -127,7 +151,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                         },
                       ],
                     },
-                    ScriptKey: { S: `${parsedBody.audioUrls[0]}` },
+                    ScriptKey: { S: `${listIDs[0]}.${parsedBody.audioUrls[0].split('.').pop()}` },
                   },
                 },
                 P2: {
@@ -202,7 +226,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                         },
                       ],
                     },
-                    ScriptKey: { S: `${parsedBody.audioUrls[1]}` },
+                    ScriptKey: { S: `${listIDs[1]}.${parsedBody.audioUrls[1].split('.').pop()}` },
                   },
                 },
                 P3: {
@@ -266,7 +290,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                         },
                       ],
                     },
-                    ScriptKey: { S: `${parsedBody.audioUrls[2]}` },
+                    ScriptKey: { S: `${listIDs[2]}.${parsedBody.audioUrls[2].split('.').pop()}` },
                   },
                 },
                 P4: {
@@ -332,7 +356,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                         },
                       ],
                     },
-                    ScriptKey: { S: `${parsedBody.audioUrls[3]}` },
+                    ScriptKey: { S: `${listIDs[3]}.${parsedBody.audioUrls[3].split('.').pop()}` },
                   },
                 },
               },
@@ -388,13 +412,12 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         body: JSON.stringify({ message: `No object found for userID: ${userID}` }),
       };
     }
-          const sourceBucket = "speaking-questions-polly";
-          const destinationBucket = "speaking-questions-polly";
+         
           for(let i = 0; i< parsedBody.audioUrls.length; i++){
             let objectKey = parsedBody.audioUrls[i].split("/").pop()
             const fullobjectKey = `unApproved/Listening/${objectKey}`; // The original object key
             const fileType = objectKey.split('.').pop()
-            const idKey = uuidv4()
+            const idKey = listIDs[i]
             const newObjectKey = `${idKey}.${fileType}`; // New destination object key
                 try {
                 console.log("Inside the try block!");

@@ -167,7 +167,7 @@ const sectionName = window.location.pathname?.split('/').pop()?.replace('showExt
     
           alert("Questions Saved Successfully!")
           // Redirect to admin landing page
-          window.location.href = "/adminLandingPage";
+          window.location.href = "/admin-home";
         }else{
         if(buttonApprove)
           buttonApprove.disabled = false;

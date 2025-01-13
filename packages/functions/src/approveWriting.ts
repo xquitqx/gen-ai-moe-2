@@ -28,6 +28,30 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       let p2Question;
       console.log("events:" , event.body);
       const parsedBody = JSON.parse(event.body)
+      const sourceBucket = "speaking-questions-polly";
+      const destinationBucket = "speaking-questions-polly";
+      let listIDs = []
+        for (let i = 0; i<1; i++){
+          let currentID = uuidv4()
+          try{
+            const objectData = await s3
+                      .getObject({
+                      Bucket: sourceBucket,
+                      Key: currentID
+                      })
+                      .promise();
+                  console.log("Object retrieved successfully:", objectData);
+          
+              i--
+          }
+          catch{
+            listIDs.push(currentID)
+          }
+          
+          
+          
+      
+        }
       // Extract only the key from the audioUrls URL
       if (parsedBody.audioUrls) {
         parsedBody.audioUrls = parsedBody.audioUrls.split('/').pop()!;
@@ -66,6 +90,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         }
        }
        console.log("OUR id: ", id)
+       console.log("list of ids: " , listIDs)
+       console.log("the image we got:" , parsedBody.audioUrls)
         transactItems.push({
           Put: {
             TableName: tableName,
@@ -75,7 +101,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                 P1: {
                     M: {
                         GraphDescription: { S: "This is a description" },
-                        GraphKey: { S: parsedBody.audioUrls },
+                        GraphKey: { S: `${listIDs[0]}.${parsedBody.audioUrls.split('.').pop()}` },
                         Question: { S: p1Question },
                     },
                 },
@@ -138,11 +164,10 @@ const response = await dynamodb.transactWriteItems(transactParams).promise();
       body: JSON.stringify({ message: `No object found for userID: ${userID}` }),
     };
   }
-  const sourceBucket = "speaking-questions-polly";
-  const destinationBucket = "speaking-questions-polly";
+  
   const objectKey = `unApproved/Writing/${parsedBody.audioUrls}`; // The original object key
   const fileType = objectKey.split('.').pop()
-  const idKey = uuidv4()
+  const idKey = listIDs[0]
   const newObjectKey = `${idKey}.${fileType}`; // New destination object key
     try {
       console.log("Inside the try block!");
