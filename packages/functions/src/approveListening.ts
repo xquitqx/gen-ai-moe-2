@@ -73,8 +73,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                           M: {
                             NumOfSubQuestions: { N: "3" },
                             Question: { S: "Listen and answer the questions." },
-                            QuestionType: { S: "Short answers" },
-                            SubQuestion: {
+                            QuestionType: { S: "Short Answers" },
+                            SubQuestions: {
                               L: [
                                 {
                                   M: {
@@ -87,7 +87,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                         } 
                                       ] 
                                     },
-                                    QuestionText: { S: `${parsedBody.validSections[0].question}` },
+                                    QuestionText: { S: `${parsedBody.validSections[0].question}-answer-` },
                                     QuestionWeight: { N: "1" },
                                   },
                                 },
@@ -102,7 +102,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                         } 
                                       ] 
                                     },
-                                    QuestionText: { S: `${parsedBody.validSections[1].question}` },
+                                    QuestionText: { S: `${parsedBody.validSections[1].question}-answer-` },
                                     QuestionWeight: { N: "1" },
                                   },
                                 },
@@ -117,7 +117,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                         } 
                                       ] 
                                     },
-                                    QuestionText: { S: `${parsedBody.validSections[2].question}` },
+                                    QuestionText: { S: `${parsedBody.validSections[2].question}-answer-` },
                                     QuestionWeight: { N: "1" },
                                   },
                                 },
@@ -139,8 +139,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                           M: {
                             NumOfSubQuestions: { N: "3" },
                             Question: { S: "Listen and answer the questions." },
-                            QuestionType: { S: "Multiple Choice Questions" },
-                            SubQuestion: {
+                            QuestionType: { S: "Multiple Answers" },
+                            SubQuestions: {
                               L: [
                                 {
                                   M: {
@@ -214,23 +214,15 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                           M: {
                             NumOfSubQuestions: { N: "3" },
                             Question: { S: "Listen and answer the questions." },
-                            QuestionType: { S: "Multiple Choice Questions" },
-                            SubQuestion: {
+                            QuestionType: { S: "Multiple Choice" },
+                            SubQuestions: {
                               L: [
                                 {
                                   M: {
                                     Choices: {
                                       L: parsedBody.validSections[6].choices.map((choice: string) => ({ S: choice })),
                                     },
-                                    CorrectAnswers: { 
-                                      L: [ 
-                                        { 
-                                          L: [ 
-                                            { S: `${parsedBody.validSections[6].selectedAnswer}` } 
-                                          ] 
-                                        } 
-                                      ] 
-                                    },
+                                    CorrectAnswer: { S: `${parsedBody.validSections[6].selectedAnswer}` }, 
                                     QuestionText: { S: `${parsedBody.validSections[6].question}` },
                                   },
                                 },
@@ -286,8 +278,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                           M: {
                             NumOfSubQuestions: { N: "3" },
                             Question: { S: "Listen and answer the questions." },
-                            QuestionType: { S: "Short answers" },
-                            SubQuestion: {
+                            QuestionType: { S: "Short Answers" },
+                            SubQuestions: {
                               L: [
                                 {
                                   M: {
@@ -300,7 +292,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                         } 
                                       ] 
                                     },
-                                    QuestionText: { S: `${parsedBody.validSections[9].question}` },
+                                    QuestionText: { S: `${parsedBody.validSections[9].question}-answer-` },
                                     QuestionWeight: { N: "1" },
                                   },
                                 },
@@ -315,7 +307,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                         } 
                                       ] 
                                     },
-                                    QuestionText: { S: `${parsedBody.validSections[10].question}` },
+                                    QuestionText: { S: `${parsedBody.validSections[10].question}-answer-` },
                                     QuestionWeight: { N: "1" },
                                   },
                                 },
@@ -330,7 +322,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                         } 
                                       ] 
                                     },
-                                    QuestionText: { S: `${parsedBody.validSections[11].question}` },
+                                    QuestionText: { S: `${parsedBody.validSections[11].question}-answer-` },
                                     QuestionWeight: { N: "1" },
                                   },
                                 },
