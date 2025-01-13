@@ -8,11 +8,11 @@ interface FileWithPreview extends File {
 
 interface DropzoneAudioProps {
   className?: string;
-  onFileSelected?: (file: File | null) => void;
+  onFileSelected?: (files: File[]) => void; // Expect multiple files now
 }
 
 const DropzoneAudio = ({ className, onFileSelected }: DropzoneAudioProps) => {
-  const [files, setFiles] = useState<FileWithPreview[]>([]);
+  const [files, setFiles] = useState<FileWithPreview[]>([]); // Track multiple files
   const [rejected, setRejected] = useState<FileRejection[]>([]);
 
   const onDrop = useCallback(
@@ -25,14 +25,14 @@ const DropzoneAudio = ({ className, onFileSelected }: DropzoneAudioProps) => {
           return fileWithPreview;
         });
 
-        // Update state with only the first 7 files
+        // Update state with new files
         setFiles(prevFiles => {
           const allFiles = [...prevFiles, ...newFiles];
           return allFiles.slice(0, 7); // Keep only the first 7 files
         });
 
-        // Notify the parent with the first file in the batch
-        onFileSelected?.(newFiles[0]);
+        // Notify parent with the new files
+        onFileSelected?.(acceptedFiles);
       }
 
       if (rejectedFiles?.length) {
@@ -54,7 +54,7 @@ const DropzoneAudio = ({ className, onFileSelected }: DropzoneAudioProps) => {
     setRejected([]);
 
     if (onFileSelected) {
-      onFileSelected(null);
+      onFileSelected([]); // Notify parent with empty array
     }
   };
 

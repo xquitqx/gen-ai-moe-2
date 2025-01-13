@@ -1,12 +1,22 @@
 import React, { useEffect, useState,useRef } from "react";
 import { get } from "aws-amplify/api";
+import { Nav } from '../components/Nav'; // Correct import for Nav
 //import { /*ToastContainer*/ toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { post } from 'aws-amplify/api';
 import WaveSurfer from "wavesurfer.js";
 
+interface UploadListeningProps {
+  hideLayout?: boolean; // Adding the hideLayout prop
+}
 
-const ListeningExtractedFilePage: React.FC = () => {
+const ListeningExtractedFilePage: React.FC = ({ hideLayout }: UploadListeningProps) => {
+  const navLinks = [
+    { text: 'Dashboard', to: '/admin-home' },
+    { text: 'Upload Exam', to: '/AdminUploadExams' },
+  ];
+
+
 const [feedback, setFeedback] = useState<string>(""); 
 const [fileContent, setFileContent] = useState<string | null>(null);
 const [error, setError] = useState<string | null>(null);
@@ -153,17 +163,21 @@ const sectionName = window.location.pathname?.split('/').pop()?.replace('showExt
           const validSections = sections.filter((section) => section.question.trim() !== "")
           console.log(validSections)
           // Send the gathered data to your Lambda function
+          const requestData = {
+            validSections,
+            audioUrls,
+          };
           const response = await post({
             apiName: "myAPI",
             path: "/approveListening",
-            options: { body: JSON.stringify(validSections) },
+            options: { body: JSON.stringify(requestData) },
           });
       
           console.log("Approve response:", response);
     
           alert("Questions Saved Successfully!")
           // Redirect to admin landing page
-          window.location.href = "/adminLandingPage";
+          window.location.href = "/admin-home";
         }else{
         if(buttonApprove)
           buttonApprove.disabled = false;
@@ -285,6 +299,10 @@ const sectionName = window.location.pathname?.split('/').pop()?.replace('showExt
   
   
   return (
+    <div className="upload-page">
+      {/* Use Nav component here */}
+      {!hideLayout && <Nav entries={navLinks} />}
+      {/* Conditionally render Nav based on hideLayout */}
     <div
       style={{
         display: "flex",
@@ -409,6 +427,7 @@ const sectionName = window.location.pathname?.split('/').pop()?.replace('showExt
             </div>
           ))}
       </div>
+    </div>
     </div>
   );
 };

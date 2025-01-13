@@ -40,7 +40,7 @@ export function ApiStack({ stack }: StackContext) {
       authorizer: 'jwt',
       function: {
         // Bind the table name to our API
-        bind: [table, bucket, bucket2, uploads_bucket],
+        bind: [table, bucket, bucket2],
       },
     },
     authorizers: {
@@ -304,6 +304,7 @@ export function ApiStack({ stack }: StackContext) {
           handler: 'packages/functions/src/s3adminUploadAudio.handler',
           permissions: ['s3:PutObject', 's3:PutObjectAcl'],
           environment: {
+            speakingPollyBucket: speakingPollyBucket.bucketName,
             bucket: bucket.bucketName,
           },
           timeout: '120 seconds',
@@ -314,6 +315,7 @@ export function ApiStack({ stack }: StackContext) {
           handler: 'packages/functions/src/s3adminUploadImage.handler',
           permissions: ['s3:PutObject', 's3:PutObjectAcl'],
           environment: {
+            speakingPollyBucket: speakingPollyBucket.bucketName,
             bucket: bucket.bucketName,
           },
           timeout: '120 seconds',
@@ -350,7 +352,10 @@ export function ApiStack({ stack }: StackContext) {
       'POST /approveListening': {
         function: {
           handler: 'packages/functions/src/approveListening.handler',
-          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject'],
+          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject','s3:PutObject'],
+          environment: {
+            speakingPollyBucket: speakingPollyBucket.bucketName,
+          },
           timeout: '60 seconds',
         },
       },
@@ -364,14 +369,17 @@ export function ApiStack({ stack }: StackContext) {
       'POST /approveWriting': {
         function: {
           handler: 'packages/functions/src/approveWriting.handler',
-          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject'],
+          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject', 's3:CopyObject','s3:PutObject'],
           timeout: '60 seconds',
         },
       },
       'POST /approveSpeaking': {
         function: {
           handler: 'packages/functions/src/approveSpeaking.handler',
-          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject'],
+          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject','s3:PutObject'],
+          environment: {
+            speakingPollyBucket: speakingPollyBucket.bucketName,
+          },
           timeout: '60 seconds',
         },
       },
@@ -379,6 +387,9 @@ export function ApiStack({ stack }: StackContext) {
         function: {
           handler:'packages/functions/src/getAudioFiles.handler',
           permissions:['s3:ListBucket','s3:GetObject'],
+          environment: {
+            speakingPollyBucket: speakingPollyBucket.bucketName,
+          },
           timeout: '60 seconds'
         },
       },

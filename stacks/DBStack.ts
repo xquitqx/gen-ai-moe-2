@@ -1,6 +1,8 @@
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import { Bucket, Table, StackContext, Function, RDS } from 'sst/constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as s3Cfn from 'aws-cdk-lib/aws-s3';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import * as secretsManager from 'aws-cdk-lib/aws-secretsmanager';
 import * as path from 'path';
@@ -41,6 +43,7 @@ graphlambdafunction.addEnvironment('RECORDS_TABLE', table.tableName);
   });
   // Add the table name as an environment variable to the Lambda function
 graphlambdafunction.addEnvironment('USERDATA_TABLE', userdataTable.tableName);
+
 
   const uploads_bucket = new Bucket(stack, 'Uploads');
   

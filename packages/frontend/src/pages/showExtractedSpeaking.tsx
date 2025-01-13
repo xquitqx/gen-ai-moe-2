@@ -2,8 +2,18 @@ import React, { useEffect, useState, useRef } from "react";
 import { get } from "aws-amplify/api";
 import { post } from 'aws-amplify/api';
 import WaveSurfer from "wavesurfer.js";
+import { Nav } from '../components/Nav'; // Correct import for Nav
 
-const SpeakingExtractedFilePage: React.FC = () => {
+interface UploadListeningProps {
+  hideLayout?: boolean; // Adding the hideLayout prop
+}
+
+const SpeakingExtractedFilePage: React.FC = ({ hideLayout }: UploadListeningProps) => {
+  const navLinks = [
+    { text: 'Dashboard', to: '/admin-home' },
+    { text: 'Upload Exam', to: '/AdminUploadExams' },
+  ];
+  
   const [feedback, setFeedback] = useState<string>(""); 
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -188,7 +198,7 @@ const SpeakingExtractedFilePage: React.FC = () => {
 
       alert("Questions Saved Successfully!")
       // Redirect to admin landing page
-      window.location.href = "/adminLandingPage";
+      window.location.href = "/admin-home";
     } catch (error) {
       console.error(`Approve failed: ${(error as Error).message}`);
       const buttonApprove = document.getElementById("btnApprove") as HTMLButtonElement | null;
@@ -198,13 +208,17 @@ const SpeakingExtractedFilePage: React.FC = () => {
   };
 
   return (
+    <div className="upload-page">
+      {/* Use Nav component here */}
+      {!hideLayout && <Nav entries={navLinks} />}
+      {/* Conditionally render Nav based on hideLayout */}
     <div
       style={{
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        height: "750px",
+        height: "1750px",
         backgroundColor: "#f8f9fa",
       }}
     >
@@ -220,7 +234,7 @@ const SpeakingExtractedFilePage: React.FC = () => {
           borderRadius: "8px",
           backgroundColor: "rgba(255, 255, 255, 0.9)",
           width: "80%",
-          height: "500px",
+          height: "1500px",
           maxHeight: "auto",
           overflowY: "auto",
           wordWrap: "break-word",
@@ -331,6 +345,7 @@ const SpeakingExtractedFilePage: React.FC = () => {
             </div>
           ))}
       </div>
+    </div>
     </div>
   );
 };

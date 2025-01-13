@@ -17,13 +17,13 @@ const UploadListening = ({ hideLayout }: UploadListeningProps) => {
     { text: 'Upload Exam', to: '/AdminUploadExams' },
   ];
 
-  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [audioFiles, setAudioFiles] = useState<File[]>([]); // Store multiple audio files
   const [questionFile, setQuestionFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false); // Track if form is submitted
 
-  // Callback to collect the audio file from DropzoneAudio
-  const handleAudioFile = (file: File | null) => setAudioFile(file);
+  // Callback to collect multiple audio files from DropzoneAudio
+  const handleAudioFiles = (files: File[]) => setAudioFiles(files); // Handle an array of files
 
   // Callback to collect the question file from Dropzone
   const handleQuestionFile = (file: File | null) => setQuestionFile(file);
@@ -34,10 +34,13 @@ const UploadListening = ({ hideLayout }: UploadListeningProps) => {
 
     try {
       const section = 'Listening';
-      // Prepare the form data for audio file
-      if (audioFile) {
+
+      // Prepare the form data for multiple audio files
+      if (audioFiles.length > 0) {
         const audioFormData = new FormData();
-        audioFormData.append('file', audioFile);
+        audioFiles.forEach((file, index) => {
+          audioFormData.append(`audioFile${index + 1}`, file);
+        });
 
         await toJSON(
           post({
@@ -85,7 +88,7 @@ const UploadListening = ({ hideLayout }: UploadListeningProps) => {
           <h2 className="subtitle">Audio Files</h2>
           <DropzoneAudio
             className="dropzone-container"
-            onFileSelected={handleAudioFile} // Pass callback
+            onFileSelected={handleAudioFiles} // Handle multiple files
           />
 
           {/* Dropzone for Question Files */}
@@ -95,7 +98,7 @@ const UploadListening = ({ hideLayout }: UploadListeningProps) => {
             acceptedFileTypes={{
               'application/pdf': [], // .pdf files
             }}
-            onFileSelected={handleQuestionFile} // Pass callback
+            onFileSelected={handleQuestionFile} // Handle single file
           />
 
           <div className="button-container">

@@ -61,6 +61,7 @@ import about from './pages/about.tsx';
 import AdminLandingPage from './pages/adminlayout.tsx';
 import SchoolsList from './pages/chooseschool.tsx';
 import SchoolsList2 from './pages/chooseschool2.tsx';
+import AchievementsPage from './pages/AchievementsPage.tsx';
 
 // These routes will have the landing nav bar
 
@@ -142,21 +143,10 @@ const notLandingRoutes: RouteObject[] = [
     path: '/questions-by-level',
     Component: QuestionsByLevel,
   },
+  
   {
-    path: '/showExtractedListening',
-    Component: ListeningExtractedFilePage,
-  },
-  {
-    path: '/showExtractedReading',
-    Component: ReadingExtractedFilePage,
-  },
-  {
-    path: '/showExtractedWriting',
-    Component: WritingExtractedFilePage,
-  },
-  {
-    path: '/showExtractedSpeaking',
-    Component: SpeakingExtractedFilePage,
+    path: '/achievements',
+    Component: AchievementsPage,
   },
 ];
 
@@ -276,7 +266,22 @@ const noLayoutRoutes: RouteObject[] = [
     path: '/AdminUploadExams',
     Component: AdminUploadExams,
   },
-
+  {
+    path: '/showExtractedListening',
+    Component: ListeningExtractedFilePage,
+  },
+  {
+    path: '/showExtractedReading',
+    Component: ReadingExtractedFilePage,
+  },
+  {
+    path: '/showExtractedWriting',
+    Component: WritingExtractedFilePage,
+  },
+  {
+    path: '/showExtractedSpeaking',
+    Component: SpeakingExtractedFilePage,
+  },
   {
     path: '/scores/:section/:sk',
     Component: LRFeedbackPage,
