@@ -2,8 +2,18 @@ import React, { useEffect, useState } from "react";
 import { get } from "aws-amplify/api";
 import { post } from 'aws-amplify/api';
 //import { toJSON } from '../utilities';
+import { Nav } from '../components/Nav'; // Correct import for Nav
 
-const WritingExtractedFilePage: React.FC = () => {
+interface UploadListeningProps {
+  hideLayout?: boolean; // Adding the hideLayout prop
+}
+
+const WritingExtractedFilePage: React.FC = ({ hideLayout }: UploadListeningProps) => {
+  const navLinks = [
+    { text: 'Dashboard', to: '/admin-home' },
+    { text: 'Upload Exam', to: '/AdminUploadExams' },
+  ];
+
   const [feedback, setFeedback] = useState<string>(""); 
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -97,18 +107,22 @@ const WritingExtractedFilePage: React.FC = () => {
   
       // Filter out null or empty values
       const validSections = sections.filter((content) => content !== null && content.trim() !== "");
+      const payload = {
+        validSections,
+        audioUrls, // Ensure `audioUrls` is defined in your component or state
+      };
   
       // Send the gathered content to your Lambda function
       const response = await post({
         apiName: "myAPI",
         path: "/approveWriting",
-        options: { body:  validSections  },
+        options: { body:  payload  },
       });
   
       console.log("Approve response:", response);
       alert("Questions Saved Successfully!")
       // Redirect to admin landing page
-    window.location.href = "/adminLandingPage";
+      window.location.href = "/admin-home";
     } catch (error) {
       console.error("Approve failed:", (error as Error).message);
       const buttonApprove = document.getElementById("btnApprove") as HTMLButtonElement | null;
@@ -162,6 +176,10 @@ const WritingExtractedFilePage: React.FC = () => {
   }, [feedback]);
   
   return (
+    <div className="upload-page">
+      {/* Use Nav component here */}
+      {!hideLayout && <Nav entries={navLinks} />}
+      {/* Conditionally render Nav based on hideLayout */}
     <div
       style={{
         display: "flex",
@@ -249,6 +267,7 @@ const WritingExtractedFilePage: React.FC = () => {
 />
 
       </div>
+    </div>
     </div>
   );
 };

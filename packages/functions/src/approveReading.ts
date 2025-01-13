@@ -72,8 +72,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
          subQuestionsListP1.push({
           M: {
             CorrectAnswer: { S: selectedAnswer  },  
-            QuestionText: { S: question },
-            choices: {
+            QuestionText: { S: `${question}-answer-` },
+            Choices: {
               L: choices.map((choice: any) => ({ S: choice })) // Map each choice as { S: value }
             }
           }
@@ -89,8 +89,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         subQuestionsListP2.push({
          M: {
            CorrectAnswer: { S: selectedAnswer  },  
-           QuestionText: { S: question },
-           choices: {
+           QuestionText: { S: `${question}-answer-` },
+           Choices: {
              L: choices.map((choice: any) => ({ S: choice })) // Map each choice as { S: value }
            }
          }
@@ -105,8 +105,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         subQuestionsListP3.push({
          M: {
            CorrectAnswer: { S: selectedAnswer  },  
-           QuestionText: { S: question },
-           choices: {
+           QuestionText: { S: `${question}-answer-` },
+           Choices: {
              L: choices.map((choice: any) => ({ S: choice })) // Map each choice as { S: value }
            }
          }
@@ -131,8 +131,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                        M: {
                          NumOfSubQuestions: { N: `${p1[2].length}` },
                          Question: { S: "Read the following passage and answer the questions." },
-                         QuestionType: { S: "Multiple Choice and True or False" },
-                         SubQuestion: {
+                         QuestionType: { S: "Matching Paragraph Information" },
+                         SubQuestions: {
                            L: subQuestionsListP1 // Dynamically generated subquestions
                          }
                        }
@@ -152,60 +152,12 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                             M: {
                               NumOfSubQuestions: { N: `${p1[2].length}` },
                               Question: { S: "Read the following passage and answer the questions." },
-                              QuestionType: { S: "Multiple Choice and True or False" },
-                              SubQuestion: {
+                              QuestionType: { S: "List Selection" },
+                              SubQuestions: {
                                 L: subQuestionsListP2 // Dynamically generated subquestions
                               }
                             }
                           },
-                          {
-                              M: {
-                                  NumOfSubQuestions: { N: "1" },
-                                  Question: { S: "Explain the purpose of the passage." },
-                                  QuestionType: { S: "OpenEnded" },
-                                  SubQuestion: {
-                                      L: [
-                                          {
-                                              M: {
-                                                  CorrectAnswers: {
-                                                      L: [
-                                                          {
-                                                              L: [{ S: "Purpose A" }, { S: "Purpose B" }]
-                                                          }
-                                                      ]
-                                                  },
-                                                  QuestionText: { S: "Describe the purpose." },
-                                                  QuestionWeight: { N: "10" }
-                                              }
-                                          }
-                                      ]
-                                  }
-                              }
-                          },
-                          {
-                              M: {
-                                  NumOfSubQuestions: { N: "1" },
-                                  Question: { S: "What are the key points mentioned?" },
-                                  QuestionType: { S: "MultipleChoice" },
-                                  SubQuestion: {
-                                      L: [
-                                          {
-                                              M: {
-                                                  choices: {
-                                                      L: [
-                                                          { S: "Key Point 1" },
-                                                          { S: "Key Point 2" },
-                                                          { S: "Key Point 3" }
-                                                      ]
-                                                  },
-                                                  CorrectAnswer: { S: "Key Point 3" },
-                                                  QuestionText: { S: "Select the correct key point." }
-                                              }
-                                          }
-                                      ]
-                                  }
-                              }
-                          }
                       ]
                   }
               }
@@ -221,8 +173,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                       M: {
                         NumOfSubQuestions: { N: `${p3[2].length}` },
                         Question: { S: "Read the following passage and answer the questions." },
-                        QuestionType: { S: "Multiple Choice and True or False" },
-                        SubQuestion: {
+                        QuestionType: { S: "Matching Headings" },
+                        SubQuestions: {
                           L: subQuestionsListP3 // Dynamically generated subquestions
                         }
                       }

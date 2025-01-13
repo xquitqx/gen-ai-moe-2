@@ -11,6 +11,30 @@ const s3 = new S3();
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   console.log("events:" , event.body);
+  const sourceBucket = "speaking-questions-polly";
+  const destinationBucket = "speaking-questions-polly";
+  let listIDs = []
+   for (let i = 0; i<7; i++){
+            let currentID = uuidv4()
+            try{
+              const objectData = await s3
+                        .getObject({
+                        Bucket: sourceBucket,
+                        Key: currentID
+                        })
+                        .promise();
+                    console.log("Object retrieved successfully:", objectData);
+            
+                i--
+            }
+            catch{
+              listIDs.push(currentID)
+            }
+            
+            
+            
+        
+          }
   try {
     let questionID = "";
     let questionID2 = "";
@@ -23,14 +47,13 @@ export const handler: APIGatewayProxyHandler = async (event) => {
           const parsedBody = JSON.parse(JSON.parse(event.body))
           console.log("DOUBLE PARSE:", parsedBody)
 
-          const objectNames = parsedBody[2].map((url: string) => {
-            const parts = url.split('/');
-            return `${parts[parts.length - 2]}/${parts[parts.length - 1]}`; // Combine "Speaking" and file name
-        });
+          parsedBody[2] = parsedBody[2].map((url: string) => url.split('/').pop()!);
+          const objectNames = parsedBody[2]
+          console.log("Files names:", objectNames)
 
-        const firstFiveSentences = parsedBody[0][0]
-         .split('.\n') 
-         .slice(0, 5); 
+          const firstFiveSentences = parsedBody[0][0]
+          .split('.\n') 
+          .slice(0, 5); 
         
     
           const transactItems: any[] = [];
@@ -69,19 +92,19 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                 L: [
                                     {
                                         M: {
-                                            S3Key: { S: `${objectNames[1]}` },
+                                            S3Key: { S: `${listIDs[1]}.${objectNames[1].split('.').pop()}` },
                                             text: { S: `${parsedBody[1][1]}` },
                                         }
                                     },
                                     {
                                         M: {
-                                            S3Key: { S: `${objectNames[2]}` },
+                                            S3Key: { S: `${listIDs[2]}.${objectNames[2].split('.').pop()}` },
                                             text: { S: `${parsedBody[1][2]}` },
                                         }
                                     },
                                     {
                                         M: {
-                                            S3Key: { S: `${objectNames[3]}` },
+                                            S3Key: { S: `${listIDs[3]}.${objectNames[3].split('.').pop()}` },
                                             text: { S: `${parsedBody[1][3]}` },
                                         }
                                     }
@@ -89,7 +112,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                             },
                             Task: {
                                 M: {
-                                    S3Key: { S: `${objectNames[0]}` },
+                                    S3Key: { S: `${listIDs[0]}.${objectNames[0].split('.').pop()}` },
                                     text: { S: `${parsedBody[1][0]}` },
                                 }
                             }
@@ -100,35 +123,35 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                             Questions: {
                                 L: [
                                     {
-                                        M: {
-                                            text: { S: `${firstFiveSentences[0]}` },
-                                        }
+                                        
+                                              S: `${firstFiveSentences[0]}` 
+                                        
                                     },
                                     {
-                                        M: {
-                                            text: { S: `${firstFiveSentences[1]}` },
-                                        }
+                                       
+                                              S: `${firstFiveSentences[1]}` 
+                                        
                                     },
                                     {
-                                        M: {
-                                            text: { S: `${firstFiveSentences[2]}` },
-                                        }
+                                        
+                                        S: `${firstFiveSentences[2]}` 
+                                        
                                     },
                                     {
-                                        M: {
-                                            text: { S: `${firstFiveSentences[3]}` },
-                                        }
+                                        
+                                        S: `${firstFiveSentences[3]}` 
+                                        
                                     },
                                     {
-                                      M: {
-                                          text: { S: `${firstFiveSentences[4]}` },
+                                      
+                                        S: `${firstFiveSentences[4]}` 
                                       }
-                                  }
+                                  
                                 ]
                             },
                             Task: {
                                 M: {
-                                    S3Key: { S: `${objectNames[0]}` },
+                                    S3Key: { S: `${listIDs[0]}.${objectNames[0].split('.').pop()}` },
                                     text: { S: `${parsedBody[1][0]}` },
                                 }
                             }
@@ -140,19 +163,19 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                 L: [
                                     {
                                         M: {
-                                            S3Key: { S: `${objectNames[4]}` },
+                                            S3Key: { S: `${listIDs[4]}.${objectNames[4].split('.').pop()}` },
                                             text: { S: `${parsedBody[1][4]}` },
                                         }
                                     },
                                     {
                                         M: {
-                                            S3Key: { S: `${objectNames[5]}` },
+                                            S3Key: { S: `${listIDs[5]}.${objectNames[5].split('.').pop()}` },
                                             text: { S: `${parsedBody[1][5]}` },
                                         }
                                     },
                                     {
                                         M: {
-                                            S3Key: { S: `${objectNames[6]}` },
+                                            S3Key: { S: `${listIDs[6]}.${objectNames[6].split('.').pop()}` },
                                             text: { S: `${parsedBody[1][6]}` },
                                         }
                                     }
@@ -160,7 +183,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                             },
                             Task: {
                                 M: {
-                                    S3Key: { S: `${objectNames[0]}` },
+                                    S3Key: { S: `${listIDs[0]}.${objectNames[0].split('.').pop()}` },
                                     text: { S: `${parsedBody[1][0]}` },
                                 }
                             }
@@ -224,6 +247,51 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         body: JSON.stringify({ message: `No object found for userID: ${userID}` }),
       };
     }
+
+      
+      for(let i = 0; i< objectNames.length; i++){
+        let objectKey = objectNames[i]
+        const fullobjectKey = `unApproved/Speaking/${objectKey}`; // The original object key
+        const fileType = objectKey.split('.').pop()
+        const idKey = listIDs[i]
+        const newObjectKey = `${idKey}.${fileType}`; // New destination object key
+            try {
+            console.log("Inside the try block!");
+        
+            // Step 1: Get the object from the source bucket
+            const objectData = await s3
+                .getObject({
+                Bucket: sourceBucket,
+                Key: fullobjectKey,
+                })
+                .promise();
+            console.log("Object retrieved successfully:", objectData);
+        
+            // Step 2: Put the object in the destination bucket with the new key
+            await s3
+                .putObject({
+                Bucket:  destinationBucket,
+                Key: newObjectKey,
+                Body: objectData.Body, // Use the retrieved object data
+                ContentType: objectData.ContentType, // Optional: retain original content type
+                })
+                .promise();
+            console.log(`Object uploaded successfully to `);
+        
+            // Step 3: Delete the object from the source bucket
+            await s3
+                .deleteObject({
+                Bucket:  sourceBucket,
+                Key: fullobjectKey,
+                })
+                .promise();
+            console.log(`Object deleted successfully from ${sourceBucket}/${fullobjectKey}`);
+            } catch (error) {
+            console.log("Inside the catch block!");
+            console.error("Error moving object:", error);
+            }
+      }
+      
 
     // Retrieve the content of the target object
     const targetObject = await s3

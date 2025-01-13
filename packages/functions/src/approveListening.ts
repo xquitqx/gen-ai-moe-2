@@ -26,8 +26,33 @@ export const handler: APIGatewayProxyHandler = async (event) => {
           p1Question = parsedBody.validSections[0]
           console.log("Questions?:", p1Question)
           console.log("Can we get the choices?:", parsedBody.validSections[0].choices )
+          const sourceBucket = "speaking-questions-polly";
+            const destinationBucket = "speaking-questions-polly";
+            let listIDs = []
+            for (let i = 0; i<4; i++){
+                     let currentID = uuidv4()
+                     try{
+                       const objectData = await s3
+                                 .getObject({
+                                 Bucket: sourceBucket,
+                                 Key: currentID
+                                 })
+                                 .promise();
+                             console.log("Object retrieved successfully:", objectData);
+                     
+                         i--
+                     }
+                     catch{
+                       listIDs.push(currentID)
+                     }
+                     
+                     
+                     
+                 
+                   }
     
-          
+          parsedBody.audioUrls = parsedBody.audioUrls.map((url:string) => url.split('/').pop());
+
           for (const fullQuestion of parsedBody.validSections) {
             const { question, choices, selectedAnswer } = fullQuestion;
             console.log('Question:', question)
@@ -72,8 +97,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                           M: {
                             NumOfSubQuestions: { N: "3" },
                             Question: { S: "Listen and answer the questions." },
-                            QuestionType: { S: "Short answers" },
-                            SubQuestion: {
+                            QuestionType: { S: "Short Answers" },
+                            SubQuestions: {
                               L: [
                                 {
                                   M: {
@@ -86,7 +111,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                         } 
                                       ] 
                                     },
-                                    QuestionText: { S: `${parsedBody.validSections[0].question}` },
+                                    QuestionText: { S: `${parsedBody.validSections[0].question}-answer-` },
                                     QuestionWeight: { N: "1" },
                                   },
                                 },
@@ -101,7 +126,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                         } 
                                       ] 
                                     },
-                                    QuestionText: { S: `${parsedBody.validSections[1].question}` },
+                                    QuestionText: { S: `${parsedBody.validSections[1].question}-answer-` },
                                     QuestionWeight: { N: "1" },
                                   },
                                 },
@@ -116,7 +141,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                         } 
                                       ] 
                                     },
-                                    QuestionText: { S: `${parsedBody.validSections[2].question}` },
+                                    QuestionText: { S: `${parsedBody.validSections[2].question}-answer-` },
                                     QuestionWeight: { N: "1" },
                                   },
                                 },
@@ -126,7 +151,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                         },
                       ],
                     },
-                    ScriptKey: { S: `${parsedBody.audioUrls[0]}` },
+                    ScriptKey: { S: `${listIDs[0]}.${parsedBody.audioUrls[0].split('.').pop()}` },
                   },
                 },
                 P2: {
@@ -138,8 +163,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                           M: {
                             NumOfSubQuestions: { N: "3" },
                             Question: { S: "Listen and answer the questions." },
-                            QuestionType: { S: "Multiple Choice Questions" },
-                            SubQuestion: {
+                            QuestionType: { S: "Multiple Answers" },
+                            SubQuestions: {
                               L: [
                                 {
                                   M: {
@@ -201,7 +226,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                         },
                       ],
                     },
-                    ScriptKey: { S: `${parsedBody.audioUrls[1]}` },
+                    ScriptKey: { S: `${listIDs[1]}.${parsedBody.audioUrls[1].split('.').pop()}` },
                   },
                 },
                 P3: {
@@ -213,23 +238,15 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                           M: {
                             NumOfSubQuestions: { N: "3" },
                             Question: { S: "Listen and answer the questions." },
-                            QuestionType: { S: "Multiple Choice Questions" },
-                            SubQuestion: {
+                            QuestionType: { S: "Multiple Choice" },
+                            SubQuestions: {
                               L: [
                                 {
                                   M: {
                                     Choices: {
                                       L: parsedBody.validSections[6].choices.map((choice: string) => ({ S: choice })),
                                     },
-                                    CorrectAnswers: { 
-                                      L: [ 
-                                        { 
-                                          L: [ 
-                                            { S: `${parsedBody.validSections[6].selectedAnswer}` } 
-                                          ] 
-                                        } 
-                                      ] 
-                                    },
+                                    CorrectAnswer: { S: `${parsedBody.validSections[6].selectedAnswer}` }, 
                                     QuestionText: { S: `${parsedBody.validSections[6].question}` },
                                   },
                                 },
@@ -273,7 +290,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                         },
                       ],
                     },
-                    ScriptKey: { S: `${parsedBody.audioUrls[2]}` },
+                    ScriptKey: { S: `${listIDs[2]}.${parsedBody.audioUrls[2].split('.').pop()}` },
                   },
                 },
                 P4: {
@@ -285,8 +302,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                           M: {
                             NumOfSubQuestions: { N: "3" },
                             Question: { S: "Listen and answer the questions." },
-                            QuestionType: { S: "Short answers" },
-                            SubQuestion: {
+                            QuestionType: { S: "Short Answers" },
+                            SubQuestions: {
                               L: [
                                 {
                                   M: {
@@ -299,7 +316,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                         } 
                                       ] 
                                     },
-                                    QuestionText: { S: `${parsedBody.validSections[9].question}` },
+                                    QuestionText: { S: `${parsedBody.validSections[9].question}-answer-` },
                                     QuestionWeight: { N: "1" },
                                   },
                                 },
@@ -314,7 +331,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                         } 
                                       ] 
                                     },
-                                    QuestionText: { S: `${parsedBody.validSections[10].question}` },
+                                    QuestionText: { S: `${parsedBody.validSections[10].question}-answer-` },
                                     QuestionWeight: { N: "1" },
                                   },
                                 },
@@ -329,7 +346,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                         } 
                                       ] 
                                     },
-                                    QuestionText: { S: `${parsedBody.validSections[11].question}` },
+                                    QuestionText: { S: `${parsedBody.validSections[11].question}-answer-` },
                                     QuestionWeight: { N: "1" },
                                   },
                                 },
@@ -339,7 +356,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                         },
                       ],
                     },
-                    ScriptKey: { S: `${parsedBody.audioUrls[3]}` },
+                    ScriptKey: { S: `${listIDs[3]}.${parsedBody.audioUrls[3].split('.').pop()}` },
                   },
                 },
               },
@@ -395,6 +412,49 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         body: JSON.stringify({ message: `No object found for userID: ${userID}` }),
       };
     }
+         
+          for(let i = 0; i< parsedBody.audioUrls.length; i++){
+            let objectKey = parsedBody.audioUrls[i].split("/").pop()
+            const fullobjectKey = `unApproved/Listening/${objectKey}`; // The original object key
+            const fileType = objectKey.split('.').pop()
+            const idKey = listIDs[i]
+            const newObjectKey = `${idKey}.${fileType}`; // New destination object key
+                try {
+                console.log("Inside the try block!");
+            
+                // Step 1: Get the object from the source bucket
+                const objectData = await s3
+                    .getObject({
+                    Bucket: sourceBucket,
+                    Key: fullobjectKey,
+                    })
+                    .promise();
+                console.log("Object retrieved successfully:", objectData);
+            
+                // Step 2: Put the object in the destination bucket with the new key
+                await s3
+                    .putObject({
+                    Bucket:  destinationBucket,
+                    Key: newObjectKey,
+                    Body: objectData.Body, // Use the retrieved object data
+                    ContentType: objectData.ContentType, // Optional: retain original content type
+                    })
+                    .promise();
+                console.log(`Object uploaded successfully to `);
+            
+                // Step 3: Delete the object from the source bucket
+                await s3
+                    .deleteObject({
+                    Bucket:  sourceBucket,
+                    Key: fullobjectKey,
+                    })
+                    .promise();
+                console.log(`Object deleted successfully from ${sourceBucket}/${fullobjectKey}`);
+                } catch (error) {
+                console.log("Inside the catch block!");
+                console.error("Error moving object:", error);
+                }
+          }
 
     // Retrieve the content of the target object
     const targetObject = await s3
