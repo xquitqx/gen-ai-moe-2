@@ -25,6 +25,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
 
           parsedBody[2] = parsedBody[2].map((url: string) => url.split('/').pop()!);
           const objectNames = parsedBody[2]
+          console.log("Files names:", objectNames)
 
           const firstFiveSentences = parsedBody[0][0]
           .split('.\n') 
@@ -222,6 +223,52 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         body: JSON.stringify({ message: `No object found for userID: ${userID}` }),
       };
     }
+
+      const sourceBucket = "speaking-questions-polly";
+      const destinationBucket = "speaking-questions-polly";
+      for(let i = 0; i< objectNames.length; i++){
+        let objectKey = objectNames[i]
+        const fullobjectKey = `unApproved/Speaking/${objectKey}`; // The original object key
+        const fileType = objectKey.split('.').pop()
+        const idKey = uuidv4()
+        const newObjectKey = `${idKey}.${fileType}`; // New destination object key
+            try {
+            console.log("Inside the try block!");
+        
+            // Step 1: Get the object from the source bucket
+            const objectData = await s3
+                .getObject({
+                Bucket: sourceBucket,
+                Key: fullobjectKey,
+                })
+                .promise();
+            console.log("Object retrieved successfully:", objectData);
+        
+            // Step 2: Put the object in the destination bucket with the new key
+            await s3
+                .putObject({
+                Bucket:  destinationBucket,
+                Key: newObjectKey,
+                Body: objectData.Body, // Use the retrieved object data
+                ContentType: objectData.ContentType, // Optional: retain original content type
+                })
+                .promise();
+            console.log(`Object uploaded successfully to `);
+        
+            // Step 3: Delete the object from the source bucket
+            await s3
+                .deleteObject({
+                Bucket:  sourceBucket,
+                Key: fullobjectKey,
+                })
+                .promise();
+            console.log(`Object deleted successfully from ${sourceBucket}/${fullobjectKey}`);
+            } catch (error) {
+            console.log("Inside the catch block!");
+            console.error("Error moving object:", error);
+            }
+      }
+      
 
     // Retrieve the content of the target object
     const targetObject = await s3

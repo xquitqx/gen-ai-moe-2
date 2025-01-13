@@ -141,15 +141,17 @@ const response = await dynamodb.transactWriteItems(transactParams).promise();
   const sourceBucket = "speaking-questions-polly";
   const destinationBucket = "speaking-questions-polly";
   const objectKey = `unApproved/Writing/${parsedBody.audioUrls}`; // The original object key
-  const newObjectKey = `123456789?????Please`; // New destination object key
+  const fileType = objectKey.split('.').pop()
+  const idKey = uuidv4()
+  const newObjectKey = `${idKey}.${fileType}`; // New destination object key
     try {
       console.log("Inside the try block!");
   
       // Step 1: Get the object from the source bucket
       const objectData = await s3
         .getObject({
-          Bucket: "speaking-questions-polly",
-          Key: "unApproved/Writing/2428c498-7051-70d4-fd74-485e880d889d.png",
+          Bucket: sourceBucket,
+          Key: objectKey,
         })
         .promise();
       console.log("Object retrieved successfully:", objectData);
@@ -157,8 +159,8 @@ const response = await dynamodb.transactWriteItems(transactParams).promise();
       // Step 2: Put the object in the destination bucket with the new key
       await s3
         .putObject({
-          Bucket:  "speaking-questions-polly",
-          Key: "123?NOW",
+          Bucket:  destinationBucket,
+          Key: newObjectKey,
           Body: objectData.Body, // Use the retrieved object data
           ContentType: objectData.ContentType, // Optional: retain original content type
         })
@@ -168,8 +170,8 @@ const response = await dynamodb.transactWriteItems(transactParams).promise();
       // Step 3: Delete the object from the source bucket
       await s3
         .deleteObject({
-          Bucket:  "speaking-questions-polly",
-          Key: "unApproved/Writing/2428c498-7051-70d4-fd74-485e880d889d.png",
+          Bucket:  sourceBucket,
+          Key: objectKey,
         })
         .promise();
       console.log(`Object deleted successfully from ${sourceBucket}/${objectKey}`);

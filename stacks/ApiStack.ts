@@ -352,7 +352,7 @@ export function ApiStack({ stack }: StackContext) {
       'POST /approveListening': {
         function: {
           handler: 'packages/functions/src/approveListening.handler',
-          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject'],
+          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject','s3:PutObject'],
           environment: {
             speakingPollyBucket: speakingPollyBucket.bucketName,
           },
@@ -376,7 +376,7 @@ export function ApiStack({ stack }: StackContext) {
       'POST /approveSpeaking': {
         function: {
           handler: 'packages/functions/src/approveSpeaking.handler',
-          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject'],
+          permissions: ['s3:ListBucket', 's3:GetObject', 's3:DeleteObject','s3:PutObject'],
           environment: {
             speakingPollyBucket: speakingPollyBucket.bucketName,
           },
