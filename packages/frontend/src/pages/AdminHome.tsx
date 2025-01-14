@@ -355,7 +355,7 @@ function AdminHome() {
         beginAtZero: true, // Ensure the y-axis starts from 0
         title: {
           display: true,
-          text: 'School name', // Label for the y-axis
+          text: 'Average test score', // Label for the y-axis
         },
       },
     },
@@ -995,10 +995,7 @@ function AdminHome() {
           <div className="graph-right">
             <h3>Username vs Streak Counter</h3>
             {userStreakData.length > 0 ? (
-              <Bar
-                data={barChartData}
-                options={chartOptionsusernamestreak}
-              />
+              <Bar data={barChartData} options={chartOptionsusernamestreak} />
             ) : error ? (
               <p>{error}</p>
             ) : (
