@@ -1,20 +1,20 @@
 import React, { useEffect, useState,useRef } from "react";
 import { get } from "aws-amplify/api";
-import { Nav } from '../components/Nav'; // Correct import for Nav
+//import { Nav } from '../components/Nav'; // Correct import for Nav
 //import { /*ToastContainer*/ toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { post } from 'aws-amplify/api';
 import WaveSurfer from "wavesurfer.js";
 
-interface UploadListeningProps {
-  hideLayout?: boolean; // Adding the hideLayout prop
-}
+// interface UploadListeningProps {
+//   hideLayout?: boolean; // Adding the hideLayout prop
+// }
 
-const ListeningExtractedFilePage: React.FC = ({ hideLayout }: UploadListeningProps) => {
-  const navLinks = [
-    { text: 'Dashboard', to: '/admin-home' },
-    { text: 'Upload Exam', to: '/AdminUploadExams' },
-  ];
+const ListeningExtractedFilePage: React.FC = (/*{ hideLayout }: UploadListeningProps*/) => {
+  // const navLinks = [
+  //   { text: 'Dashboard', to: '/admin-home' },
+  //   { text: 'Upload Exam', to: '/AdminUploadExams' },
+  // ];
 
 
 const [feedback, setFeedback] = useState<string>(""); 
@@ -299,10 +299,10 @@ const sectionName = window.location.pathname?.split('/').pop()?.replace('showExt
   
   
   return (
-    <div className="upload-page">
-      {/* Use Nav component here */}
-      {!hideLayout && <Nav entries={navLinks} />}
-      {/* Conditionally render Nav based on hideLayout */}
+    // <div className="upload-page">
+    //   {/* Use Nav component here */}
+    //   {!hideLayout && <Nav entries={navLinks} />}
+    //   {/* Conditionally render Nav based on hideLayout */}
     <div
       style={{
         display: "flex",
@@ -428,7 +428,7 @@ const sectionName = window.location.pathname?.split('/').pop()?.replace('showExt
           ))}
       </div>
     </div>
-    </div>
+    //</div>
   );
 };
 

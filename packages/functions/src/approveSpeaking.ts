@@ -92,19 +92,19 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                 L: [
                                     {
                                         M: {
-                                            S3Key: { S: `${listIDs[1]}.${objectNames[1].split('.').pop()}` },
+                                            S3key: { S: `${listIDs[1]}.${objectNames[1].split('.').pop()}` },
                                             text: { S: `${parsedBody[1][1]}` },
                                         }
                                     },
                                     {
                                         M: {
-                                            S3Key: { S: `${listIDs[2]}.${objectNames[2].split('.').pop()}` },
+                                            S3key: { S: `${listIDs[2]}.${objectNames[2].split('.').pop()}` },
                                             text: { S: `${parsedBody[1][2]}` },
                                         }
                                     },
                                     {
                                         M: {
-                                            S3Key: { S: `${listIDs[3]}.${objectNames[3].split('.').pop()}` },
+                                            S3key: { S: `${listIDs[3]}.${objectNames[3].split('.').pop()}` },
                                             text: { S: `${parsedBody[1][3]}` },
                                         }
                                     }
@@ -112,7 +112,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                             },
                             Task: {
                                 M: {
-                                    S3Key: { S: `${listIDs[0]}.${objectNames[0].split('.').pop()}` },
+                                    S3key: { S: `${listIDs[0]}.${objectNames[0].split('.').pop()}` },
                                     text: { S: `${parsedBody[1][0]}` },
                                 }
                             }
@@ -151,7 +151,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                             },
                             Task: {
                                 M: {
-                                    S3Key: { S: `${listIDs[0]}.${objectNames[0].split('.').pop()}` },
+                                    S3key: { S: `${listIDs[0]}.${objectNames[0].split('.').pop()}` },
                                     text: { S: `${parsedBody[1][0]}` },
                                 }
                             }
@@ -163,19 +163,19 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                                 L: [
                                     {
                                         M: {
-                                            S3Key: { S: `${listIDs[4]}.${objectNames[4].split('.').pop()}` },
+                                            S3key: { S: `${listIDs[4]}.${objectNames[4].split('.').pop()}` },
                                             text: { S: `${parsedBody[1][4]}` },
                                         }
                                     },
                                     {
                                         M: {
-                                            S3Key: { S: `${listIDs[5]}.${objectNames[5].split('.').pop()}` },
+                                            S3key: { S: `${listIDs[5]}.${objectNames[5].split('.').pop()}` },
                                             text: { S: `${parsedBody[1][5]}` },
                                         }
                                     },
                                     {
                                         M: {
-                                            S3Key: { S: `${listIDs[6]}.${objectNames[6].split('.').pop()}` },
+                                            S3key: { S: `${listIDs[6]}.${objectNames[6].split('.').pop()}` },
                                             text: { S: `${parsedBody[1][6]}` },
                                         }
                                     }
@@ -183,7 +183,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                             },
                             Task: {
                                 M: {
-                                    S3Key: { S: `${listIDs[0]}.${objectNames[0].split('.').pop()}` },
+                                    S3key: { S: `${listIDs[0]}.${objectNames[0].split('.').pop()}` },
                                     text: { S: `${parsedBody[1][0]}` },
                                 }
                             }
