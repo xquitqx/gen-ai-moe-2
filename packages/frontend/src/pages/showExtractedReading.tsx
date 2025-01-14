@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { get } from "aws-amplify/api";
 import { post } from 'aws-amplify/api';
-import { Nav } from '../components/Nav'; // Correct import for Nav
+//import { Nav } from '../components/Nav'; // Correct import for Nav
 
-interface UploadListeningProps {
-  hideLayout?: boolean; // Adding the hideLayout prop
-}
+// interface UploadListeningProps {
+//   hideLayout?: boolean; // Adding the hideLayout prop
+// }
 
-const ReadingExtractedFilePage: React.FC = ({ hideLayout }: UploadListeningProps) => {
-  const navLinks = [
-    { text: 'Dashboard', to: '/admin-home' },
-    { text: 'Upload Exam', to: '/AdminUploadExams' },
-  ];
+const ReadingExtractedFilePage: React.FC = (/*{ hideLayout }: UploadListeningProps*/) => {
+  // const navLinks = [
+  //   { text: 'Dashboard', to: '/admin-home' },
+  //   { text: 'Upload Exam', to: '/AdminUploadExams' },
+  // ];
 
   const [feedback, /*setFeedback*/] = useState<string>(""); 
   const [fileContent, setFileContent] = useState<string | null>(null);
@@ -441,10 +441,10 @@ const ReadingExtractedFilePage: React.FC = ({ hideLayout }: UploadListeningProps
 
   
   return (
-    <div className="upload-page">
-      {/* Use Nav component here */}
-      {!hideLayout && <Nav entries={navLinks} />}
-      {/* Conditionally render Nav based on hideLayout */}
+    // <div className="upload-page">
+    //   {/* Use Nav component here */}
+    //   {!hideLayout && <Nav entries={navLinks} />}
+    //   {/* Conditionally render Nav based on hideLayout */}
     <div
       style={{
         display: "flex",
@@ -517,7 +517,7 @@ const ReadingExtractedFilePage: React.FC = ({ hideLayout }: UploadListeningProps
           </div>)}
       </div>
     </div>
-    </div>
+    //</div>
   );
 };
 
