@@ -6,7 +6,7 @@ This repository contains the codebase for LINGUI, a web application designed to 
 
 *   **IELTS Exam Simulation:** Users can take simulated IELTS exams to assess and improve their English proficiency.
 *   **Personalized Feedback:** After completing an exam, users receive detailed, personalized feedback on their performance, highlighting areas of strength and weakness using Generative AI.
-*   **Motivational Gamification:** A daily streak system encourages consistent practice. Users build streaks by taking learning activities daily.
+*   **Motivational Gamification:** A daily streak system encourages consistent practice. Users build streaks by taking learning activities daily and compete for the top of leaderboards.
 *   **Streak Milestone Rewards:** Users unlock milestones and receive email notifications upon reaching the significant streak milestones, providing further motivation.
 *   **Admin Dashboard:** A dedicated admin dashboard provides comprehensive management capabilities.
 *   **Data Visualization:** The admin dashboard features data visualizations of system performance metrics and student performance data across Bahrain and per school, offering valuable insights.
