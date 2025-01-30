@@ -38,7 +38,4 @@ Actions:
       Type: EC2
       Fleet: Linux.x86-64.Large
     Environment:
-      Connections:
-        - Role: CodeCatalystWorkflowDevelopmentRole-moe-ielts-phase2
-          Name: "664418980468"
       Name: Prod
