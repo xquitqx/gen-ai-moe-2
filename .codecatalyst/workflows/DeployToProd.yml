@@ -38,4 +38,7 @@ Actions:
       Type: EC2
       Fleet: Linux.x86-64.Large
     Environment:
-        Name: Prod
+      Connections:
+        - Role: CodeCatalystWorkflowDevelopmentRole-iGA_Jamal_ILIETS
+          Name: "600627328431"
+      Name: Prod
