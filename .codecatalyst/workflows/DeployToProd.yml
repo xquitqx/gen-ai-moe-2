@@ -39,6 +39,6 @@ Actions:
       Fleet: Linux.x86-64.Large
     Environment:
       Connections:
-        - Role: CodeCatalystWorkflowDevelopmentRole-iGA_Jamal_ILIETS
+        - Role: CodeCatalystWorkflowDevelopmentRole-iGA_Jamal_Internal
           Name: "571600842703"
       Name: Prod
