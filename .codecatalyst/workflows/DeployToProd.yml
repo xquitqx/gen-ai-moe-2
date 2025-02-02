@@ -38,7 +38,4 @@ Actions:
       Type: EC2
       Fleet: Linux.x86-64.Large
     Environment:
-      Connections:
-        - Role: CodeCatalystWorkflowDevelopmentRole-iGA_Projects
-          Name: "600627328431"
-      Name: Prod
+        Name: Prod
