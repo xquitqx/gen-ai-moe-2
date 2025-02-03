@@ -22,8 +22,8 @@ npm install chart.js
 echo "After chart.js install@@@@@@@@@@@@"
 
 # ***** Custom Bootstrap Step with Least-Privilege Policy *****
-echo "Bootstrapping CDK with custom execution policy"
-npx cdk bootstrap --cloudformation-execution-policies arn:aws:iam::571600842703:policy/cdk-toolkit-jamal-least-privillege
+echo "Bootstrapping CDK with custom execution policy @@@@@@@@@@@@@@@@@"
+npx cdk bootstrap --force --cloudformation-execution-policies arn:aws:iam::571600842703:policy/cdk-toolkit-jamal-least-privillege
 # If you need to limit which principals can assume the role, you can also add:
 # --trust arn:aws:iam::571600842703:role/CodeCatalystWorkflowDevelopmentRole-iGA_Jamal_Internal
 
