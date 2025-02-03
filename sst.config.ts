@@ -13,7 +13,7 @@ export default {
   config(_input) {
     return {
       name: 'codecatalyst-sst-app',
-      region: 'us-east-1',
+      region: 'eu-west-1',
     };
   },
   stacks(app) {
