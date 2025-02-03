@@ -27,7 +27,7 @@ npm install -g aws-cdk
 
 # ***** Custom Bootstrap Step with Least-Privilege Policy *****
 echo "Bootstrapping CDK with custom execution policy @@@@@@@@@@@@@@@@@"
-npx cdk bootstrap aws://571600842703/us-east-1 --force --cloudformation-execution-policies arn:aws:iam::571600842703:policy/cdk-toolkit-jamal-least-privillege -c bootstrapBucketPublicAccessBlock=false
+#npx cdk bootstrap aws://571600842703/us-east-1 --force --cloudformation-execution-policies arn:aws:iam::571600842703:policy/cdk-toolkit-jamal-least-privillege -c bootstrapBucketPublicAccessBlock=false
 # If you need to limit which principals can assume the role, you can also add:
 # --trust arn:aws:iam::571600842703:role/CodeCatalystWorkflowDevelopmentRole-iGA_Jamal_Internal
 
