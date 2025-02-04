@@ -33,5 +33,5 @@ npx sst bootstrap --region us-east-1 -- --no-public-access-block-configuration
 
 
 echo "Starting Deploy sst npx@@@@@@@@@@@@"
-npx sst deploy --stage prod aws://571600842703/us-east-1 --force --cloudformation-execution-policies arn:aws:iam::571600842703:policy/cdk-toolkit-jamal-least-privillege --no-public-access-block-configuration
+npx sst deploy --stage prod
 echo "Done from Deploy sst npx@@@@@@@@@@@"
