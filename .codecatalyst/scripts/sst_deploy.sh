@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo "Deploying project"
-
+pwd
 source ~/.bashrc
 nohup dockerd &
 docker version
