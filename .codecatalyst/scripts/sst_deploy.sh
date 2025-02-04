@@ -24,13 +24,13 @@ echo "After chart.js install@@@@@@@@@@@@"
 echo "cdk version and update check @@@@@@@@@@@@@@@@@@@@@"
 npx cdk --version
 npm install -g aws-cdk
-npx sst --version
+npx sst version
 
 
 
 # ***** Custom Bootstrap Step with Least-Privilege Policy *****
 echo "Bootstrapping CDK with custom execution policy @@@@@@@@@@@@@@@@@"
-#npx cdk bootstrap aws://571600842703/us-east-1 --force --cloudformation-execution-policies arn:aws:iam::571600842703:policy/cdk-toolkit-jamal-least-privillege --no-public-access-block-configuration
+npx cdk bootstrap aws://571600842703/us-east-1 --force --cloudformation-execution-policies arn:aws:iam::571600842703:policy/cdk-toolkit-jamal-least-privillege --no-public-access-block-configuration
 # Explicitly run SST's bootstrap command (instead of letting it auto-bootstrap):
 npx sst bootstrap --region us-east-1 -- --no-public-access-block-configuration
 
