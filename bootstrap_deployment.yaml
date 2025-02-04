@@ -578,7 +578,7 @@ Resources:
             # The CLI will prevent this case from occurring
             - Ref: AWS::NoValue
             # The CLI will advertise that we picked this implicitly
-            - - Fn::Sub: "arn:${AWS::Partition}:iam::aws:policy/AdministratorAccess"
+            - - Fn::Sub: "arn:${AWS::Partition}:iam::aws:policy/cdk-toolkit-jamal-least-privillege" # Change this for specified policy you need @@@@@@@@@@@@@@@@@@@@@@@@@@@@
       RoleName:
         Fn::Sub: cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}
       PermissionsBoundary:
