@@ -24,7 +24,8 @@ echo "After chart.js install@@@@@@@@@@@@"
 echo "cdk version and update check @@@@@@@@@@@@@@@@@@@@@"
 npx cdk --version
 npm install -g aws-cdk
-npx sst --version -y
+npx sst --version
+
 
 
 # ***** Custom Bootstrap Step with Least-Privilege Policy *****
