@@ -34,14 +34,14 @@ set -euo pipefail
 aws cloudformation deploy \
   --template-file cdk-bootstrap-template.yml \
   --stack-name CDKToolkit \
-  #--capabilities CAPABILITY_NAMED_IAM \
+  --capabilities CAPABILITY_NAMED_IAM \
   --no-fail-on-empty-changeset
 
 # 2) Deploy the SST bootstrap stack if not already deployed
 aws cloudformation deploy \
   --template-file sst-bootstrap-template.yml \
   --stack-name SSTBootstrap \
-  #--capabilities CAPABILITY_NAMED_IAM \
+  --capabilities CAPABILITY_NAMED_IAM \
   --no-fail-on-empty-changeset
 
 # 3) Finally, deploy your SST app
