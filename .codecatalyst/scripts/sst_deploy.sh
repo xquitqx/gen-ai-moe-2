@@ -26,18 +26,31 @@ npx cdk --version
 npm install -g aws-cdk
 npx sst version
 
+echo "new code for deploying new cdk cdktoolkit and sstbootstrap @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 
+set -euo pipefail
+
+# 1) Deploy the AWS CDK toolkit stack if not already deployed
+aws cloudformation deploy \
+  --template-file cdk-bootstrap-template.yml \
+  --stack-name CDKToolkit \
+  #--capabilities CAPABILITY_NAMED_IAM \
+  --no-fail-on-empty-changeset
+
+# 2) Deploy the SST bootstrap stack if not already deployed
+aws cloudformation deploy \
+  --template-file sst-bootstrap-template.yml \
+  --stack-name SSTBootstrap \
+  #--capabilities CAPABILITY_NAMED_IAM \
+  --no-fail-on-empty-changeset
+
+# 3) Finally, deploy your SST app
+#npx sst deploy --stage prod
 
 # ***** Custom Bootstrap Step with Least-Privilege Policy *****
 echo "Bootstrapping CDK with custom execution policy @@@@@@@@@@@@@@@@@"
 #npx cdk bootstrap aws://571600842703/us-east-1 --force --cloudformation-execution-policies arn:aws:iam::571600842703:policy/cdk-toolkit-jamal-least-privillege --no-public-access-block-configuration
 # Explicitly run SST's bootstrap command (instead of letting it auto-bootstrap):
-npx sst bootstrap aws://571600842703/us-east-1 \
-  --force \
-  -- \
-    --template ./bootstrap_deployment.yaml \
-    --cloudformation-execution-policies arn:aws:iam::x:policy/cdk-toolkit-jamal-least-privillege \
-    --no-public-access-block-configuration
 
 echo "Starting Deploy sst npx@@@@@@@@@@@@"
 npx sst deploy --stage prod
