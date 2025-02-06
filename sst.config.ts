@@ -28,7 +28,6 @@ export default {
       app.stack(OIDCForGitHubCI);
     } else {
       app
-        .stack(SSTBootstrap)
         .stack(DBStack)
         .stack(AuthStack)
         .stack(GrammarToolStack)
