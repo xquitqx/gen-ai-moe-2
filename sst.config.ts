@@ -1,5 +1,4 @@
 import { SSTConfig } from 'sst';
-import { SSTBootstrap } from "./stacks/SSTBootstrap";
 import { FrontendStack } from './stacks/FrontendStack';
 import { DBStack } from './stacks/DBStack';
 import { ApiStack } from './stacks/ApiStack';
@@ -36,7 +35,6 @@ export default {
         .stack(StorageStack)
         .stack(ApiStack)
         .stack(FrontendStack)
-        //.stack(StorageStack)
     }
   },
 } satisfies SSTConfig;
