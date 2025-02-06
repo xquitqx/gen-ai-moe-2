@@ -1,4 +1,5 @@
 import { SSTConfig } from 'sst';
+import { SSTBootstrap } from "./stacks/SSTBootstrap";
 import { FrontendStack } from './stacks/FrontendStack';
 import { DBStack } from './stacks/DBStack';
 import { ApiStack } from './stacks/ApiStack';
@@ -28,6 +29,7 @@ export default {
       app.stack(OIDCForGitHubCI);
     } else {
       app
+        .stack(SSTBootstrap)
         .stack(DBStack)
         .stack(AuthStack)
         .stack(GrammarToolStack)
