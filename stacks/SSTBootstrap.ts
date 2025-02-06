@@ -1,13 +1,13 @@
 import { StackContext, Bucket, BucketProps } from "sst/constructs";
 import { aws_s3 as s3, aws_iam as iam, RemovalPolicy, Duration } from "aws-cdk-lib";
 
-export function SSTBootstrapStack({ stack }: StackContext) {
+export function SSTBootstrap({ stack }: StackContext) {
   // 1) Override the default stack name in CloudFormation.
   //    This ensures the deployed stack will be called "SSTBootstrap".
   stack.setStackName("SSTBootstrap");
 
   // 2) Create the S3 bucket, minus PublicAccessBlockConfiguration.
-  const bucket = new Bucket(stack, "SSTBootstrapBucket", {
+  const bucket = new Bucket(stack, "SSTBootstrap", {
     autoDeleteObjects: true, // creates a custom resource for auto-delete
     cdk: {
       bucket: {
